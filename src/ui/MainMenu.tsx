@@ -10,6 +10,7 @@ import { listSaves, deleteSave, type SaveGame } from '../store/persistence';
 export function MainMenu(): JSX.Element {
   const newGame = useGameStore((s) => s.newGame);
   const resume = useGameStore((s) => s.resume);
+  const goToScreen = useGameStore((s) => s.goToScreen);
 
   const scenarios = useMemo(
     () =>
@@ -103,9 +104,17 @@ export function MainMenu(): JSX.Element {
             The same seed always produces the same hidden Rival and the same probes — play is fully
             deterministic. Leave blank to use the scenario default.
           </p>
-          <button type="button" className="primary" onClick={start}>
-            Begin Campaign
-          </button>
+          <div className="menu-secondary">
+            <button type="button" className="primary" onClick={start}>
+              Begin Campaign
+            </button>
+            <button type="button" className="ghost" onClick={() => goToScreen('TUTORIAL')}>
+              How to Play
+            </button>
+            <button type="button" className="ghost" onClick={() => goToScreen('ABOUT')}>
+              About &amp; Theory
+            </button>
+          </div>
         </div>
 
         <div className="panel resume-campaign">

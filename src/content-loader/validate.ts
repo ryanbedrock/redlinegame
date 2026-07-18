@@ -162,7 +162,7 @@ export function assembleContentPack(files: RawFiles, schemas: SchemaMap): Conten
   });
   policies.forEach((p) => {
     (p.probeResponse.rules ?? []).forEach((r, i) =>
-      checkCond(r.condition, `policies[${p.id}].probeResponse.rules[${i}]`, 'RIVAL_CONTEXT'),
+      checkCond(r.condition, `policies[${p.id}].probeResponse.rules[${i}]`, 'PLAYER_CONTEXT'),
     );
     p.purchasePlan.buys.forEach((b, i) => {
       if (b.condition) checkCond(b.condition, `policies[${p.id}].purchasePlan.buys[${i}]`, 'PLAYER_CONTEXT');

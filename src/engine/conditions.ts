@@ -46,6 +46,7 @@ export const PLAYER_VARS = new Set<string>([
   'budget',
   'backDownCount',
   'honoredTestCount',
+  'concessionStreak',
   'statedTypeBelief',
   'playerDistractionActive',
   'tracks.denial',
