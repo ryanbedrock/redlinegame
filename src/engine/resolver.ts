@@ -22,7 +22,7 @@ import type {
   TurnRecord,
 } from './types';
 import { RESPONSE_ORDINAL, TRACK_IDS } from './types';
-import { buildRivalVars } from './context';
+import { buildRivalVars, buildPlayerVars } from './context';
 import { evalBool } from './conditions';
 import {
   clamp,
@@ -164,7 +164,10 @@ function phaseSignalsInvestments(
   for (const purchase of decisions.purchases) {
     const card = content.cardsById[purchase.cardId];
     if (!card) continue;
-    // Affordability & purchase-limit guards (defensive; UI also enforces).
+    // Availability, affordability & purchase-limit guards (defensive; the UI
+    // also gates these). card.availability is a PLAYER_CONTEXT condition — the
+    // engine, not just the caller, refuses a purchase whose gate is false.
+    if (card.availability && !evalBool(card.availability, buildPlayerVars(next, content))) continue;
     if (card.cost.budget > next.player.budget) continue;
     if (card.cost.politicalCapital > next.player.politicalCapital) continue;
     const count = next.player.purchaseCounts[card.id] ?? 0;
@@ -348,6 +351,18 @@ function phaseEvents(next: GameState, content: ContentPack): string[] {
   const vars = buildRivalVars(next, content);
   const turn = next.meta.turnNumber;
 
+  // scenario.beats is the authoritative source of scheduled event timing
+  // (per-scenario windows). Events without a beat may still fire on a
+  // condition; events with neither are unreachable (rejected by validation).
+  const beatWindow = new Map<string, { minTurn: number; maxTurn: number }>();
+  for (const b of content.scenario.beats) {
+    const existing = beatWindow.get(b.eventId);
+    beatWindow.set(b.eventId, {
+      minTurn: existing ? Math.min(existing.minTurn, b.minTurn) : b.minTurn,
+      maxTurn: existing ? Math.max(existing.maxTurn, b.maxTurn) : b.maxTurn,
+    });
+  }
+
   const candidates: EventCard[] = content.events.filter((ev) => {
     if (ev.maxFires !== undefined && eventFireCount(next, ev.id) >= ev.maxFires) {
       return false;
@@ -356,12 +371,12 @@ function phaseEvents(next: GameState, content: ContentPack): string[] {
     if (ev.cooldownTurns !== undefined && last !== undefined && turn - last < ev.cooldownTurns) {
       return false;
     }
-    if (ev.schedule) {
-      if (turn < ev.schedule.minTurn || turn > ev.schedule.maxTurn) return false;
-    }
+    const window = beatWindow.get(ev.id);
+    if (window && (turn < window.minTurn || turn > window.maxTurn)) return false;
     if (ev.condition && !evalBool(ev.condition, vars)) return false;
-    // Scheduled events with a window fire as soon as in-window (once).
-    if (!ev.schedule && !ev.condition) return false;
+    // Deterministic scheduled events fire as soon as the beat window opens
+    // (once, gated by maxFires). Purely conditional events fire on condition.
+    if (!window && !ev.condition) return false;
     return true;
   });
 
@@ -520,11 +535,14 @@ export function resolveTurn(
     }
   }
 
-  // 2. Signals & investments.
-  const applied = phaseSignalsInvestments(next, decisions, content);
-
-  // 3. Advance pipelines.
+  // 2. Advance pre-existing build pipelines first, so this quarter's new
+  //    purchases wait their full declared lead time (a lead-N investment lands
+  //    N quarters later, never in the quarter it was bought — §6.5).
   const completedTracks = phaseAdvancePipelines(next, content);
+
+  // 3. Signals & investments (newly queued items are not decremented until the
+  //    next quarter).
+  const applied = phaseSignalsInvestments(next, decisions, content);
 
   // 4. Update Rival perception ledgers.
   phasePerception(next, content, applied, completedTracks, denialAtStart, punishmentAtStart);

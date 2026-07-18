@@ -219,6 +219,17 @@ export function assembleContentPack(files: RawFiles, schemas: SchemaMap): Conten
   );
   scenario.beats.forEach((b) => {
     if (!events.some((e) => e.id === b.eventId)) push(`scenario.beats: unknown event ${b.eventId}`);
+    if (b.minTurn > b.maxTurn) push(`scenario.beats[${b.eventId}]: minTurn ${b.minTurn} > maxTurn ${b.maxTurn}`);
+  });
+  // scenario.beats is authoritative for event timing; an event must not carry
+  // its own window (guards against a stale schedule silently diverging).
+  events.forEach((e) => {
+    if ('schedule' in e) push(`events[${e.id}]: 'schedule' is not allowed — scheduling is defined by scenario.beats`);
+    // A deterministic event with no beat and no condition can never fire.
+    const scheduled = scenario.beats.some((b) => b.eventId === e.id);
+    if (!scheduled && !e.condition) {
+      push(`events[${e.id}]: unreachable — not referenced by scenario.beats and has no condition`);
+    }
   });
   for (const t of TRACK_IDS) {
     if (scenario.opening.tracks[t] === undefined) push(`scenario.opening.tracks: missing ${t}`);
