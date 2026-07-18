@@ -224,7 +224,8 @@ export interface EventCard {
   id: string;
   title: string;
   text: string;
-  schedule?: { minTurn: number; maxTurn: number }; // scheduled window
+  // Scheduled timing is authoritative in scenario.beats (per-scenario), not
+  // here — an event carries no window of its own.
   condition?: ConditionExpr; // RIVAL_CONTEXT triggered
   effects: EffectSpec[];
   cooldownTurns?: number;

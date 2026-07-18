@@ -8,14 +8,6 @@
       "id": { "type": "string" },
       "title": { "type": "string" },
       "text": { "type": "string" },
-      "schedule": {
-        "type": "object",
-        "required": ["minTurn", "maxTurn"],
-        "properties": {
-          "minTurn": { "type": "integer" },
-          "maxTurn": { "type": "integer" }
-        }
-      },
       "condition": {},
       "effects": { "type": "array", "items": { "$ref": "#/$defs/effect" } },
       "cooldownTurns": { "type": "integer" },
