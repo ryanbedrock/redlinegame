@@ -51,4 +51,54 @@ describe('AC-3 content validation', () => {
     } as unknown as RawFiles;
     expect(() => assembleContentPack(raw, SCHEMAS)).toThrow();
   });
+
+  // scenario.beats is authoritative for event timing.
+  const rawFrom = (base: ReturnType<typeof loadContentPack>, over: Partial<RawFiles>): RawFiles =>
+    ({
+      signals: base.signals,
+      investments: base.investments,
+      probes: base.probes,
+      rivalTypes: Object.values(base.rivalTypes),
+      rivalRules: base.rivalRules,
+      events: base.events,
+      inbox: base.inbox,
+      intelTemplates: base.intelTemplates,
+      diagnosis: base.diagnosis,
+      rationales: base.rationales,
+      epilogue: base.epilogue,
+      policies: base.policies,
+      quiz: base.quiz,
+      scenario: base.scenario,
+      ...over,
+    }) as unknown as RawFiles;
+
+  it('rejects an event that carries its own stale schedule', () => {
+    const base = loadContentPack('scenario-1');
+    const events = structuredClone(base.events) as unknown[];
+    (events[0] as { schedule: unknown }).schedule = { minTurn: 1, maxTurn: 3 };
+    expect(() => assembleContentPack(rawFrom(base, { events } as Partial<RawFiles>), SCHEMAS)).toThrow();
+  });
+
+  it('rejects an event that is neither scheduled by a beat nor conditional (unreachable)', () => {
+    const base = loadContentPack('scenario-1');
+    const events = structuredClone(base.events) as { id: string; condition?: unknown }[];
+    const scenario = structuredClone(base.scenario) as { beats: { eventId: string }[] };
+    // Strip both the beat and the condition for one event.
+    const target = scenario.beats[0].eventId;
+    scenario.beats = scenario.beats.filter((b) => b.eventId !== target);
+    const ev = events.find((e) => e.id === target);
+    if (ev) delete ev.condition;
+    expect(() =>
+      assembleContentPack(rawFrom(base, { events, scenario } as unknown as Partial<RawFiles>), SCHEMAS),
+    ).toThrow();
+  });
+
+  it('rejects a beat whose minTurn exceeds its maxTurn', () => {
+    const base = loadContentPack('scenario-1');
+    const scenario = structuredClone(base.scenario) as { beats: { minTurn: number; maxTurn: number }[] };
+    scenario.beats[0] = { ...scenario.beats[0], minTurn: 20, maxTurn: 3 };
+    expect(() =>
+      assembleContentPack(rawFrom(base, { scenario } as unknown as Partial<RawFiles>), SCHEMAS),
+    ).toThrow();
+  });
 });
