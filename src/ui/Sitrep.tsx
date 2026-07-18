@@ -4,7 +4,8 @@
 
 import { useGameStore } from '../store/gameStore';
 import type { IntelMetric } from '../engine/types';
-import { pct, probeView } from './format';
+import { pct, probeView, GLOSSARY } from './format';
+import { InfoTip } from './InfoTip';
 
 const METRIC_LABEL: Record<IntelMetric, string> = {
   RESOLVE_READ: 'Assessed Rival Resolve',
@@ -45,8 +46,11 @@ export function Sitrep(): JSX.Element | null {
         </div>
       )}
 
-      <section className="panel">
-        <h3>Intelligence Estimates</h3>
+      <section className="panel" data-tour="intel">
+        <h3>
+          Intelligence Estimates
+          <InfoTip term="Intelligence Estimates" label={GLOSSARY.intelEstimates} side="bottom" />
+        </h3>
         <p className="panel-note">
           This is your intelligence: each read is the Rival's own (imperfect) estimate of you, or
           your estimate of it. The Inbox brief repeats these same numbers — reading it is optional.
@@ -75,8 +79,11 @@ export function Sitrep(): JSX.Element | null {
         </p>
       </section>
 
-      <section className="panel incoming">
-        <h3>Incoming</h3>
+      <section className="panel incoming" data-tour="incoming">
+        <h3>
+          Incoming
+          <InfoTip term="the incoming probe" label={GLOSSARY.probe} side="bottom" />
+        </h3>
         {staged ? (
           <div className="probe-preview">
             <div className="probe-preview-head">

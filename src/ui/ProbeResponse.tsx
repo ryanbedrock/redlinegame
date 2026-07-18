@@ -6,7 +6,8 @@ import { useGameStore } from '../store/gameStore';
 import type { ResponseType } from '../engine/types';
 import { RESPONSE_ORDINAL } from '../engine/types';
 import { RationalePicker } from './RationalePicker';
-import { probeView } from './format';
+import { probeView, GLOSSARY } from './format';
+import { InfoTip } from './InfoTip';
 
 const LADDER_HINT: Record<ResponseType, string> = {
   CONCEDE: 'Yield ground. Preserves capital now, but erodes the status quo and reads as weakness.',
@@ -49,7 +50,10 @@ export function ProbeResponse(): JSX.Element | null {
 
   return (
     <div className="screen probe-response">
-      <h2 className="screen-title">Probe Response</h2>
+      <h2 className="screen-title">
+        Probe Response
+        <InfoTip term="the response ladder" label={GLOSSARY.responseLadder} side="bottom" />
+      </h2>
       <section className="panel probe-card">
         <div className="probe-preview-head">
           <span className="probe-title">{view.title}</span>
