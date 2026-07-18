@@ -368,7 +368,9 @@ function phaseEvents(next: GameState, content: ContentPack): string[] {
   // Deterministic ordering; ≤2 per turn.
   candidates.sort((a, b) => a.id.localeCompare(b.id));
   for (const ev of candidates.slice(0, 2)) {
-    const effects = ev.perTypeEffects?.[next.rival.type] ?? ev.effects;
+    // Per-type effects augment the base effects (base applies to all types).
+    const perType = ev.perTypeEffects?.[next.rival.type] ?? [];
+    const effects = [...ev.effects, ...perType];
     applyEffects(next, effects, ev.id, turn);
     if (ev.biasMetric) {
       next.world.biasActive = {
@@ -634,10 +636,7 @@ function applyTurnIncome(next: GameState, content: ContentPack): void {
   const turn = next.meta.turnNumber;
   const incomeMult = flowMultiplier(next, 'budgetIncome', turn);
   const income = next.player.budgetIncome * incomeMult;
-  next.player.budget = Math.min(
-    next.player.budget + income,
-    next.player.budgetIncome * 1.5,
-  );
+  next.player.budget = next.player.budget + income;
   next.player.politicalCapital = Math.min(
     next.player.politicalCapital + content.scenario.tuning.pcRegenPerTurn,
     content.scenario.tuning.pcCap,

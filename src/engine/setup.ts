@@ -23,9 +23,10 @@ export function createInitialState(
   seed: number,
   createdAt: string,
   displayName?: string,
+  typeOverride?: RivalType,
 ): GameState {
   const sc = content.scenario;
-  const type = typeFromSeed(content, seed);
+  const type = typeOverride ?? typeFromSeed(content, seed);
   const def = content.rivalTypes[type];
 
   const streamCursors = {} as GameState['rng']['streamCursors'];

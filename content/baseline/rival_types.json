@@ -37,7 +37,7 @@
     "prize": 0.0,
     "windowBonusScale": 0.0,
     "preemptionValue": 1.25,
-    "b": 1.6,
+    "b": 0.7,
     "warThreshold": 0.5,
     "priorThreatPerception": 0.42,
     "priorResolve": 0.55,

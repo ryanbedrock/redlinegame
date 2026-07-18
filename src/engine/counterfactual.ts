@@ -87,18 +87,10 @@ export function playGame(
   decide: DecideFn,
   opts: PlayOptions = {},
 ): RunResult {
-  let s = createInitialState(content, seed, CF_CREATED_AT);
-  if (opts.typeOverride && opts.typeOverride !== s.rival.type) {
-    const def = content.rivalTypes[opts.typeOverride];
-    s.rival.type = opts.typeOverride;
-    s.rival.perceivedCapability = def.priorCapability;
-    s.rival.perceivedResolve = def.priorResolve;
-    s.rival.threatPerception = def.priorThreatPerception;
-    // Re-prime opening probe/intel under the overridden type (deterministic).
-    // (createInitialState already primed; re-priming would double-run streams,
-    // so we instead accept the primed opening — type only affects generation
-    // from turn 0 resolution onward, which is sufficient for robustness runs.)
-  }
+  // Type-swap runs prime the opening (probe/intel/correspondence) under the
+  // overridden type, so the counterfactual is a true "what if the Rival had
+  // been type X from the start" simulation rather than a mid-game swap.
+  let s = createInitialState(content, seed, CF_CREATED_AT, undefined, opts.typeOverride);
 
   let guard = 0;
   while (s.meta.phase !== 'DEBRIEF' && guard < content.scenario.turnCount + 12) {

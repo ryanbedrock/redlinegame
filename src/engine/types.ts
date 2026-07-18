@@ -50,11 +50,22 @@ export const SIGNAL_CLASSES: SignalClass[] = [
 
 export type VoiceId =
   | 'INTEL_DIRECTOR'
-  | 'DEFENSE_MINISTER'
-  | 'FOREIGN_MINISTER'
+  | 'ADVISOR_DEFENSE'
+  | 'ADVISOR_STATE'
   | 'CHIEF_OF_STAFF'
-  | 'ARCHIPELAGO_PREMIER'
+  | 'HEAD_OF_GOVERNMENT'
+  | 'RIVAL_FOREIGN_MINISTRY'
   | 'RIVAL_PUBLIC';
+
+export const VOICE_IDS: VoiceId[] = [
+  'INTEL_DIRECTOR',
+  'ADVISOR_DEFENSE',
+  'ADVISOR_STATE',
+  'CHIEF_OF_STAFF',
+  'HEAD_OF_GOVERNMENT',
+  'RIVAL_FOREIGN_MINISTRY',
+  'RIVAL_PUBLIC',
+];
 
 export type RngStream = 'rival' | 'probes' | 'events' | 'intel' | 'epilogue';
 export const RNG_STREAMS: RngStream[] = [

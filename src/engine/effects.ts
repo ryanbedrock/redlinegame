@@ -12,11 +12,11 @@ const STOCK_TARGETS = new Set<string>([
   'budget',
   'politicalCapital',
   'statusQuoIntegrity',
-  'rival.threatPerception',
-  'rival.internalPressure',
-  'rival.perceivedResolve',
-  'rival.perceivedCapability',
-  'rival.armingLevel',
+  'threatPerception',
+  'internalPressure',
+  'perceivedResolve',
+  'perceivedCapability',
+  'armingLevel',
 ]);
 
 // Duration-based flow/flag targets (registered as ActiveModifiers).
@@ -45,12 +45,12 @@ function clampTarget(target: string, v: number): number {
       return clamp(v, 0, 100);
     case 'budget':
       return Math.max(0, v);
-    case 'rival.threatPerception':
-    case 'rival.perceivedResolve':
-    case 'rival.perceivedCapability':
-    case 'rival.internalPressure':
+    case 'threatPerception':
+    case 'perceivedResolve':
+    case 'perceivedCapability':
+    case 'internalPressure':
       return clamp01(v);
-    case 'rival.armingLevel':
+    case 'armingLevel':
       return clamp(v, 0, 10);
     default:
       return v;
@@ -65,15 +65,15 @@ function getStock(state: GameState, target: string): number {
       return state.player.politicalCapital;
     case 'statusQuoIntegrity':
       return state.world.statusQuoIntegrity;
-    case 'rival.threatPerception':
+    case 'threatPerception':
       return state.rival.threatPerception;
-    case 'rival.internalPressure':
+    case 'internalPressure':
       return state.rival.internalPressure;
-    case 'rival.perceivedResolve':
+    case 'perceivedResolve':
       return state.rival.perceivedResolve;
-    case 'rival.perceivedCapability':
+    case 'perceivedCapability':
       return state.rival.perceivedCapability;
-    case 'rival.armingLevel':
+    case 'armingLevel':
       return state.rival.armingLevel;
     default:
       return 0;
@@ -92,19 +92,19 @@ function setStock(state: GameState, target: string, v: number): void {
     case 'statusQuoIntegrity':
       state.world.statusQuoIntegrity = c;
       break;
-    case 'rival.threatPerception':
+    case 'threatPerception':
       state.rival.threatPerception = c;
       break;
-    case 'rival.internalPressure':
+    case 'internalPressure':
       state.rival.internalPressure = c;
       break;
-    case 'rival.perceivedResolve':
+    case 'perceivedResolve':
       state.rival.perceivedResolve = c;
       break;
-    case 'rival.perceivedCapability':
+    case 'perceivedCapability':
       state.rival.perceivedCapability = c;
       break;
-    case 'rival.armingLevel':
+    case 'armingLevel':
       state.rival.armingLevel = c;
       break;
   }

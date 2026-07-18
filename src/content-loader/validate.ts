@@ -15,6 +15,7 @@ import {
   RIVAL_TYPES,
   SIGNAL_CLASSES,
   TRACK_IDS,
+  VOICE_IDS,
   type Card,
   type ContentPack,
   type DiagnosisContent,
@@ -183,6 +184,11 @@ export function assembleContentPack(files: RawFiles, schemas: SchemaMap): Conten
   inbox.forEach((m) =>
     (m.responseOptions ?? []).forEach((o) => checkEffects(o.effects, `inbox[${m.id}].responseOptions[${o.id}]`)),
   );
+
+  // Closed vocabulary: inbox voiceIds must be declared VoiceId values.
+  inbox.forEach((m) => {
+    if (!VOICE_IDS.includes(m.voiceId)) push(`inbox[${m.id}]: unknown voiceId "${m.voiceId}"`);
+  });
 
   // 4. Referential integrity + closed vocabulary.
   cards.forEach((c) => {
