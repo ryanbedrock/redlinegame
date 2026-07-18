@@ -59,6 +59,9 @@ interface GameStore {
   stage: Stage;
   draft: Draft;
   resolvedTurn: number | null;
+  // Client-only (never persisted, never in GameState): inbox message ids the
+  // player has opened, so the HUD badge counts genuinely unseen correspondence.
+  seenMessageIds: string[];
 
   newGame: (scenarioId: string, seed: number, displayName?: string) => void;
   resume: (saveId: string) => void;
@@ -90,6 +93,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   stage: 'SITREP',
   draft: emptyDraft(),
   resolvedTurn: null,
+  seenMessageIds: [],
 
   newGame: (scenarioId, seed, displayName) => {
     const content = loadContentPack(scenarioId);
@@ -106,7 +110,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       decisionLog: [],
     };
     writeSave(save);
-    set({ screen: 'GAME', content, state, save, stage: 'SITREP', draft: emptyDraft(), resolvedTurn: null });
+    set({ screen: 'GAME', content, state, save, stage: 'SITREP', draft: emptyDraft(), resolvedTurn: null, seenMessageIds: [] });
   },
 
   resume: (saveId) => {
@@ -120,12 +124,31 @@ export const useGameStore = create<GameStore>((set, get) => ({
         : state.meta.phase === 'DEBRIEF'
           ? 'DEBRIEF'
           : 'SITREP';
-    set({ screen: 'GAME', content, state, save, stage, draft: emptyDraft(), resolvedTurn: null });
+    // On resume, treat all correspondence already in the log as seen.
+    set({
+      screen: 'GAME',
+      content,
+      state,
+      save,
+      stage,
+      draft: emptyDraft(),
+      resolvedTurn: null,
+      seenMessageIds: state.world.inbox.map((m) => m.id),
+    });
   },
 
   backToMenu: () => set({ screen: 'MENU' }),
 
-  goToStage: (stage) => set({ stage }),
+  goToStage: (stage) => {
+    if (stage === 'INBOX') {
+      const { state, seenMessageIds } = get();
+      const ids = state ? state.world.inbox.map((m) => m.id) : [];
+      const merged = [...new Set([...seenMessageIds, ...ids])];
+      set({ stage, seenMessageIds: merged });
+    } else {
+      set({ stage });
+    }
+  },
 
   setProbeResponse: (responseType, rationaleId) => {
     const { state, draft } = get();

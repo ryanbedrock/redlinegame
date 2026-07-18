@@ -11,10 +11,12 @@ export function Hud(): JSX.Element | null {
   const stage = useGameStore((s) => s.stage);
   const goToStage = useGameStore((s) => s.goToStage);
   const backToMenu = useGameStore((s) => s.backToMenu);
+  const seenMessageIds = useGameStore((s) => s.seenMessageIds);
 
   if (!state || !content) return null;
 
-  const unread = state.world.inbox.filter((m) => !m.read && !m.respondedWith).length;
+  const seen = new Set(seenMessageIds);
+  const unread = state.world.inbox.filter((m) => !m.respondedWith && !seen.has(m.id)).length;
   const planning = stage === 'SITREP' || stage === 'PROBE' || stage === 'SIGNALS' || stage === 'INBOX' || stage === 'ASSESSMENT';
   const sq = state.world.statusQuoIntegrity;
   const sqTone = sq <= 25 ? 'danger' : sq <= 50 ? 'warn' : 'good';
