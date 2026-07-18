@@ -1,0 +1,62 @@
+[
+  {
+    "id": "probe_fishing",
+    "title": "Grey-Hull Fishing Fleet",
+    "text": "A swarm of state-linked fishing vessels loiters inside the contested approaches, shadowed by a coast-guard cutter.",
+    "tags": ["maritime"],
+    "severity": 1,
+    "salamiValue": 3,
+    "responses": [
+      { "id": "r_concede", "label": "Ignore it — not worth a confrontation.", "responseType": "CONCEDE", "rationaleSetId": "rs_probe" },
+      { "id": "r_protest", "label": "Lodge a formal diplomatic protest.", "responseType": "PROTEST", "rationaleSetId": "rs_probe" },
+      { "id": "r_match", "label": "Shadow them with your own coast guard.", "responseType": "MATCH", "rationaleSetId": "rs_probe" },
+      { "id": "r_enforce", "label": "Escort the fleet out and publicize it.", "responseType": "ENFORCE", "rationaleSetId": "rs_probe" },
+      { "id": "r_escalate", "label": "Interdict and detain the cutter.", "responseType": "ESCALATE", "rationaleSetId": "rs_probe" }
+    ]
+  },
+  {
+    "id": "probe_incursion",
+    "title": "Frontier Air Incursion",
+    "text": "Rival aircraft cross the median line, testing your reaction time and rules of engagement.",
+    "tags": ["frontier"],
+    "severity": 2,
+    "salamiValue": 5,
+    "responses": [
+      { "id": "r_concede", "label": "Note it and stand down.", "responseType": "CONCEDE", "rationaleSetId": "rs_probe" },
+      { "id": "r_protest", "label": "Protest and release radar tracks publicly.", "responseType": "PROTEST", "rationaleSetId": "rs_probe" },
+      { "id": "r_match", "label": "Scramble a proportionate intercept.", "responseType": "MATCH", "rationaleSetId": "rs_probe" },
+      { "id": "r_enforce", "label": "Establish a standing combat air patrol.", "responseType": "ENFORCE", "rationaleSetId": "rs_probe" },
+      { "id": "r_escalate", "label": "Announce weapons-free rules on repeat incursions.", "responseType": "ESCALATE", "rationaleSetId": "rs_probe" }
+    ]
+  },
+  {
+    "id": "probe_blockade",
+    "title": "Customs Quarantine",
+    "text": "The Rival declares a 'customs inspection zone' astride the sea lane to your forward islands — a soft blockade.",
+    "tags": ["maritime", "frontier"],
+    "severity": 3,
+    "salamiValue": 8,
+    "responses": [
+      { "id": "r_concede", "label": "Reroute your shipping quietly.", "responseType": "CONCEDE", "rationaleSetId": "rs_probe" },
+      { "id": "r_protest", "label": "Condemn it and rally partners.", "responseType": "PROTEST", "rationaleSetId": "rs_probe" },
+      { "id": "r_match", "label": "Run an escorted convoy through.", "responseType": "MATCH", "rationaleSetId": "rs_probe" },
+      { "id": "r_enforce", "label": "Break the quarantine with a naval task group.", "responseType": "ENFORCE", "rationaleSetId": "rs_probe" },
+      { "id": "r_escalate", "label": "Impose a counter-blockade of your own.", "responseType": "ESCALATE", "rationaleSetId": "rs_probe" }
+    ]
+  },
+  {
+    "id": "probe_seizure",
+    "title": "Disputed Feature Seizure",
+    "text": "Rival marines land on an unoccupied disputed reef and begin building a garrison. A textbook fait accompli.",
+    "tags": ["frontier"],
+    "severity": 4,
+    "salamiValue": 12,
+    "responses": [
+      { "id": "r_concede", "label": "Protest on paper; accept the new fact.", "responseType": "CONCEDE", "rationaleSetId": "rs_probe" },
+      { "id": "r_protest", "label": "Take it to international bodies.", "responseType": "PROTEST", "rationaleSetId": "rs_probe" },
+      { "id": "r_match", "label": "Occupy an adjacent feature in response.", "responseType": "MATCH", "rationaleSetId": "rs_probe" },
+      { "id": "r_enforce", "label": "Blockade and isolate the garrison.", "responseType": "ENFORCE", "rationaleSetId": "rs_probe" },
+      { "id": "r_escalate", "label": "Retake the feature by force.", "responseType": "ESCALATE", "rationaleSetId": "rs_probe" }
+    ]
+  }
+]

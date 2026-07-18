@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["decisions", "outcomeFormula", "settlements"],
+  "properties": {
+    "decisions": {
+      "type": "array",
+      "minItems": 4,
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "text", "options"],
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "text": { "type": "string" },
+          "options": {
+            "type": "array",
+            "minItems": 2,
+            "items": {
+              "type": "object",
+              "required": ["id", "label", "outcomeDelta"],
+              "properties": {
+                "id": { "type": "string" },
+                "label": { "type": "string" },
+                "outcomeDelta": { "type": "number" },
+                "terminationLeverage": { "type": "boolean" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "outcomeFormula": {
+      "type": "object",
+      "required": [
+        "denialWeight", "readinessWeight", "posturebase",
+        "punishmentBattlefieldCap", "terminationPerLevelAbove3", "terminationCap"
+      ],
+      "additionalProperties": { "type": "number" }
+    },
+    "settlements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["minOutcome", "text"],
+        "properties": {
+          "minOutcome": { "type": "number" },
+          "text": { "type": "string" }
+        }
+      }
+    }
+  }
+}

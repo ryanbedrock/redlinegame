@@ -1,0 +1,70 @@
+[
+  {
+    "id": "pol_accommodate",
+    "name": "Accommodation",
+    "description": "Avoid provocation: concede minor probes, reassure, and invest little in hard power.",
+    "probeResponse": {
+      "default": "PROTEST",
+      "rules": [ { "condition": { "gte": [ { "var": "concessionStreak" }, 3 ] }, "responseType": "MATCH" } ]
+    },
+    "purchasePlan": {
+      "buys": [
+        { "cardId": "sig_reassure" },
+        { "cardId": "inv_intel_1" }
+      ]
+    },
+    "typeBelief": "SECURITY_SEEKER"
+  },
+  {
+    "id": "pol_tripwire",
+    "name": "Tripwire & Resolve",
+    "description": "Tie hands early with a public guarantee, then match every probe firmly.",
+    "probeResponse": {
+      "default": "MATCH",
+      "rules": [ { "condition": { "gte": [ { "var": "concessionStreak" }, 1 ] }, "responseType": "ENFORCE" } ]
+    },
+    "purchasePlan": {
+      "buys": [
+        { "cardId": "sig_tripwire_treaty" },
+        { "cardId": "inv_denial_1" },
+        { "cardId": "inv_denial_2", "condition": { "gte": [ { "var": "tracks.denial" }, 3 ] } },
+        { "cardId": "sig_exercise" }
+      ]
+    },
+    "typeBelief": "OPPORTUNIST"
+  },
+  {
+    "id": "pol_fortress",
+    "name": "Denial Fortress",
+    "description": "Invest heavily in defensive denial and intelligence; respond proportionately.",
+    "probeResponse": {
+      "default": "MATCH"
+    },
+    "purchasePlan": {
+      "buys": [
+        { "cardId": "inv_denial_1" },
+        { "cardId": "inv_intel_1" },
+        { "cardId": "inv_ready_1" },
+        { "cardId": "inv_denial_2", "condition": { "gte": [ { "var": "tracks.denial" }, 3 ] } }
+      ]
+    },
+    "typeBelief": "UNSURE"
+  },
+  {
+    "id": "pol_pressure",
+    "name": "Maximum Pressure",
+    "description": "Build offensive punishment, mobilize, and enforce hard against every probe.",
+    "probeResponse": {
+      "default": "ENFORCE",
+      "rules": [ { "condition": { "gt": [ { "var": "threatPerception" }, 0.7 ] }, "responseType": "ESCALATE" } ]
+    },
+    "purchasePlan": {
+      "buys": [
+        { "cardId": "inv_punish_1" },
+        { "cardId": "sig_mobilize" },
+        { "cardId": "inv_punish_2", "condition": { "gte": [ { "var": "tracks.punishment" }, 3 ] } }
+      ]
+    },
+    "typeBelief": "OPPORTUNIST"
+  }
+]

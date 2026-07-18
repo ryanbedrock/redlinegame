@@ -1,0 +1,57 @@
+[
+  {
+    "id": "q_costly_signal",
+    "lo": "Distinguish cheap talk from costly signals.",
+    "question": "Why is a costly (sunk-cost or hands-tying) signal more credible than a mere statement of intent?",
+    "options": [
+      { "id": "a", "label": "It imposes a cost the sender would only bear if genuinely resolved, so it is hard to bluff.", "correct": true },
+      { "id": "b", "label": "It is always cheaper than diplomacy.", "correct": false },
+      { "id": "c", "label": "It guarantees the adversary will back down.", "correct": false }
+    ],
+    "explanation": "Credibility comes from separation: only a resolved actor finds the cost worth paying, so the signal cannot be cheaply imitated by a bluffer."
+  },
+  {
+    "id": "q_audience_cost",
+    "lo": "Explain audience costs and hands-tying.",
+    "question": "How does a public commitment (tying hands) strengthen deterrence?",
+    "options": [
+      { "id": "a", "label": "By creating a domestic penalty for backing down, making the threat more credible.", "correct": true },
+      { "id": "b", "label": "By hiding the leader's true intentions.", "correct": false },
+      { "id": "c", "label": "By reducing the cost of war.", "correct": false }
+    ],
+    "explanation": "Audience costs make reneging painful, so the commitment is believed — but the credibility decays if you are seen to back down (effectiveBackDowns)."
+  },
+  {
+    "id": "q_security_dilemma",
+    "lo": "Recognize the security dilemma.",
+    "question": "Against a security-seeking rival, why can building offensive-coded forces be counterproductive?",
+    "options": [
+      { "id": "a", "label": "It raises the rival's threat perception, driving a spiral of arming that can cause the war it aimed to prevent.", "correct": true },
+      { "id": "b", "label": "It always signals weakness.", "correct": false },
+      { "id": "c", "label": "It has no effect on a security-seeker.", "correct": false }
+    ],
+    "explanation": "A security-seeker arms in reaction to threat. Offensive postures feed the spiral; defensive denial and reassurance dampen it."
+  },
+  {
+    "id": "q_denial_punishment",
+    "lo": "Contrast deterrence by denial and by punishment.",
+    "question": "What distinguishes deterrence by denial from deterrence by punishment?",
+    "options": [
+      { "id": "a", "label": "Denial lowers the probability the aggression succeeds; punishment raises the cost of aggression after the fact.", "correct": true },
+      { "id": "b", "label": "They are the same thing.", "correct": false },
+      { "id": "c", "label": "Punishment always deters better than denial.", "correct": false }
+    ],
+    "explanation": "Denial attacks pSuccess; punishment attacks the cost term. Denial is often more robust because it does not depend on credited resolve."
+  },
+  {
+    "id": "q_salami",
+    "lo": "Identify salami tactics.",
+    "question": "What is the danger of conceding a series of individually-minor probes?",
+    "options": [
+      { "id": "a", "label": "Each concession is small, but the cumulative erosion and the lesson taught invite bolder probes (salami-slicing).", "correct": true },
+      { "id": "b", "label": "There is no danger; small concessions are always optimal.", "correct": false },
+      { "id": "c", "label": "It immediately triggers war.", "correct": false }
+    ],
+    "explanation": "Salami tactics exploit the absence of a clear red line. A concession streak both cedes ground and signals low resolve, escalating the next probe."
+  }
+]

@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "array",
+  "minItems": 3,
+  "items": {
+    "type": "object",
+    "required": [
+      "type", "weights", "prize", "windowBonusScale", "preemptionValue", "b",
+      "warThreshold", "priorThreatPerception", "priorResolve", "priorCapability",
+      "baseArmingSchedule", "armingFromThreat", "pressureSchedulePerTurn", "tell"
+    ],
+    "properties": {
+      "type": { "enum": ["OPPORTUNIST", "PRESSURED_EXPANSIONIST", "SECURITY_SEEKER"] },
+      "weights": {
+        "type": "object",
+        "required": ["CHEAP", "SUNK", "TIED_HANDS", "REASSURANCE"],
+        "properties": {
+          "CHEAP": { "type": "number" },
+          "SUNK": { "type": "number" },
+          "TIED_HANDS": { "type": "number" },
+          "REASSURANCE": { "type": "number" }
+        }
+      },
+      "prize": { "type": "number" },
+      "windowBonusScale": { "type": "number" },
+      "preemptionValue": { "type": "number" },
+      "b": { "type": "number" },
+      "warThreshold": { "type": "number" },
+      "priorThreatPerception": { "type": "number" },
+      "priorResolve": { "type": "number" },
+      "priorCapability": { "type": "number" },
+      "baseArmingSchedule": { "type": "number" },
+      "armingFromThreat": { "type": "number" },
+      "pressureSchedulePerTurn": { "type": "number" },
+      "tell": { "type": "string" }
+    }
+  }
+}

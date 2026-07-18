@@ -1,0 +1,50 @@
+[
+  {
+    "type": "OPPORTUNIST",
+    "weights": { "CHEAP": 0.2, "SUNK": 1.0, "TIED_HANDS": 1.2, "REASSURANCE": 0.6 },
+    "prize": 0.95,
+    "windowBonusScale": 0.0,
+    "preemptionValue": 0.0,
+    "b": 2.0,
+    "warThreshold": 0.5,
+    "priorThreatPerception": 0.25,
+    "priorResolve": 0.5,
+    "priorCapability": 0.4,
+    "baseArmingSchedule": 4.5,
+    "armingFromThreat": 0.0,
+    "pressureSchedulePerTurn": 0.0,
+    "tell": "Probes early and often, backs off when you enforce, and only goes to war if your denial is visibly weak. Responsive to demonstrated resolve; indifferent to reassurance."
+  },
+  {
+    "type": "PRESSURED_EXPANSIONIST",
+    "weights": { "CHEAP": 0.15, "SUNK": 0.8, "TIED_HANDS": 0.9, "REASSURANCE": 0.3 },
+    "prize": 0.55,
+    "windowBonusScale": 0.9,
+    "preemptionValue": 0.0,
+    "b": 1.7,
+    "warThreshold": 0.62,
+    "priorThreatPerception": 0.35,
+    "priorResolve": 0.5,
+    "priorCapability": 0.45,
+    "baseArmingSchedule": 5.0,
+    "armingFromThreat": 0.0,
+    "pressureSchedulePerTurn": 0.03,
+    "tell": "Internal pressure rises every turn — a closing window of opportunity. Deterrence must be established EARLY; late resolve is discounted as the window narrows. Reassurance barely helps."
+  },
+  {
+    "type": "SECURITY_SEEKER",
+    "weights": { "CHEAP": 0.2, "SUNK": 0.7, "TIED_HANDS": 0.8, "REASSURANCE": 1.3 },
+    "prize": 0.0,
+    "windowBonusScale": 0.0,
+    "preemptionValue": 1.25,
+    "b": 1.6,
+    "warThreshold": 0.5,
+    "priorThreatPerception": 0.42,
+    "priorResolve": 0.55,
+    "priorCapability": 0.4,
+    "baseArmingSchedule": 3.0,
+    "armingFromThreat": 0.72,
+    "pressureSchedulePerTurn": 0.0,
+    "tell": "Arms in reaction to threat, not appetite. Offensive-coded build-ups and mobilizations feed a spiral; reassurance and defensive denial cool it. Punishing postures can manufacture the very war they aim to prevent."
+  }
+]

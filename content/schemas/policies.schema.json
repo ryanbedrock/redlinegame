@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["id", "name", "description", "probeResponse", "purchasePlan"],
+    "properties": {
+      "id": { "type": "string" },
+      "name": { "type": "string" },
+      "description": { "type": "string" },
+      "probeResponse": {
+        "type": "object",
+        "required": ["default"],
+        "properties": {
+          "default": { "enum": ["CONCEDE", "PROTEST", "MATCH", "ENFORCE", "ESCALATE"] },
+          "rules": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["condition", "responseType"],
+              "properties": {
+                "condition": {},
+                "responseType": { "enum": ["CONCEDE", "PROTEST", "MATCH", "ENFORCE", "ESCALATE"] }
+              }
+            }
+          }
+        }
+      },
+      "purchasePlan": {
+        "type": "object",
+        "required": ["buys"],
+        "properties": {
+          "buys": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["cardId"],
+              "properties": {
+                "cardId": { "type": "string" },
+                "condition": {}
+              }
+            }
+          }
+        }
+      },
+      "typeBelief": { "enum": ["OPPORTUNIST", "PRESSURED_EXPANSIONIST", "SECURITY_SEEKER", "UNSURE"] }
+    }
+  }
+}

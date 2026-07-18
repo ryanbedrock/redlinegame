@@ -1,0 +1,14 @@
+{
+  "promptText": "Based on the Rival's behaviour and your intelligence, what kind of adversary do you believe you are facing?",
+  "unsureText": "Insufficient evidence — I am not yet ready to commit to a type.",
+  "typeDescriptions": {
+    "OPPORTUNIST": "A greedy opportunist: probes for cheap gains and only fights when it looks easy. Deterred by demonstrated denial and resolve.",
+    "PRESSURED_EXPANSIONIST": "A pressured expansionist acting under a closing window: internal pressure drives escalation, so early deterrence matters most.",
+    "SECURITY_SEEKER": "A security-seeker arming out of fear: responds to a spiral of threat. Reassurance and defensive posture cool it; offensive build-ups inflame it."
+  },
+  "tellSheets": {
+    "OPPORTUNIST": "Tell: probes track your perceived resolve, and it backs down when enforced. It never escalated purely because you built defenses — only when it smelled weakness.",
+    "PRESSURED_EXPANSIONIST": "Tell: probe severity rose with the calendar, not with your posture. Its war-utility climbed even in quarters you were firm — the window, not you, set the tempo.",
+    "SECURITY_SEEKER": "Tell: its arming tracked your threat signature. Quarters where you reassured or built purely defensive denial cooled it; offensive-coded punishment and mobilizations spiked its threat perception."
+  }
+}

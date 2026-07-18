@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["id", "title", "text", "effects"],
+    "properties": {
+      "id": { "type": "string" },
+      "title": { "type": "string" },
+      "text": { "type": "string" },
+      "schedule": {
+        "type": "object",
+        "required": ["minTurn", "maxTurn"],
+        "properties": {
+          "minTurn": { "type": "integer" },
+          "maxTurn": { "type": "integer" }
+        }
+      },
+      "condition": {},
+      "effects": { "type": "array", "items": { "$ref": "#/$defs/effect" } },
+      "cooldownTurns": { "type": "integer" },
+      "maxFires": { "type": "integer" },
+      "perTypeEffects": { "type": "object" },
+      "biasMetric": { "enum": ["RESOLVE_READ", "CAPABILITY_READ", "INTENT_ASSESSMENT", "ARMING_READ"] },
+      "biasAmount": { "type": "number" },
+      "biasDurationTurns": { "type": "integer" }
+    }
+  },
+  "$defs": {
+    "effect": {
+      "type": "object",
+      "required": ["target", "op", "value"],
+      "properties": {
+        "target": { "type": "string" },
+        "op": { "enum": ["add", "mul", "set"] },
+        "value": { "type": "number" },
+        "durationTurns": { "type": "integer" }
+      }
+    }
+  }
+}

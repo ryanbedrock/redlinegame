@@ -1,0 +1,55 @@
+{
+  "id": "scenario-2",
+  "name": "The Closing Window",
+  "description": "A longer, ten-year confrontation against a Rival whose domestic clock is ticking. 40 quarters; early deterrence is everything.",
+  "turnCount": 40,
+  "defaultSeed": 2718,
+  "flavor": "The Verdant Dominion's leadership has staked its legitimacy on resolving the Amber question within a generation. Time is not on the side of patience.",
+  "seedTypePins": [
+    { "seed": 2, "type": "PRESSURED_EXPANSIONIST" }
+  ],
+  "opening": {
+    "budget": 18,
+    "politicalCapital": 12,
+    "tracks": { "denial": 2, "punishment": 1, "intelligence": 1, "readiness": 1 },
+    "priorArmingLevel": 3,
+    "statusQuoIntegrity": 100
+  },
+  "beats": [
+    { "eventId": "evt_budget_windfall", "minTurn": 4, "maxTurn": 8 },
+    { "eventId": "evt_intel_deception", "minTurn": 8, "maxTurn": 14 },
+    { "eventId": "evt_domestic_crisis", "minTurn": 14, "maxTurn": 20 },
+    { "eventId": "evt_econ_shock", "minTurn": 20, "maxTurn": 28 }
+  ],
+  "tuning": {
+    "budgetIncome": 6,
+    "pcRegenPerTurn": 2,
+    "pcCap": 20,
+    "decayPerTurn": 0.1,
+    "concessionSalamiThreshold": 3,
+    "warThresholdConsecutiveTurns": 2,
+    "honoredTestPC": 2,
+    "pivotSubSeeds": 5,
+    "maxPivots": 6,
+    "unsurePenaltyTurnFraction": 0.6,
+    "trackThreatDeltas": { "denial": 0.01, "punishment": 0.05, "intelligence": 0.0, "readiness": 0.02 },
+    "trackLeadTimeReadinessBonus": 0.15,
+    "intelSigmaLevel0": 0.22,
+    "intelSigmaLevel10": 0.05
+  },
+  "scoring": {
+    "outcomeBands": [
+      { "minOutcome": 80, "label": "Deterrence Achieved", "points": 100 },
+      { "minOutcome": 55, "label": "Costly Stability", "points": 75 },
+      { "minOutcome": 30, "label": "Strained Outcome", "points": 50 },
+      { "minOutcome": 0, "label": "Strategic Failure", "points": 20 }
+    ],
+    "weights": {
+      "outcome": 0.35,
+      "robustness": 0.25,
+      "diagnosis": 0.2,
+      "credibility": 0.1,
+      "efficiency": 0.1
+    }
+  }
+}

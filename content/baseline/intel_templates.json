@@ -1,0 +1,17 @@
+[
+  { "id": "resolve_low", "metric": "RESOLVE_READ", "confidence": "LOW", "body": "Fragmentary reporting suggests the Rival's read of your resolve is roughly {value}. Treat with caution." },
+  { "id": "resolve_mod", "metric": "RESOLVE_READ", "confidence": "MODERATE", "body": "Multiple sources assess the Rival credits your resolve at about {value}." },
+  { "id": "resolve_high", "metric": "RESOLVE_READ", "confidence": "HIGH", "body": "High-confidence assessment: the Rival credits your resolve at {value}." },
+
+  { "id": "cap_low", "metric": "CAPABILITY_READ", "confidence": "LOW", "body": "Unconfirmed: the Rival estimates your denial/punishment capability near {value}." },
+  { "id": "cap_mod", "metric": "CAPABILITY_READ", "confidence": "MODERATE", "body": "The Rival's estimate of your capability is assessed at about {value}." },
+  { "id": "cap_high", "metric": "CAPABILITY_READ", "confidence": "HIGH", "body": "Confirmed: the Rival estimates your capability at {value}." },
+
+  { "id": "intent_low", "metric": "INTENT_ASSESSMENT", "confidence": "LOW", "body": "Weak indicators put the Rival's appetite for conflict near {value} — low confidence." },
+  { "id": "intent_mod", "metric": "INTENT_ASSESSMENT", "confidence": "MODERATE", "body": "The Rival's propensity toward conflict is assessed at roughly {value}." },
+  { "id": "intent_high", "metric": "INTENT_ASSESSMENT", "confidence": "HIGH", "body": "High confidence: the Rival's war-utility is assessed at {value}." },
+
+  { "id": "arm_low", "metric": "ARMING_READ", "confidence": "LOW", "body": "Sparse indicators suggest Rival mobilization near {value}." },
+  { "id": "arm_mod", "metric": "ARMING_READ", "confidence": "MODERATE", "body": "Rival mobilization is assessed at about {value}." },
+  { "id": "arm_high", "metric": "ARMING_READ", "confidence": "HIGH", "body": "Confirmed Rival mobilization level: {value}." }
+]

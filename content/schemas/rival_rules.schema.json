@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["id", "type", "kind", "condition", "priority"],
+    "properties": {
+      "id": { "type": "string" },
+      "type": { "enum": ["OPPORTUNIST", "PRESSURED_EXPANSIONIST", "SECURITY_SEEKER"] },
+      "kind": { "enum": ["PROBE", "ARMING", "PRESSURE"] },
+      "condition": {},
+      "probeId": { "type": "string" },
+      "priority": { "type": "number" },
+      "cooldownTurns": { "type": "integer" }
+    }
+  }
+}

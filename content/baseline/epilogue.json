@@ -1,0 +1,57 @@
+{
+  "decisions": [
+    {
+      "id": "E1",
+      "title": "Opening Moves",
+      "text": "War has come. The Rival's opening gambit is a rapid grab at the disputed approaches. How do you meet it?",
+      "options": [
+        { "id": "e1_forward", "label": "Contest forward — deny the fait accompli at the water's edge.", "outcomeDelta": 8 },
+        { "id": "e1_defend", "label": "Trade space for time; consolidate on prepared lines.", "outcomeDelta": 2 },
+        { "id": "e1_strike", "label": "Open with deep strikes on their staging areas.", "outcomeDelta": 4, "terminationLeverage": true }
+      ]
+    },
+    {
+      "id": "E2",
+      "title": "Mobilization",
+      "text": "The conflict widens. Reserves, allies, and industry must be marshalled.",
+      "options": [
+        { "id": "e2_allies", "label": "Prioritize coalition cohesion over tempo.", "outcomeDelta": 6 },
+        { "id": "e2_tempo", "label": "Prioritize operational tempo; go it alone if needed.", "outcomeDelta": 3 }
+      ]
+    },
+    {
+      "id": "E3",
+      "title": "Escalation Management",
+      "text": "The Rival signals it may widen the war unless you relent. Retaliatory reach is your leverage.",
+      "options": [
+        { "id": "e3_hold", "label": "Hold escalation dominance; make continuation costly.", "outcomeDelta": 5, "terminationLeverage": true },
+        { "id": "e3_deescalate", "label": "Offer an off-ramp to cap the war.", "outcomeDelta": 4 },
+        { "id": "e3_press", "label": "Press the advantage regardless of risk.", "outcomeDelta": 1 }
+      ]
+    },
+    {
+      "id": "E4",
+      "title": "Termination",
+      "text": "Both sides are exhausted. The terms of the settlement will be set now.",
+      "options": [
+        { "id": "e4_favorable", "label": "Leverage battlefield position for favorable terms.", "outcomeDelta": 8, "terminationLeverage": true },
+        { "id": "e4_status", "label": "Settle for restoration of the status quo ante.", "outcomeDelta": 4 },
+        { "id": "e4_concede", "label": "Accept an unfavorable settlement to end the bleeding.", "outcomeDelta": 0 }
+      ]
+    }
+  ],
+  "outcomeFormula": {
+    "denialWeight": 4,
+    "readinessWeight": 3,
+    "posturebase": 28,
+    "punishmentBattlefieldCap": 15,
+    "terminationPerLevelAbove3": 4,
+    "terminationCap": 20
+  },
+  "settlements": [
+    { "minOutcome": 80, "text": "A favorable settlement: the Rival's aims are frustrated and the frontier restored on your terms — but at a cost that deterrence might have avoided." },
+    { "minOutcome": 55, "text": "A negotiated settlement roughly restoring the status quo ante, purchased in blood and treasure." },
+    { "minOutcome": 30, "text": "A costly, ambiguous outcome: the war ends with the frontier redrawn against you." },
+    { "minOutcome": 0, "text": "A strategic defeat: exhausted and outmaneuvered, you accept terms dictated by the Rival." }
+  ]
+}

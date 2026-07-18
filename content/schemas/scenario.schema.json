@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["id", "name", "description", "turnCount", "defaultSeed", "opening", "beats", "tuning", "scoring", "flavor"],
+  "properties": {
+    "id": { "type": "string" },
+    "name": { "type": "string" },
+    "description": { "type": "string" },
+    "turnCount": { "type": "integer", "minimum": 1 },
+    "defaultSeed": { "type": "integer" },
+    "flavor": { "type": "string" },
+    "seedTypePins": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["seed", "type"],
+        "properties": {
+          "seed": { "type": "integer" },
+          "type": { "enum": ["OPPORTUNIST", "PRESSURED_EXPANSIONIST", "SECURITY_SEEKER"] }
+        }
+      }
+    },
+    "opening": {
+      "type": "object",
+      "required": ["budget", "politicalCapital", "tracks", "priorArmingLevel", "statusQuoIntegrity"],
+      "properties": {
+        "budget": { "type": "number" },
+        "politicalCapital": { "type": "number" },
+        "priorArmingLevel": { "type": "number" },
+        "statusQuoIntegrity": { "type": "number" },
+        "tracks": {
+          "type": "object",
+          "required": ["denial", "punishment", "intelligence", "readiness"],
+          "additionalProperties": { "type": "number" }
+        }
+      }
+    },
+    "beats": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["eventId", "minTurn", "maxTurn"],
+        "properties": {
+          "eventId": { "type": "string" },
+          "minTurn": { "type": "integer" },
+          "maxTurn": { "type": "integer" }
+        }
+      }
+    },
+    "tuning": {
+      "type": "object",
+      "required": [
+        "budgetIncome", "pcRegenPerTurn", "pcCap", "decayPerTurn",
+        "concessionSalamiThreshold", "warThresholdConsecutiveTurns", "honoredTestPC",
+        "pivotSubSeeds", "maxPivots", "unsurePenaltyTurnFraction", "trackThreatDeltas",
+        "trackLeadTimeReadinessBonus", "intelSigmaLevel0", "intelSigmaLevel10"
+      ],
+      "properties": {
+        "trackThreatDeltas": {
+          "type": "object",
+          "required": ["denial", "punishment", "intelligence", "readiness"],
+          "additionalProperties": { "type": "number" }
+        }
+      }
+    },
+    "scoring": {
+      "type": "object",
+      "required": ["outcomeBands", "weights"],
+      "properties": {
+        "outcomeBands": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["minOutcome", "label", "points"],
+            "properties": {
+              "minOutcome": { "type": "number" },
+              "label": { "type": "string" },
+              "points": { "type": "number" }
+            }
+          }
+        },
+        "weights": {
+          "type": "object",
+          "required": ["outcome", "robustness", "diagnosis", "credibility", "efficiency"],
+          "additionalProperties": { "type": "number" }
+        }
+      }
+    }
+  }
+}

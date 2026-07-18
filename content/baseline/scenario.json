@@ -1,0 +1,57 @@
+{
+  "id": "scenario-1",
+  "name": "The Approaches",
+  "description": "A eight-year cold confrontation over a contested maritime frontier. Deter the Rival across 32 quarters without provoking the war you seek to prevent.",
+  "turnCount": 32,
+  "defaultSeed": 1337,
+  "flavor": "You are the national security principal of the Meridian Federation. Across the strait lies the Verdant Dominion, whose claims on the Amber Approaches have hardened. Neither side wants war — yet.",
+  "seedTypePins": [
+    { "seed": 1, "type": "OPPORTUNIST" },
+    { "seed": 2, "type": "PRESSURED_EXPANSIONIST" },
+    { "seed": 3, "type": "SECURITY_SEEKER" }
+  ],
+  "opening": {
+    "budget": 20,
+    "politicalCapital": 12,
+    "tracks": { "denial": 2, "punishment": 1, "intelligence": 1, "readiness": 2 },
+    "priorArmingLevel": 2,
+    "statusQuoIntegrity": 100
+  },
+  "beats": [
+    { "eventId": "evt_budget_windfall", "minTurn": 3, "maxTurn": 6 },
+    { "eventId": "evt_intel_deception", "minTurn": 6, "maxTurn": 11 },
+    { "eventId": "evt_domestic_crisis", "minTurn": 10, "maxTurn": 15 },
+    { "eventId": "evt_econ_shock", "minTurn": 16, "maxTurn": 22 }
+  ],
+  "tuning": {
+    "budgetIncome": 6,
+    "pcRegenPerTurn": 2,
+    "pcCap": 20,
+    "decayPerTurn": 0.1,
+    "concessionSalamiThreshold": 3,
+    "warThresholdConsecutiveTurns": 2,
+    "honoredTestPC": 2,
+    "pivotSubSeeds": 5,
+    "maxPivots": 6,
+    "unsurePenaltyTurnFraction": 0.6,
+    "trackThreatDeltas": { "denial": 0.01, "punishment": 0.05, "intelligence": 0.0, "readiness": 0.02 },
+    "trackLeadTimeReadinessBonus": 0.15,
+    "intelSigmaLevel0": 0.22,
+    "intelSigmaLevel10": 0.05
+  },
+  "scoring": {
+    "outcomeBands": [
+      { "minOutcome": 80, "label": "Deterrence Achieved", "points": 100 },
+      { "minOutcome": 55, "label": "Costly Stability", "points": 75 },
+      { "minOutcome": 30, "label": "Strained Outcome", "points": 50 },
+      { "minOutcome": 0, "label": "Strategic Failure", "points": 20 }
+    ],
+    "weights": {
+      "outcome": 0.35,
+      "robustness": 0.25,
+      "diagnosis": 0.2,
+      "credibility": 0.1,
+      "efficiency": 0.1
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["id", "metric", "confidence", "body"],
+    "properties": {
+      "id": { "type": "string" },
+      "metric": { "enum": ["RESOLVE_READ", "CAPABILITY_READ", "INTENT_ASSESSMENT", "ARMING_READ"] },
+      "confidence": { "enum": ["LOW", "MODERATE", "HIGH"] },
+      "body": { "type": "string" }
+    }
+  }
+}
