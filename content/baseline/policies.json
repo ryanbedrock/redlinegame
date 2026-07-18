@@ -56,7 +56,7 @@
     "description": "Build offensive punishment, mobilize, and enforce hard against every probe.",
     "probeResponse": {
       "default": "ENFORCE",
-      "rules": [ { "condition": { "gt": [ { "var": "threatPerception" }, 0.7 ] }, "responseType": "ESCALATE" } ]
+      "rules": [ { "condition": { "lt": [ { "var": "statusQuoIntegrity" }, 70 ] }, "responseType": "ESCALATE" } ]
     },
     "purchasePlan": {
       "buys": [

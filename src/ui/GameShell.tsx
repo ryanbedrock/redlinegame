@@ -11,6 +11,7 @@ import { TypeAssessment } from './TypeAssessment';
 import { Resolution } from './Resolution';
 import { Epilogue } from './Epilogue';
 import { Debrief } from './Debrief';
+import { KnowledgeCheck } from './KnowledgeCheck';
 
 export function GameShell(): JSX.Element {
   const stage = useGameStore((s) => s.stage);
@@ -33,12 +34,14 @@ export function GameShell(): JSX.Element {
         return <Epilogue />;
       case 'DEBRIEF':
         return <Debrief />;
+      case 'KNOWLEDGE':
+        return <KnowledgeCheck />;
       default:
         return <Sitrep />;
     }
   })();
 
-  const showHud = stage !== 'DEBRIEF';
+  const showHud = stage !== 'DEBRIEF' && stage !== 'KNOWLEDGE';
 
   return (
     <div className="game-shell">

@@ -34,7 +34,10 @@ export type Stage =
   | 'ASSESSMENT'
   | 'RESOLUTION'
   | 'EPILOGUE'
-  | 'DEBRIEF';
+  | 'DEBRIEF'
+  | 'KNOWLEDGE';
+
+export type Screen = 'MENU' | 'GAME' | 'TUTORIAL' | 'ABOUT';
 
 export interface Draft {
   probeResponse?: { probeId: string; responseType: ResponseType; rationaleId: string };
@@ -52,7 +55,7 @@ function nowIso(): string {
 }
 
 interface GameStore {
-  screen: 'MENU' | 'GAME';
+  screen: Screen;
   content: ContentPack | null;
   state: GameState | null;
   save: SaveGame | null;
@@ -66,6 +69,7 @@ interface GameStore {
   newGame: (scenarioId: string, seed: number, displayName?: string) => void;
   resume: (saveId: string) => void;
   backToMenu: () => void;
+  goToScreen: (screen: Screen) => void;
   goToStage: (stage: Stage) => void;
 
   setProbeResponse: (responseType: ResponseType, rationaleId: string) => void;
@@ -138,6 +142,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
   },
 
   backToMenu: () => set({ screen: 'MENU' }),
+
+  goToScreen: (screen) => set({ screen }),
 
   goToStage: (stage) => {
     if (stage === 'INBOX') {

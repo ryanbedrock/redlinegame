@@ -16,7 +16,7 @@ import type {
 import { RIVAL_TYPES, RESPONSE_ORDINAL } from './types';
 import { resolveTurn, resolveEpilogueTurn } from './resolver';
 import { createInitialState } from './setup';
-import { buildRivalVars, buildPlayerVars } from './context';
+import { buildPlayerVars } from './context';
 import { evalBool } from './conditions';
 import { hash32 } from './rng';
 import { hashState, outcomeValue } from './analytics';
@@ -216,13 +216,15 @@ export function makePolicyDecide(profile: PolicyProfile, content: ContentPack): 
   return (state: GameState): TurnDecisions => {
     const turn = state.meta.turnNumber;
     const decisions: TurnDecisions = { turn, purchases: [] };
-    const rivalVars = buildRivalVars(state, content);
+    // Policies are executable player doctrines, not oracles: both their probe
+    // rules and their buy conditions read PLAYER_CONTEXT only (no hidden ledgers),
+    // so the strategy lattice is an honest "what if you'd followed this doctrine".
     const playerVars = buildPlayerVars(state, content);
 
     if (state.world.stagedProbeId) {
       let responseType = profile.probeResponse.default;
       for (const rule of profile.probeResponse.rules ?? []) {
-        if (evalBool(rule.condition, rivalVars)) {
+        if (evalBool(rule.condition, playerVars)) {
           responseType = rule.responseType;
           break;
         }

@@ -53,6 +53,7 @@ export function buildPlayerVars(state: GameState, content: ContentPack): VarBag 
     budget: p.budget,
     backDownCount: p.backDownCount,
     honoredTestCount: p.honoredTestCount,
+    concessionStreak: w.concessionStreak,
     statedTypeBelief: latestBelief(state.analytics.typeBeliefs),
     playerDistractionActive: w.playerDistractionActive,
     'tracks.denial': p.tracks.denial,
