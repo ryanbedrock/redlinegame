@@ -24,6 +24,7 @@ const FLOW_TARGETS = new Set<string>([
   'budgetIncome',
   'playerDistractionActive',
   'audienceCostMultiplier',
+  'intelCollectionBoost',
 ]);
 
 function applyOp(current: number, op: EffectSpec['op'], value: number): number {

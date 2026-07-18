@@ -113,4 +113,15 @@ export function generateProbe(state: GameState, content: ContentPack): void {
   }
 
   state.world.stagedProbeId = chosen;
+
+  // Rotate flavor variants deterministically on repeats: the Nth appearance of
+  // a probe shows its Nth variant (mod the pool size). Same mechanics, new text.
+  if (chosen) {
+    const probe = content.probes.find((p) => p.id === chosen);
+    const pool = probe?.variants?.length ?? 0;
+    const priorCount = state.world.probeLog.filter((p) => p.probeId === chosen).length;
+    state.world.stagedProbeVariant = pool > 0 ? priorCount % pool : 0;
+  } else {
+    state.world.stagedProbeVariant = 0;
+  }
 }

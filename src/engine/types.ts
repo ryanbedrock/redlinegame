@@ -170,10 +170,19 @@ export interface ProbeResponseOption {
   }>;
 }
 
+export interface ProbeVariant {
+  title: string;
+  text: string;
+}
+
 export interface ProbeCard {
   id: string;
   title: string;
   text: string;
+  // What this class of probe is testing (deterrence read shown to the player).
+  intent?: string;
+  // Flavor variants (same mechanics) rotated deterministically on repeats.
+  variants?: ProbeVariant[];
   tags: string[];
   severity: number; // 1..5
   salamiValue: number; // baseline shift when conceded
@@ -584,6 +593,7 @@ export interface GameState {
     eventLog: ResolvedEvent[];
     activeModifiers: ActiveModifier[];
     stagedProbeId: string | null; // probe awaiting response this turn
+    stagedProbeVariant: number; // flavor-variant index for the staged probe
     biasActive: { metric: IntelMetric; amount: number; expiresOnTurn: number } | null;
     playerDistractionActive: boolean;
   };

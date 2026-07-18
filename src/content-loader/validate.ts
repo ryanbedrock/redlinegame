@@ -81,6 +81,7 @@ const VALID_EFFECT_TARGETS = new Set([
   'armingLevel',
   'playerDistractionActive',
   'audienceCostMultiplier',
+  'intelCollectionBoost',
 ]);
 
 export class ContentValidationError extends Error {

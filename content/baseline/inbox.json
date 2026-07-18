@@ -20,14 +20,14 @@
   {
     "id": "msg_intel_brief",
     "voiceId": "INTEL_DIRECTOR",
-    "subject": "Weekly intelligence summary",
-    "body": "Latest estimates are attached. Confidence tracks our collection posture — invest in intelligence and the error bars narrow.",
+    "subject": "Quarterly intelligence summary",
+    "body": "Minister — this quarter's estimates are reproduced below; they are the same reads shown on your Situation Report. Confidence tracks our collection posture: raise the Intelligence track and the error bars narrow permanently, or task a one-off surge to sharpen next quarter's read.",
     "priority": 6,
     "cooldownTurns": 4,
     "condition": { "gte": [ { "var": "turn" }, 1 ] },
     "responseOptions": [
       { "id": "ack", "label": "Acknowledge." },
-      { "id": "task", "label": "Task additional collection (−1 PC).", "effects": [ { "target": "politicalCapital", "op": "add", "value": -1 } ] }
+      { "id": "task", "label": "Task additional collection (−1 PC): sharpen next quarter's estimates.", "effects": [ { "target": "politicalCapital", "op": "add", "value": -1 }, { "target": "intelCollectionBoost", "op": "set", "value": 1, "durationTurns": 2 } ] }
     ]
   },
   {

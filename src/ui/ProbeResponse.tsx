@@ -6,6 +6,7 @@ import { useGameStore } from '../store/gameStore';
 import type { ResponseType } from '../engine/types';
 import { RESPONSE_ORDINAL } from '../engine/types';
 import { RationalePicker } from './RationalePicker';
+import { probeView } from './format';
 
 const LADDER_HINT: Record<ResponseType, string> = {
   CONCEDE: 'Yield ground. Preserves capital now, but erodes the status quo and reads as weakness.',
@@ -41,6 +42,7 @@ export function ProbeResponse(): JSX.Element | null {
   }
 
   const chosen = draft.probeResponse;
+  const view = probeView(probe, state.world.stagedProbeVariant);
   const options = [...probe.responses].sort(
     (a, b) => RESPONSE_ORDINAL[a.responseType] - RESPONSE_ORDINAL[b.responseType],
   );
@@ -50,10 +52,11 @@ export function ProbeResponse(): JSX.Element | null {
       <h2 className="screen-title">Probe Response</h2>
       <section className="panel probe-card">
         <div className="probe-preview-head">
-          <span className="probe-title">{probe.title}</span>
+          <span className="probe-title">{view.title}</span>
           <span className="severity">Severity {probe.severity}</span>
         </div>
-        <p>{probe.text}</p>
+        <p>{view.text}</p>
+        {probe.intent && <p className="probe-intent">Intelligence read: {probe.intent}</p>}
         <p className="footnote">Tags: {probe.tags.join(', ')}</p>
       </section>
 

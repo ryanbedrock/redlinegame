@@ -434,11 +434,14 @@ function confidenceFor(sigma: number): 'LOW' | 'MODERATE' | 'HIGH' {
 
 function phaseIntel(next: GameState, content: ContentPack): void {
   const turn = next.meta.turnNumber;
-  const sigma = intelSigma(
+  const baseSigma = intelSigma(
     next.player.tracks.intelligence,
     content.scenario.tuning.intelSigmaLevel0,
     content.scenario.tuning.intelSigmaLevel10,
   );
+  // Tasking extra collection (an inbox action) sharpens this quarter's read.
+  const boosted = flagActive(next, 'intelCollectionBoost', turn);
+  const sigma = boosted ? baseSigma * 0.5 : baseSigma;
   const bias = next.world.biasActive;
   for (const metric of INTEL_METRICS) {
     const truth = truthForMetric(next, metric);

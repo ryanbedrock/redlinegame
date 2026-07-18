@@ -1,6 +1,16 @@
 // Small presentation helpers shared across screens.
 
-import type { TrackId } from '../engine/types';
+import type { ProbeCard, TrackId } from '../engine/types';
+
+// Resolve the flavor variant to display for a staged probe. Falls back to the
+// probe's base title/text when no variants are authored.
+export function probeView(
+  probe: ProbeCard,
+  variantIndex: number,
+): { title: string; text: string } {
+  const v = probe.variants?.[variantIndex];
+  return v ?? { title: probe.title, text: probe.text };
+}
 
 export function signed(n: number, digits = 0): string {
   const v = n.toFixed(digits);

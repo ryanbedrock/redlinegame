@@ -3,7 +3,15 @@
 // are colour and perspective. Responses are staged into the draft.
 
 import { useGameStore } from '../store/gameStore';
-import { VOICE_LABEL } from './format';
+import type { IntelMetric } from '../engine/types';
+import { VOICE_LABEL, pct } from './format';
+
+const INTEL_METRIC_LABEL: Record<IntelMetric, string> = {
+  RESOLVE_READ: 'Assessed Rival Resolve',
+  CAPABILITY_READ: 'Assessed Rival Capability',
+  INTENT_ASSESSMENT: 'Assessed Hostile Intent',
+  ARMING_READ: 'Observed Rival Arming',
+};
 
 export function Inbox(): JSX.Element | null {
   const state = useGameStore((s) => s.state);
@@ -32,6 +40,21 @@ export function Inbox(): JSX.Element | null {
                 </div>
                 <h3 className="mail-subject">{m.subject}</h3>
                 <p className="mail-body">{m.body}</p>
+                {m.voiceId === 'INTEL_DIRECTOR' && (() => {
+                  const est = state.world.intel.filter((i) => i.turn === m.turn);
+                  if (est.length === 0) return null;
+                  return (
+                    <ul className="mail-estimates">
+                      {est.map((i) => (
+                        <li key={i.metric}>
+                          <span className="me-label">{INTEL_METRIC_LABEL[i.metric]}</span>
+                          <span className="me-value">{pct(i.value)}</span>
+                          <span className={`confidence c-${i.confidence.toLowerCase()}`}>{i.confidence}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  );
+                })()}
                 {m.responseOptions && m.responseOptions.length > 0 && (
                   <div className="mail-options" role="group" aria-label="Response">
                     {m.respondedWith ? (

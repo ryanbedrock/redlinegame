@@ -1,10 +1,10 @@
 {
   "id": "scenario-2",
   "name": "The Closing Window",
-  "description": "A longer, ten-year confrontation against a Rival whose domestic clock is ticking. 40 quarters; early deterrence is everything.",
+  "description": "A longer, ten-year confrontation against a Rival whose domestic clock is ticking. It presses your EEZ, sea lanes, and disputed features on a deadline. 40 quarters; early deterrence is everything.",
   "turnCount": 40,
   "defaultSeed": 2718,
-  "flavor": "The Verdant Dominion's leadership has staked its legitimacy on resolving the Amber question within a generation. Time is not on the side of patience.",
+  "flavor": "The Verdant Dominion's leadership has staked its legitimacy on resolving the Amber question — your territorial sea, EEZ, and the disputed features within it — inside a generation. Status Quo tracks how much of your claimed maritime space you still control. Time is not on the side of patience.",
   "seedTypePins": [
     { "seed": 2, "type": "PRESSURED_EXPANSIONIST" }
   ],

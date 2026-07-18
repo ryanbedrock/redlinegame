@@ -2,55 +2,83 @@
   {
     "id": "probe_fishing",
     "title": "Grey-Hull Fishing Fleet",
-    "text": "A swarm of state-linked fishing vessels loiters inside the contested approaches, shadowed by a coast-guard cutter.",
+    "text": "A swarm of state-linked fishing vessels anchors inside your Exclusive Economic Zone, shadowed by a coast-guard cutter that refuses to acknowledge your patrols.",
+    "intent": "A low-cost, deniable test of your tolerance for a grey-zone presence inside your EEZ. The Rival is reading your resolve cheaply — concede and the presence becomes permanent.",
     "tags": ["maritime"],
     "severity": 1,
     "salamiValue": 3,
+    "variants": [
+      { "title": "Grey-Hull Fishing Fleet", "text": "A swarm of state-linked fishing vessels anchors inside your Exclusive Economic Zone, shadowed by a coast-guard cutter that refuses to acknowledge your patrols." },
+      { "title": "Maritime Militia Swarm", "text": "Dozens of 'fishing' trawlers moving in synchrony raft together over a gas block inside your EEZ, ignoring your radio warnings to disperse." },
+      { "title": "Survey Vessel Intrusion", "text": "A Rival 'marine research' ship trails a sonar array across your EEZ under coast-guard escort, methodically mapping the seabed you claim." },
+      { "title": "Squid-Light Flotilla", "text": "A night flotilla lit like a small city works the grounds just inside your EEZ boundary, daring your under-strength patrol to react." }
+    ],
     "responses": [
-      { "id": "r_concede", "label": "Ignore it — not worth a confrontation.", "responseType": "CONCEDE", "rationaleSetId": "rs_probe" },
-      { "id": "r_protest", "label": "Lodge a formal diplomatic protest.", "responseType": "PROTEST", "rationaleSetId": "rs_probe" },
+      { "id": "r_concede", "label": "Ignore it — not worth a confrontation in your EEZ.", "responseType": "CONCEDE", "rationaleSetId": "rs_probe" },
+      { "id": "r_protest", "label": "Lodge a formal diplomatic protest over the EEZ intrusion.", "responseType": "PROTEST", "rationaleSetId": "rs_probe" },
       { "id": "r_match", "label": "Shadow them with your own coast guard.", "responseType": "MATCH", "rationaleSetId": "rs_probe" },
-      { "id": "r_enforce", "label": "Escort the fleet out and publicize it.", "responseType": "ENFORCE", "rationaleSetId": "rs_probe" },
-      { "id": "r_escalate", "label": "Interdict and detain the cutter.", "responseType": "ESCALATE", "rationaleSetId": "rs_probe" }
+      { "id": "r_enforce", "label": "Escort the fleet out of your EEZ and publicize it.", "responseType": "ENFORCE", "rationaleSetId": "rs_probe" },
+      { "id": "r_escalate", "label": "Board and detain the escorting cutter.", "responseType": "ESCALATE", "rationaleSetId": "rs_probe" }
     ]
   },
   {
     "id": "probe_incursion",
     "title": "Frontier Air Incursion",
-    "text": "Rival aircraft cross the median line, testing your reaction time and rules of engagement.",
+    "text": "Rival combat aircraft penetrate your Air Defense Identification Zone, testing your reaction time and rules of engagement.",
+    "intent": "A test of your reaction time and rules of engagement in your ADIZ. It probes whether you will commit forces, not just words — and how fast.",
     "tags": ["frontier"],
     "severity": 2,
     "salamiValue": 5,
+    "variants": [
+      { "title": "Frontier Air Incursion", "text": "Rival combat aircraft penetrate your Air Defense Identification Zone, testing your reaction time and rules of engagement." },
+      { "title": "Bomber Transit", "text": "A pair of Rival bombers skirts the edge of your territorial airspace along your declared baseline, squawking nothing and forcing a scramble decision." },
+      { "title": "Drone Overflight", "text": "An unmanned Rival aircraft loiters over your ADIZ above a garrisoned feature, streaming imagery and ignoring your warnings on the guard frequency." },
+      { "title": "Formation Probe", "text": "A large Rival formation flies a track straight at your territorial sea, peeling away only at the last moment to clock your intercept timeline." }
+    ],
     "responses": [
       { "id": "r_concede", "label": "Note it and stand down.", "responseType": "CONCEDE", "rationaleSetId": "rs_probe" },
-      { "id": "r_protest", "label": "Protest and release radar tracks publicly.", "responseType": "PROTEST", "rationaleSetId": "rs_probe" },
+      { "id": "r_protest", "label": "Protest and release the radar tracks publicly.", "responseType": "PROTEST", "rationaleSetId": "rs_probe" },
       { "id": "r_match", "label": "Scramble a proportionate intercept.", "responseType": "MATCH", "rationaleSetId": "rs_probe" },
-      { "id": "r_enforce", "label": "Establish a standing combat air patrol.", "responseType": "ENFORCE", "rationaleSetId": "rs_probe" },
+      { "id": "r_enforce", "label": "Establish a standing combat air patrol over the ADIZ.", "responseType": "ENFORCE", "rationaleSetId": "rs_probe" },
       { "id": "r_escalate", "label": "Announce weapons-free rules on repeat incursions.", "responseType": "ESCALATE", "rationaleSetId": "rs_probe" }
     ]
   },
   {
     "id": "probe_blockade",
     "title": "Customs Quarantine",
-    "text": "The Rival declares a 'customs inspection zone' astride the sea lane to your forward islands — a soft blockade.",
+    "text": "The Rival declares a 'customs inspection zone' astride the sea lane to your forward islands — a soft blockade inside waters you administer.",
+    "intent": "A challenge to your freedom of navigation through a sea lane inside your contiguous zone. It tests whether you will physically contest interference with your shipping, or reroute and accept the precedent.",
     "tags": ["maritime", "frontier"],
     "severity": 3,
     "salamiValue": 8,
+    "variants": [
+      { "title": "Customs Quarantine", "text": "The Rival declares a 'customs inspection zone' astride the sea lane to your forward islands — a soft blockade inside waters you administer." },
+      { "title": "Sanitary Cordon", "text": "Citing 'biosecurity,' the Rival announces mandatory inspections of all shipping transiting the strait to your garrisoned features — chokepoint pressure by another name." },
+      { "title": "Live-Fire Exercise Box", "text": "The Rival closes a rectangle of sea across your main resupply lane for a week-long 'live-fire exercise,' effectively sealing the approach." },
+      { "title": "Coast-Guard Cordon", "text": "White hulls form a picket line across the contiguous-zone approach to your forward islands and begin turning back civilian traffic." }
+    ],
     "responses": [
       { "id": "r_concede", "label": "Reroute your shipping quietly.", "responseType": "CONCEDE", "rationaleSetId": "rs_probe" },
-      { "id": "r_protest", "label": "Condemn it and rally partners.", "responseType": "PROTEST", "rationaleSetId": "rs_probe" },
-      { "id": "r_match", "label": "Run an escorted convoy through.", "responseType": "MATCH", "rationaleSetId": "rs_probe" },
-      { "id": "r_enforce", "label": "Break the quarantine with a naval task group.", "responseType": "ENFORCE", "rationaleSetId": "rs_probe" },
+      { "id": "r_protest", "label": "Condemn the lane closure and rally partners.", "responseType": "PROTEST", "rationaleSetId": "rs_probe" },
+      { "id": "r_match", "label": "Run an escorted convoy through the lane.", "responseType": "MATCH", "rationaleSetId": "rs_probe" },
+      { "id": "r_enforce", "label": "Break the cordon with a naval task group.", "responseType": "ENFORCE", "rationaleSetId": "rs_probe" },
       { "id": "r_escalate", "label": "Impose a counter-blockade of your own.", "responseType": "ESCALATE", "rationaleSetId": "rs_probe" }
     ]
   },
   {
     "id": "probe_seizure",
     "title": "Disputed Feature Seizure",
-    "text": "Rival marines land on an unoccupied disputed reef and begin building a garrison. A textbook fait accompli.",
+    "text": "Rival marines land on an unoccupied disputed reef inside your EEZ and begin building a garrison. A textbook fait accompli.",
+    "intent": "A fait accompli against a disputed feature inside your EEZ. It tests whether you will bear the cost of reversal — or protest on paper and ratify the new fact on the ground.",
     "tags": ["frontier"],
     "severity": 4,
     "salamiValue": 12,
+    "variants": [
+      { "title": "Disputed Feature Seizure", "text": "Rival marines land on an unoccupied disputed reef inside your EEZ and begin building a garrison. A textbook fait accompli." },
+      { "title": "Low-Tide Elevation Grab", "text": "Rival crews begin dredging and paving a low-tide elevation you claim, racing to manufacture an 'island' before you can respond." },
+      { "title": "Lighthouse Planting", "text": "The Rival erects a 'civilian navigation lighthouse' and raises its flag on a rock inside your territorial sea, then invites the press to film it." },
+      { "title": "Fisheries Station Landing", "text": "Under cover of a storm, Rival personnel occupy a disputed cay inside your EEZ and declare it a permanent 'fisheries administration station.'" }
+    ],
     "responses": [
       { "id": "r_concede", "label": "Protest on paper; accept the new fact.", "responseType": "CONCEDE", "rationaleSetId": "rs_probe" },
       { "id": "r_protest", "label": "Take it to international bodies.", "responseType": "PROTEST", "rationaleSetId": "rs_probe" },
