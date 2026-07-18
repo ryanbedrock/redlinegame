@@ -1,0 +1,64 @@
+[
+  {
+    "id": "opp_seize", "type": "OPPORTUNIST", "kind": "PROBE", "probeId": "probe_seizure",
+    "priority": 40, "cooldownTurns": 4,
+    "condition": { "all": [ { "lt": [ { "var": "perceivedResolve" }, 0.34 ] }, { "lt": [ { "var": "tracks.denial" }, 4 ] } ] }
+  },
+  {
+    "id": "opp_blockade", "type": "OPPORTUNIST", "kind": "PROBE", "probeId": "probe_blockade",
+    "priority": 35, "cooldownTurns": 3,
+    "condition": { "gte": [ { "var": "concessionStreak" }, 2 ] }
+  },
+  {
+    "id": "opp_incursion", "type": "OPPORTUNIST", "kind": "PROBE", "probeId": "probe_incursion",
+    "priority": 20, "cooldownTurns": 2,
+    "condition": { "lt": [ { "var": "perceivedResolve" }, 0.5 ] }
+  },
+  {
+    "id": "opp_fishing", "type": "OPPORTUNIST", "kind": "PROBE", "probeId": "probe_fishing",
+    "priority": 5, "cooldownTurns": 1,
+    "condition": true
+  },
+
+  {
+    "id": "pex_seize", "type": "PRESSURED_EXPANSIONIST", "kind": "PROBE", "probeId": "probe_seizure",
+    "priority": 40, "cooldownTurns": 4,
+    "condition": { "all": [ { "gt": [ { "var": "internalPressure" }, 0.45 ] }, { "lt": [ { "var": "tracks.denial" }, 5 ] } ] }
+  },
+  {
+    "id": "pex_blockade", "type": "PRESSURED_EXPANSIONIST", "kind": "PROBE", "probeId": "probe_blockade",
+    "priority": 30, "cooldownTurns": 3,
+    "condition": { "gt": [ { "var": "internalPressure" }, 0.28 ] }
+  },
+  {
+    "id": "pex_incursion", "type": "PRESSURED_EXPANSIONIST", "kind": "PROBE", "probeId": "probe_incursion",
+    "priority": 20, "cooldownTurns": 2,
+    "condition": { "gte": [ { "var": "turn" }, 2 ] }
+  },
+  {
+    "id": "pex_fishing", "type": "PRESSURED_EXPANSIONIST", "kind": "PROBE", "probeId": "probe_fishing",
+    "priority": 5, "cooldownTurns": 1,
+    "condition": true
+  },
+
+  {
+    "id": "sec_seize", "type": "SECURITY_SEEKER", "kind": "PROBE", "probeId": "probe_seizure",
+    "priority": 40, "cooldownTurns": 5,
+    "condition": { "gt": [ { "var": "threatPerception" }, 0.78 ] }
+  },
+  {
+    "id": "sec_blockade", "type": "SECURITY_SEEKER", "kind": "PROBE", "probeId": "probe_blockade",
+    "priority": 35, "cooldownTurns": 3,
+    "condition": { "all": [ { "gt": [ { "var": "armingLevel" }, 6 ] }, { "gt": [ { "var": "threatPerception" }, 0.6 ] } ] }
+  },
+  {
+    "id": "sec_incursion", "type": "SECURITY_SEEKER", "kind": "PROBE", "probeId": "probe_incursion",
+    "priority": 25, "cooldownTurns": 2,
+    "condition": { "gt": [ { "var": "threatPerception" }, 0.5 ] }
+  },
+  {
+    "id": "sec_fishing", "type": "SECURITY_SEEKER", "kind": "PROBE", "probeId": "probe_fishing",
+    "priority": 10, "cooldownTurns": 2,
+    "condition": { "gt": [ { "var": "threatPerception" }, 0.32 ] }
+  }
+]

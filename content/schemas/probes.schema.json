@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["id", "title", "text", "tags", "severity", "salamiValue", "responses"],
+    "properties": {
+      "id": { "type": "string" },
+      "title": { "type": "string" },
+      "text": { "type": "string" },
+      "tags": { "type": "array", "items": { "type": "string" } },
+      "severity": { "type": "integer", "minimum": 1, "maximum": 5 },
+      "salamiValue": { "type": "number", "minimum": 0 },
+      "perType": { "type": "object" },
+      "responses": {
+        "type": "array",
+        "minItems": 2,
+        "items": {
+          "type": "object",
+          "required": ["id", "label", "responseType", "rationaleSetId"],
+          "properties": {
+            "id": { "type": "string" },
+            "label": { "type": "string" },
+            "responseType": { "enum": ["CONCEDE", "PROTEST", "MATCH", "ENFORCE", "ESCALATE"] },
+            "rationaleSetId": { "type": "string" },
+            "overrides": { "type": "object" }
+          }
+        }
+      }
+    }
+  }
+}

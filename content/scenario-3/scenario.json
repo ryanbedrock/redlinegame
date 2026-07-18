@@ -1,0 +1,55 @@
+{
+  "id": "scenario-3",
+  "name": "The Mirror's Edge",
+  "description": "A ten-year confrontation against a Rival that arms out of fear, not appetite. 40 quarters; manage the spiral or manufacture the war you dread.",
+  "turnCount": 40,
+  "defaultSeed": 3141,
+  "flavor": "The Verdant Dominion insists its build-up is defensive — a response to your forward posture. Whether that is true, and what to do about it, is the whole of the problem.",
+  "seedTypePins": [
+    { "seed": 3, "type": "SECURITY_SEEKER" }
+  ],
+  "opening": {
+    "budget": 20,
+    "politicalCapital": 12,
+    "tracks": { "denial": 2, "punishment": 1, "intelligence": 2, "readiness": 2 },
+    "priorArmingLevel": 2,
+    "statusQuoIntegrity": 100
+  },
+  "beats": [
+    { "eventId": "evt_budget_windfall", "minTurn": 4, "maxTurn": 8 },
+    { "eventId": "evt_intel_deception", "minTurn": 8, "maxTurn": 14 },
+    { "eventId": "evt_domestic_crisis", "minTurn": 14, "maxTurn": 20 },
+    { "eventId": "evt_econ_shock", "minTurn": 20, "maxTurn": 28 }
+  ],
+  "tuning": {
+    "budgetIncome": 6,
+    "pcRegenPerTurn": 2,
+    "pcCap": 20,
+    "decayPerTurn": 0.1,
+    "concessionSalamiThreshold": 3,
+    "warThresholdConsecutiveTurns": 2,
+    "honoredTestPC": 2,
+    "pivotSubSeeds": 5,
+    "maxPivots": 6,
+    "unsurePenaltyTurnFraction": 0.6,
+    "trackThreatDeltas": { "denial": 0.01, "punishment": 0.06, "intelligence": 0.0, "readiness": 0.02 },
+    "trackLeadTimeReadinessBonus": 0.15,
+    "intelSigmaLevel0": 0.22,
+    "intelSigmaLevel10": 0.05
+  },
+  "scoring": {
+    "outcomeBands": [
+      { "minOutcome": 80, "label": "Deterrence Achieved", "points": 100 },
+      { "minOutcome": 55, "label": "Costly Stability", "points": 75 },
+      { "minOutcome": 30, "label": "Strained Outcome", "points": 50 },
+      { "minOutcome": 0, "label": "Strategic Failure", "points": 20 }
+    ],
+    "weights": {
+      "outcome": 0.35,
+      "robustness": 0.25,
+      "diagnosis": 0.2,
+      "credibility": 0.1,
+      "efficiency": 0.1
+    }
+  }
+}

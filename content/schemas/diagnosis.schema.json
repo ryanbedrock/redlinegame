@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["promptText", "typeDescriptions", "unsureText", "tellSheets"],
+  "properties": {
+    "promptText": { "type": "string" },
+    "unsureText": { "type": "string" },
+    "typeDescriptions": {
+      "type": "object",
+      "required": ["OPPORTUNIST", "PRESSURED_EXPANSIONIST", "SECURITY_SEEKER"],
+      "additionalProperties": { "type": "string" }
+    },
+    "tellSheets": {
+      "type": "object",
+      "required": ["OPPORTUNIST", "PRESSURED_EXPANSIONIST", "SECURITY_SEEKER"],
+      "additionalProperties": { "type": "string" }
+    }
+  }
+}

@@ -1,0 +1,89 @@
+[
+  {
+    "id": "sig_statement",
+    "family": "SIGNAL",
+    "title": "Public Statement of Concern",
+    "text": "Issue a diplomatic note reaffirming your interest in the contested approaches. Words are cheap — and the Rival knows it.",
+    "cost": { "budget": 0, "politicalCapital": 1 },
+    "leadTimeTurns": 0,
+    "signalType": "CHEAP",
+    "baseValue": 0.03,
+    "rationaleSetId": "rs_resolve"
+  },
+  {
+    "id": "sig_exercise",
+    "family": "SIGNAL",
+    "title": "Sunk-Cost Joint Exercise",
+    "text": "Fund a visible, expensive multinational exercise near the frontier. The expenditure itself is the signal.",
+    "cost": { "budget": 5, "politicalCapital": 1 },
+    "leadTimeTurns": 0,
+    "signalType": "SUNK",
+    "baseValue": 0.08,
+    "tpDelta": 0.02,
+    "cooldownTurns": 2,
+    "rationaleSetId": "rs_resolve"
+  },
+  {
+    "id": "sig_mobilize",
+    "family": "SIGNAL",
+    "title": "Mobilize Forward Elements",
+    "text": "Surge readiness forces to the theatre. Costly, escalatory, and unambiguous.",
+    "cost": { "budget": 6, "politicalCapital": 2 },
+    "leadTimeTurns": 0,
+    "signalType": "SUNK",
+    "baseValue": 0.09,
+    "offensiveCoded": true,
+    "tpDelta": 0.04,
+    "cooldownTurns": 2,
+    "rationaleSetId": "rs_resolve"
+  },
+  {
+    "id": "sig_tripwire_treaty",
+    "family": "SIGNAL",
+    "title": "Ratify Tripwire Guarantee",
+    "text": "Pass a legislative guarantee that ties your hands: backing down later would carry a heavy domestic audience cost.",
+    "cost": { "budget": 2, "politicalCapital": 4 },
+    "leadTimeTurns": 0,
+    "signalType": "TIED_HANDS",
+    "baseValue": 0.11,
+    "commitmentSpec": {
+      "scopeProbeTags": ["frontier", "maritime"],
+      "floorResponse": "ENFORCE",
+      "backDownPenaltyPC": 6,
+      "upkeepPC": 1
+    },
+    "maxPurchases": 1,
+    "rationaleSetId": "rs_resolve"
+  },
+  {
+    "id": "sig_redline",
+    "family": "SIGNAL",
+    "title": "Declare a Public Red Line",
+    "text": "Stake your credibility on an explicit threshold. Hands tied — but only as credible as your willingness to honor it.",
+    "cost": { "budget": 1, "politicalCapital": 3 },
+    "leadTimeTurns": 0,
+    "signalType": "TIED_HANDS",
+    "baseValue": 0.1,
+    "commitmentSpec": {
+      "scopeProbeTags": ["frontier"],
+      "floorResponse": "MATCH",
+      "backDownPenaltyPC": 4,
+      "upkeepPC": 1
+    },
+    "maxPurchases": 1,
+    "rationaleSetId": "rs_resolve"
+  },
+  {
+    "id": "sig_reassure",
+    "family": "SIGNAL",
+    "title": "Open a Reassurance Channel",
+    "text": "Privately signal that your build-up is defensive and your aims limited. Dampens the security dilemma — at some cost to perceived resolve.",
+    "cost": { "budget": 1, "politicalCapital": 2 },
+    "leadTimeTurns": 0,
+    "signalType": "REASSURANCE",
+    "baseValue": 0.02,
+    "tpDelta": -0.06,
+    "cooldownTurns": 1,
+    "rationaleSetId": "rs_reassure"
+  }
+]

@@ -1,0 +1,96 @@
+name: Auto-merge
+
+# Hands-off auto-merge: when the CI workflow completes successfully for a PR,
+# squash-merge it if it is authored by the repository owner or by the Devin bot
+# acting on the owner's behalf, OR if it carries the "automerge" label. Uses the
+# default GITHUB_TOKEN — no per-PR interaction.
+#
+# This runs on `workflow_run`, so it executes from the default branch with the
+# repo's own token (PR-fork code cannot alter this workflow), and it re-checks
+# that CI concluded `success` before merging.
+
+on:
+  workflow_run:
+    workflows: ['CI']
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  automerge:
+    name: merge on green CI
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Merge eligible PRs for this commit
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ github.repository }}
+          # Logins allowed to auto-merge without the "automerge" label. The Devin
+          # bot authors PRs on the owner's behalf, so it is trusted here too.
+          # `gh pr view` reports app authors as `app/<slug>`; the REST API uses
+          # `<slug>[bot]` — accept both spellings.
+          BOT_AUTHOR: app/devin-ai-integration
+          BOT_AUTHOR_ALT: devin-ai-integration[bot]
+        run: |
+          set -euo pipefail
+
+          # Find open PRs whose head is the commit CI just validated. The
+          # commit→pulls index is eventually consistent and can lag the
+          # workflow_run event, so retry, then fall back to matching the PR by
+          # its head branch.
+          prs=""
+          for attempt in 1 2 3 4 5 6; do
+            prs=$(gh api "repos/${REPO}/commits/${HEAD_SHA}/pulls" \
+              --jq '.[] | select(.state == "open") | .number' || true)
+            if [ -n "$prs" ]; then break; fi
+            if [ -n "${HEAD_BRANCH:-}" ]; then
+              prs=$(gh pr list --repo "$REPO" --state open --head "$HEAD_BRANCH" \
+                --json number,headRefOid \
+                --jq ".[] | select(.headRefOid == \"${HEAD_SHA}\") | .number" || true)
+              if [ -n "$prs" ]; then break; fi
+            fi
+            echo "No open PR resolved for ${HEAD_SHA} yet (attempt ${attempt}); retrying…"
+            sleep 10
+          done
+
+          if [ -z "$prs" ]; then
+            echo "No open PR found for ${HEAD_SHA}; nothing to merge."
+            exit 0
+          fi
+
+          for pr in $prs; do
+            author=$(gh pr view "$pr" --repo "$REPO" --json author --jq '.author.login')
+            labels=$(gh pr view "$pr" --repo "$REPO" --json labels --jq '.labels[].name')
+            is_draft=$(gh pr view "$pr" --repo "$REPO" --json isDraft --jq '.isDraft')
+
+            echo "PR #$pr — author=$author draft=$is_draft labels=[$(echo "$labels" | tr '\n' ' ')]"
+
+            if [ "$is_draft" = "true" ]; then
+              echo "PR #$pr is a draft; skipping."
+              continue
+            fi
+
+            eligible=false
+            if [ "$author" = "$OWNER" ] || [ "$author" = "$BOT_AUTHOR" ] || [ "$author" = "$BOT_AUTHOR_ALT" ]; then
+              eligible=true
+              echo "PR #$pr authored by $author — eligible."
+            elif echo "$labels" | grep -qx "automerge"; then
+              eligible=true
+              echo "PR #$pr carries the 'automerge' label — eligible."
+            fi
+
+            if [ "$eligible" = "true" ]; then
+              echo "Squash-merging PR #$pr…"
+              gh pr merge "$pr" --repo "$REPO" --squash --delete-branch
+            else
+              echo "PR #$pr not eligible for auto-merge; skipping."
+            fi
+          done

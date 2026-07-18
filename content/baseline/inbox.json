@@ -1,0 +1,63 @@
+[
+  {
+    "id": "msg_defense_hawk",
+    "voiceId": "ADVISOR_DEFENSE",
+    "subject": "We are being tested",
+    "body": "Minister — each unanswered probe teaches them that the next slice is free. I recommend we demonstrate resolve before the pattern hardens.",
+    "priority": 10,
+    "cooldownTurns": 3,
+    "condition": { "lt": [ { "var": "perceivedResolve" }, 0.5 ] }
+  },
+  {
+    "id": "msg_state_dove",
+    "voiceId": "ADVISOR_STATE",
+    "subject": "Mind the spiral",
+    "body": "A visible build-up may read as offensive and provoke exactly the reaction we fear. Consider whether reassurance would buy us more than another destroyer.",
+    "priority": 9,
+    "cooldownTurns": 3,
+    "condition": { "gt": [ { "var": "threatPerception" }, 0.55 ] }
+  },
+  {
+    "id": "msg_intel_brief",
+    "voiceId": "INTEL_DIRECTOR",
+    "subject": "Weekly intelligence summary",
+    "body": "Latest estimates are attached. Confidence tracks our collection posture — invest in intelligence and the error bars narrow.",
+    "priority": 6,
+    "cooldownTurns": 4,
+    "condition": { "gte": [ { "var": "turn" }, 1 ] },
+    "responseOptions": [
+      { "id": "ack", "label": "Acknowledge." },
+      { "id": "task", "label": "Task additional collection (−1 PC).", "effects": [ { "target": "politicalCapital", "op": "add", "value": -1 } ] }
+    ]
+  },
+  {
+    "id": "msg_rival_opportunist",
+    "voiceId": "RIVAL_FOREIGN_MINISTRY",
+    "subject": "On the status of the approaches",
+    "body": "Our patience with your 'administration' of waters that were always ours is not unlimited. Prudence would counsel accommodation.",
+    "perType": "OPPORTUNIST",
+    "priority": 8,
+    "cooldownTurns": 4,
+    "condition": { "lt": [ { "var": "perceivedResolve" }, 0.42 ] }
+  },
+  {
+    "id": "msg_rival_pressured",
+    "voiceId": "RIVAL_FOREIGN_MINISTRY",
+    "subject": "Historic questions cannot wait forever",
+    "body": "Domestic opinion demands resolution within this generation. We would prefer it be peaceful — but the timetable is not ours to set.",
+    "perType": "PRESSURED_EXPANSIONIST",
+    "priority": 8,
+    "cooldownTurns": 4,
+    "condition": { "gt": [ { "var": "internalPressure" }, 0.4 ] }
+  },
+  {
+    "id": "msg_rival_security",
+    "voiceId": "RIVAL_FOREIGN_MINISTRY",
+    "subject": "Your intentions are unclear to us",
+    "body": "Your forward deployments encircle us. We arm because we must, not because we wish to. Clarify your aims and we may yet step back.",
+    "perType": "SECURITY_SEEKER",
+    "priority": 8,
+    "cooldownTurns": 4,
+    "condition": { "gt": [ { "var": "threatPerception" }, 0.5 ] }
+  }
+]

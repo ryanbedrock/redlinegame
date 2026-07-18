@@ -1,0 +1,33 @@
+[
+  {
+    "id": "rs_resolve",
+    "options": [
+      { "id": "deter", "label": "Demonstrate resolve to deter probing." },
+      { "id": "reputation", "label": "Protect our reputation for honoring commitments." },
+      { "id": "domestic", "label": "Satisfy domestic expectations of firmness." }
+    ]
+  },
+  {
+    "id": "rs_capability",
+    "options": [
+      { "id": "denial", "label": "Deny the Rival a fait accompli." },
+      { "id": "cost", "label": "Raise the expected cost of aggression." },
+      { "id": "hedge", "label": "Hedge against worsening intelligence." }
+    ]
+  },
+  {
+    "id": "rs_reassure",
+    "options": [
+      { "id": "spiral", "label": "Avoid a spiral by signalling limited aims." },
+      { "id": "channel", "label": "Keep a crisis-management channel open." }
+    ]
+  },
+  {
+    "id": "rs_probe",
+    "options": [
+      { "id": "proportionate", "label": "A proportionate response fits the provocation." },
+      { "id": "firmness", "label": "Firmness now prevents salami-slicing later." },
+      { "id": "restraint", "label": "Restraint avoids handing the Rival a pretext." }
+    ]
+  }
+]

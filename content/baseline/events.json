@@ -1,0 +1,44 @@
+[
+  {
+    "id": "evt_budget_windfall",
+    "title": "Supplemental Appropriation",
+    "text": "The legislature passes an emergency defense supplemental. Your budget expands this quarter.",
+    "schedule": { "minTurn": 3, "maxTurn": 6 },
+    "effects": [ { "target": "budget", "op": "add", "value": 8 } ],
+    "maxFires": 1
+  },
+  {
+    "id": "evt_intel_deception",
+    "title": "Deception Operation Detected — Too Late",
+    "text": "The Rival has been feeding your collection a curated picture. Your intent estimates have been running optimistic.",
+    "schedule": { "minTurn": 6, "maxTurn": 11 },
+    "effects": [],
+    "biasMetric": "INTENT_ASSESSMENT",
+    "biasAmount": -0.15,
+    "biasDurationTurns": 3,
+    "maxFires": 1
+  },
+  {
+    "id": "evt_domestic_crisis",
+    "title": "Domestic Political Crisis",
+    "text": "A budget standoff at home consumes the leadership's attention, degrading your capacity to act decisively.",
+    "schedule": { "minTurn": 10, "maxTurn": 15 },
+    "effects": [
+      { "target": "playerDistractionActive", "op": "set", "value": 1, "durationTurns": 2 },
+      { "target": "politicalCapital", "op": "add", "value": -3 }
+    ],
+    "maxFires": 1
+  },
+  {
+    "id": "evt_econ_shock",
+    "title": "Regional Economic Shock",
+    "text": "A commodity shock ripples through the region. For a Rival whose clock is already ticking, the pressure to move rises.",
+    "schedule": { "minTurn": 16, "maxTurn": 22 },
+    "effects": [ { "target": "budget", "op": "add", "value": -4 } ],
+    "perTypeEffects": {
+      "PRESSURED_EXPANSIONIST": [ { "target": "internalPressure", "op": "add", "value": 0.15 } ],
+      "SECURITY_SEEKER": [ { "target": "threatPerception", "op": "add", "value": 0.08 } ]
+    },
+    "maxFires": 1
+  }
+]
