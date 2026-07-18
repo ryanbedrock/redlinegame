@@ -4,7 +4,7 @@
 
 import { useGameStore } from '../store/gameStore';
 import type { IntelMetric } from '../engine/types';
-import { pct } from './format';
+import { pct, probeView } from './format';
 
 const METRIC_LABEL: Record<IntelMetric, string> = {
   RESOLVE_READ: 'Assessed Rival Resolve',
@@ -47,6 +47,10 @@ export function Sitrep(): JSX.Element | null {
 
       <section className="panel">
         <h3>Intelligence Estimates</h3>
+        <p className="panel-note">
+          This is your intelligence: each read is the Rival's own (imperfect) estimate of you, or
+          your estimate of it. The Inbox brief repeats these same numbers — reading it is optional.
+        </p>
         {intelThisTurn.length === 0 ? (
           <p className="muted">No fresh reporting this quarter.</p>
         ) : (
@@ -76,10 +80,11 @@ export function Sitrep(): JSX.Element | null {
         {staged ? (
           <div className="probe-preview">
             <div className="probe-preview-head">
-              <span className="probe-title">{staged.title}</span>
+              <span className="probe-title">{probeView(staged, state.world.stagedProbeVariant).title}</span>
               <span className="severity">Severity {staged.severity}</span>
             </div>
-            <p>{staged.text}</p>
+            <p>{probeView(staged, state.world.stagedProbeVariant).text}</p>
+            {staged.intent && <p className="probe-intent">Intelligence read: {staged.intent}</p>}
             <button type="button" className="primary" onClick={() => goToStage('PROBE')}>
               Formulate Response →
             </button>

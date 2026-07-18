@@ -227,6 +227,15 @@ input[type="text"], select {
 .probe-title { font-weight: 600; font-size: 1.05rem; }
 .severity { color: var(--warn); font-size: 0.8rem; }
 .probe-preview p { color: var(--muted); }
+.probe-intent {
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.7rem;
+  border-left: 3px solid var(--warn);
+  background: var(--panel-2);
+  border-radius: 0 6px 6px 0;
+  color: var(--ink);
+  font-size: 0.9rem;
+}
 
 .commitment-list, .pipeline-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.5rem; }
 .commitment-list li { display: grid; gap: 0.15rem; font-size: 0.9rem; }
@@ -293,6 +302,10 @@ input[type="text"], select {
 .mail-head { display: flex; justify-content: space-between; color: var(--faint); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; }
 .mail-subject { margin: 0.35rem 0; font-size: 1.05rem; }
 .mail-body { color: var(--muted); margin: 0.25rem 0 0.5rem; }
+.mail-estimates { list-style: none; padding: 0.5rem 0.7rem; margin: 0 0 0.6rem; display: grid; gap: 0.35rem; background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; }
+.mail-estimates li { display: flex; align-items: baseline; gap: 0.6rem; font-size: 0.88rem; }
+.me-label { flex: 1; color: var(--muted); }
+.me-value { font-weight: 600; }
 .mail-options { display: flex; gap: 0.5rem; flex-wrap: wrap; }
 .chip { background: var(--panel-2); border: 1px solid var(--line); border-radius: 16px; padding: 0.35rem 0.8rem; color: var(--ink); }
 .chip.selected { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }

@@ -40,7 +40,10 @@ export function Hud(): JSX.Element | null {
           <span className="res-label">Political Capital</span>
           <span className="res-val">{Math.round(state.player.politicalCapital)}</span>
         </div>
-        <div className="res">
+        <div
+          className="res"
+          title="Effective control of your claimed maritime space — territorial sea, contiguous zone, and EEZ. 100 = fully intact; 0 = capitulation."
+        >
           <span className="res-label">Status Quo</span>
           <span className={`res-val sq-${sqTone}`}>{Math.round(sq)}</span>
         </div>

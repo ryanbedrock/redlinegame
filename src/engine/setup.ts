@@ -77,6 +77,7 @@ export function createInitialState(
       eventLog: [],
       activeModifiers: [],
       stagedProbeId: null,
+      stagedProbeVariant: 0,
       biasActive: null,
       playerDistractionActive: false,
     },

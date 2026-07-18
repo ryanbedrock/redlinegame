@@ -1,10 +1,10 @@
 {
   "id": "scenario-1",
   "name": "The Approaches",
-  "description": "A eight-year cold confrontation over a contested maritime frontier. Deter the Rival across 32 quarters without provoking the war you seek to prevent.",
+  "description": "An eight-year cold confrontation over your maritime claims — territorial sea, contiguous zone, and Exclusive Economic Zone around the Amber Approaches. Deter the Rival across 32 quarters without provoking the war you seek to prevent.",
   "turnCount": 32,
   "defaultSeed": 1337,
-  "flavor": "You are the national security principal of the Meridian Federation. Across the strait lies the Verdant Dominion, whose claims on the Amber Approaches have hardened. Neither side wants war — yet.",
+  "flavor": "You are the national security principal of the Meridian Federation. Across the strait lies the Verdant Dominion, which now contests your Exclusive Economic Zone, the airspace of your Air Defense Identification Zone, and the disputed features inside the Amber Approaches. Status Quo measures how much of your claimed maritime space remains under your effective control. Neither side wants war — yet.",
   "seedTypePins": [
     { "seed": 1, "type": "OPPORTUNIST" },
     { "seed": 2, "type": "PRESSURED_EXPANSIONIST" },
