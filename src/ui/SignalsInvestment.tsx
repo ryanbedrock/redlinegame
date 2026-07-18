@@ -8,6 +8,8 @@ import type { Card } from '../engine/types';
 import { buildPlayerVars } from '../engine/context';
 import { evalBool } from '../engine/conditions';
 import { RationalePicker } from './RationalePicker';
+import { InfoTip } from './InfoTip';
+import { GLOSSARY } from './format';
 
 const SIGNAL_TAG: Record<string, string> = {
   CHEAP: 'Cheap Talk',
@@ -121,12 +123,18 @@ export function SignalsInvestment(): JSX.Element | null {
       </div>
 
       <section className="panel">
-        <h3>Signals <span className="muted">— resolve this quarter</span></h3>
+        <h3>
+          Signals <span className="muted">— resolve this quarter</span>
+          <InfoTip term="signals" label={GLOSSARY.signalClass} side="bottom" />
+        </h3>
         <div className="card-grid">{content.signals.map(renderCard)}</div>
       </section>
 
       <section className="panel">
-        <h3>Investments <span className="muted">— complete after lead time</span></h3>
+        <h3>
+          Investments <span className="muted">— complete after lead time</span>
+          <InfoTip term="investments" label={GLOSSARY.investment} side="bottom" />
+        </h3>
         <div className="card-grid">{content.investments.map(renderCard)}</div>
       </section>
 

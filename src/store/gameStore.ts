@@ -65,12 +65,16 @@ interface GameStore {
   // Client-only (never persisted, never in GameState): inbox message ids the
   // player has opened, so the HUD badge counts genuinely unseen correspondence.
   seenMessageIds: string[];
+  // Client-only: whether the interactive guided tour overlay is showing.
+  tourOpen: boolean;
 
   newGame: (scenarioId: string, seed: number, displayName?: string) => void;
   resume: (saveId: string) => void;
   backToMenu: () => void;
   goToScreen: (screen: Screen) => void;
   goToStage: (stage: Stage) => void;
+  startTour: () => void;
+  endTour: () => void;
 
   setProbeResponse: (responseType: ResponseType, rationaleId: string) => void;
   togglePurchase: (cardId: string, rationaleId: string) => void;
@@ -89,6 +93,27 @@ function persist(save: SaveGame, decisionLog: TurnDecisions[]): SaveGame {
   return updated;
 }
 
+const TOUR_SEEN_KEY = 'redline:tourSeen';
+
+// The guided tour auto-opens once per browser on a first new game; thereafter
+// it is available on demand from the HUD. localStorage lives in the store, not
+// the engine, so purity is preserved.
+function tourSeen(): boolean {
+  try {
+    return localStorage.getItem(TOUR_SEEN_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
+function markTourSeen(): void {
+  try {
+    localStorage.setItem(TOUR_SEEN_KEY, '1');
+  } catch {
+    // Ignore storage failures (private mode, quota) — tour simply reopens.
+  }
+}
+
 export const useGameStore = create<GameStore>((set, get) => ({
   screen: 'MENU',
   content: null,
@@ -98,6 +123,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   draft: emptyDraft(),
   resolvedTurn: null,
   seenMessageIds: [],
+  tourOpen: false,
 
   newGame: (scenarioId, seed, displayName) => {
     const content = loadContentPack(scenarioId);
@@ -114,7 +140,17 @@ export const useGameStore = create<GameStore>((set, get) => ({
       decisionLog: [],
     };
     writeSave(save);
-    set({ screen: 'GAME', content, state, save, stage: 'SITREP', draft: emptyDraft(), resolvedTurn: null, seenMessageIds: [] });
+    set({
+      screen: 'GAME',
+      content,
+      state,
+      save,
+      stage: 'SITREP',
+      draft: emptyDraft(),
+      resolvedTurn: null,
+      seenMessageIds: [],
+      tourOpen: !tourSeen(),
+    });
   },
 
   resume: (saveId) => {
@@ -138,12 +174,23 @@ export const useGameStore = create<GameStore>((set, get) => ({
       draft: emptyDraft(),
       resolvedTurn: null,
       seenMessageIds: state.world.inbox.map((m) => m.id),
+      tourOpen: false,
     });
   },
 
-  backToMenu: () => set({ screen: 'MENU' }),
+  backToMenu: () => set({ screen: 'MENU', tourOpen: false }),
 
   goToScreen: (screen) => set({ screen }),
+
+  startTour: () => {
+    // Bring the tour's anchored screen (SITREP) into view before opening.
+    set((s) => ({ tourOpen: true, stage: s.stage === 'PROBE' || s.stage === 'SIGNALS' ? 'SITREP' : s.stage }));
+  },
+
+  endTour: () => {
+    markTourSeen();
+    set({ tourOpen: false });
+  },
 
   goToStage: (stage) => {
     if (stage === 'INBOX') {

@@ -217,7 +217,7 @@ input[type="text"], select {
 .intel-metric { font-weight: 600; }
 .confidence { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.1rem 0.45rem; border-radius: 10px; }
 .c-low { background: rgba(209,73,59,0.18); color: #f0a79f; }
-.c-medium { background: rgba(217,164,65,0.18); color: #f0d59a; }
+.c-moderate { background: rgba(217,164,65,0.18); color: #f0d59a; }
 .c-high { background: rgba(63,166,106,0.18); color: #9ad9b6; }
 .intel-bar { height: 8px; background: var(--bg-2); border-radius: 5px; margin: 0.4rem 0; overflow: hidden; border: 1px solid var(--line); }
 .intel-fill { height: 100%; background: linear-gradient(90deg, var(--info), var(--accent)); }
@@ -443,3 +443,87 @@ input[type="text"], select {
 .ec-tag { font-size: 0.74rem; padding: 0.15rem 0.5rem; border-radius: 999px; border: 1px solid; }
 .ec-tag.good { color: var(--good); border-color: rgba(63,166,106,0.5); }
 .ec-tag.faint { color: var(--faint); border-color: var(--line); }
+
+/* ── Tooltips & InfoTips ──────────────────────────────────────────────── */
+.tip { position: relative; display: inline-flex; align-items: center; }
+.tip > .tip-pop {
+  position: absolute;
+  z-index: 60;
+  width: max-content;
+  max-width: 280px;
+  padding: 0.55rem 0.7rem;
+  background: #0b1219;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  font-size: 0.82rem;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: normal;
+  text-transform: none;
+  white-space: normal;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(4px);
+  transition: opacity 0.12s ease, transform 0.12s ease;
+  pointer-events: none;
+}
+.tip:hover > .tip-pop,
+.tip:focus-within > .tip-pop {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.tip-bottom > .tip-pop { top: calc(100% + 8px); left: 0; }
+.tip-top > .tip-pop { bottom: calc(100% + 8px); left: 0; }
+.tip-right > .tip-pop { left: calc(100% + 8px); top: 0; }
+.tip-left > .tip-pop { right: calc(100% + 8px); top: 0; }
+
+.infotip { margin-left: 0.35rem; vertical-align: middle; }
+.infotip-btn {
+  width: 15px;
+  height: 15px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid var(--faint);
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.62rem;
+  font-style: italic;
+  font-weight: 700;
+  line-height: 1;
+  cursor: help;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.infotip-btn:hover,
+.infotip:focus-within .infotip-btn {
+  border-color: var(--info);
+  color: var(--info);
+}
+
+/* ── Guided tour ──────────────────────────────────────────────────────── */
+.tour-root { position: fixed; inset: 0; z-index: 200; }
+.tour-backdrop { position: fixed; inset: 0; background: rgba(3, 6, 10, 0.55); }
+.tour-spotlight {
+  position: fixed;
+  border-radius: 10px;
+  box-shadow: 0 0 0 9999px rgba(3, 6, 10, 0.72), 0 0 0 2px var(--accent-soft);
+  pointer-events: none;
+  transition: top 0.18s ease, left 0.18s ease, width 0.18s ease, height 0.18s ease;
+}
+.tour-card {
+  position: fixed;
+  z-index: 210;
+  width: min(360px, calc(100vw - 24px));
+  padding: 1rem 1.1rem;
+  box-shadow: var(--shadow);
+}
+.tour-card h3 { margin: 0.1rem 0 0.5rem; }
+.tour-card p { margin: 0 0 0.55rem; font-size: 0.9rem; color: var(--muted); line-height: 1.45; }
+.tour-card p:last-of-type { margin-bottom: 0.6rem; }
+.tour-step-count { font-size: 0.72rem; color: var(--faint); letter-spacing: 0.06em; }
+.tour-actions { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; }
+.tour-nav-btns { display: flex; gap: 0.5rem; }
