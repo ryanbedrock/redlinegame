@@ -183,8 +183,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
   goToScreen: (screen) => set({ screen }),
 
   startTour: () => {
-    // Bring the tour's anchored screen (SITREP) into view before opening.
-    set((s) => ({ tourOpen: true, stage: s.stage === 'PROBE' || s.stage === 'SIGNALS' ? 'SITREP' : s.stage }));
+    // The tour's steps anchor to the HUD and the SITREP screen, so open it on
+    // SITREP regardless of the current planning screen (Inbox/Assessment/etc.),
+    // otherwise the situation-report steps have nothing to highlight.
+    set({ tourOpen: true, stage: 'SITREP' });
   },
 
   endTour: () => {
