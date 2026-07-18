@@ -35,7 +35,10 @@ jobs:
           REPO: ${{ github.repository }}
           # Logins allowed to auto-merge without the "automerge" label. The Devin
           # bot authors PRs on the owner's behalf, so it is trusted here too.
-          BOT_AUTHOR: devin-ai-integration[bot]
+          # `gh pr view` reports app authors as `app/<slug>`; the REST API uses
+          # `<slug>[bot]` — accept both spellings.
+          BOT_AUTHOR: app/devin-ai-integration
+          BOT_AUTHOR_ALT: devin-ai-integration[bot]
         run: |
           set -euo pipefail
 
@@ -76,7 +79,7 @@ jobs:
             fi
 
             eligible=false
-            if [ "$author" = "$OWNER" ] || [ "$author" = "$BOT_AUTHOR" ]; then
+            if [ "$author" = "$OWNER" ] || [ "$author" = "$BOT_AUTHOR" ] || [ "$author" = "$BOT_AUTHOR_ALT" ]; then
               eligible=true
               echo "PR #$pr authored by $author — eligible."
             elif echo "$labels" | grep -qx "automerge"; then
