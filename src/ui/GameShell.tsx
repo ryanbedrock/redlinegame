@@ -33,7 +33,6 @@ const STAGE_LABEL: Record<Stage, string> = {
 
 export function GameShell(): JSX.Element {
   const stage = useGameStore((s) => s.stage);
-  const tourOpen = useGameStore((s) => s.tourOpen);
   const saveError = useGameStore((s) => s.saveError);
   const dismissSaveError = useGameStore((s) => s.dismissSaveError);
   const stageRef = useRef<HTMLDivElement>(null);
@@ -42,11 +41,13 @@ export function GameShell(): JSX.Element {
   // container so keyboard focus never strands on an unmounted button (WCAG
   // 2.4.3). The stage name is also mirrored into a live region below (4.1.3).
   // While the guided tour owns focus (it opens over SITREP on a new game), let
-  // the tour keep it rather than yanking focus back to the stage.
+  // the tour keep it — read tourOpen imperatively rather than as a dependency so
+  // closing the tour doesn't re-run this and steal the focus the tour restores
+  // to the button that opened it (e.g. the HUD "?" on a mid-game replay).
   useEffect(() => {
-    if (tourOpen) return;
+    if (useGameStore.getState().tourOpen) return;
     stageRef.current?.focus();
-  }, [stage, tourOpen]);
+  }, [stage]);
 
   const screen = (() => {
     switch (stage) {
