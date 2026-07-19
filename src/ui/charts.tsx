@@ -30,23 +30,49 @@ export function PerceptionReplay({ history }: PerceptionReplayProps): JSX.Elemen
     Capability: Math.round(h.perceivedCapability * 100) / 100,
   }));
   return (
-    <div className="chart" role="img" aria-label="Line chart of the Rival's hidden perception ledgers over the campaign">
-      <ResponsiveContainer width="100%" height={280}>
-        <LineChart data={data} margin={{ top: 8, right: 16, bottom: 4, left: -8 }}>
-          <CartesianGrid stroke={GRID} strokeDasharray="3 3" />
-          <XAxis dataKey="quarter" stroke={AXIS} fontSize={12} tickLine={false} />
-          <YAxis stroke={AXIS} fontSize={12} tickLine={false} />
-          <Tooltip
-            contentStyle={{ background: '#0d1420', border: `1px solid ${GRID}`, borderRadius: 8, fontSize: 12 }}
-            labelStyle={{ color: '#c9d4e5' }}
-          />
-          <Legend wrapperStyle={{ fontSize: 12 }} />
-          <Line type="monotone" dataKey="Threat" stroke="#e0524a" strokeWidth={2} dot={false} />
-          <Line type="monotone" dataKey="War utility" stroke="#f2a900" strokeWidth={2} dot={false} />
-          <Line type="monotone" dataKey="Resolve" stroke="#4a9de0" strokeWidth={2} dot={false} />
-          <Line type="monotone" dataKey="Capability" stroke="#5ac48a" strokeWidth={2} dot={false} />
-        </LineChart>
-      </ResponsiveContainer>
+    <div className="chart">
+      <div role="img" aria-label="Line chart of the Rival's hidden perception ledgers over the campaign">
+        <ResponsiveContainer width="100%" height={280}>
+          <LineChart data={data} margin={{ top: 8, right: 16, bottom: 4, left: -8 }}>
+            <CartesianGrid stroke={GRID} strokeDasharray="3 3" />
+            <XAxis dataKey="quarter" stroke={AXIS} fontSize={12} tickLine={false} />
+            <YAxis stroke={AXIS} fontSize={12} tickLine={false} />
+            <Tooltip
+              contentStyle={{ background: '#0d1420', border: `1px solid ${GRID}`, borderRadius: 8, fontSize: 12 }}
+              labelStyle={{ color: '#c9d4e5' }}
+            />
+            <Legend wrapperStyle={{ fontSize: 12 }} />
+            <Line type="monotone" dataKey="Threat" stroke="#e0524a" strokeWidth={2} dot={false} />
+            <Line type="monotone" dataKey="War utility" stroke="#f2a900" strokeWidth={2} dot={false} />
+            <Line type="monotone" dataKey="Resolve" stroke="#4a9de0" strokeWidth={2} dot={false} />
+            <Line type="monotone" dataKey="Capability" stroke="#5ac48a" strokeWidth={2} dot={false} />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+      {/* Non-visual equivalent of the chart for screen-reader users (§2.5.5). */}
+      <table className="sr-only">
+        <caption>The Rival's hidden perception ledgers by quarter</caption>
+        <thead>
+          <tr>
+            <th scope="col">Quarter</th>
+            <th scope="col">Threat</th>
+            <th scope="col">War utility</th>
+            <th scope="col">Resolve</th>
+            <th scope="col">Capability</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.map((d) => (
+            <tr key={d.quarter}>
+              <th scope="row">{d.quarter}</th>
+              <td>{d.Threat}</td>
+              <td>{d['War utility']}</td>
+              <td>{d.Resolve}</td>
+              <td>{d.Capability}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }

@@ -3,12 +3,13 @@
 // the consequences (and commitment tests) at turn resolution.
 
 import { useGameStore } from '../store/gameStore';
-import type { ResponseType } from '../engine/types';
+import type { ProbeResponseOption, ResponseType } from '../engine/types';
 import { RESPONSE_ORDINAL } from '../engine/types';
 import { stagedProbeStakes } from '../engine/resolver';
 import { RationalePicker } from './RationalePicker';
 import { probeView, GLOSSARY } from './format';
 import { InfoTip } from './InfoTip';
+import { useRovingRadio } from './useRovingRadio';
 
 const LADDER_HINT: Record<ResponseType, string> = {
   CONCEDE: 'Yield ground. Preserves capital now, but erodes the status quo and reads as weakness.',
@@ -17,6 +18,44 @@ const LADDER_HINT: Record<ResponseType, string> = {
   ENFORCE: 'Impose a real cost on the Rival. Firm, escalatory, credibility-building.',
   ESCALATE: 'Raise the stakes sharply. Maximal resolve signal — and maximal risk.',
 };
+
+function ResponseLadder({
+  options,
+  chosenType,
+  onSelect,
+}: {
+  options: ProbeResponseOption[];
+  chosenType: ResponseType | undefined;
+  onSelect: (o: ProbeResponseOption) => void;
+}): JSX.Element {
+  const selectedIndex = options.findIndex((o) => o.responseType === chosenType);
+  const getProps = useRovingRadio(options.length, selectedIndex, (i) => onSelect(options[i]));
+  return (
+    <div className="ladder" role="radiogroup" aria-label="Response">
+      {options.map((o, i) => {
+        const active = chosenType === o.responseType;
+        const roving = getProps(i);
+        return (
+          <button
+            key={o.id}
+            type="button"
+            role="radio"
+            aria-checked={active}
+            ref={roving.ref}
+            tabIndex={roving.tabIndex}
+            onKeyDown={roving.onKeyDown}
+            className={`ladder-rung rung-${RESPONSE_ORDINAL[o.responseType]} ${active ? 'selected' : ''}`}
+            onClick={() => onSelect(o)}
+          >
+            <span className="rung-type">{o.responseType}</span>
+            <span className="rung-label">{o.label}</span>
+            <span className="rung-hint">{LADDER_HINT[o.responseType]}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
 
 export function ProbeResponse(): JSX.Element | null {
   const state = useGameStore((s) => s.state);
@@ -66,33 +105,26 @@ export function ProbeResponse(): JSX.Element | null {
         {probe.intent && <p className="probe-intent">Intelligence read: {probe.intent}</p>}
         {stakes.escalated && (
           <p className="alert warn" role="alert">
-            Escalated stakes: your concession streak has pushed the Rival to press harder.
-            Conceding this probe now cedes ~{Math.round(stakes.salamiValue)} status-quo integrity
-            (vs {Math.round(probe.salamiValue)} normally), and holding the line costs more resolve.
+            Escalated stakes: your concession streak has pushed the Rival to press harder, so this
+            probe lands at higher severity. Conceding now cedes ~{Math.round(stakes.salamiValue)}{' '}
+            status-quo integrity (vs {Math.round(probe.salamiValue)} normally).
           </p>
         )}
         <p className="footnote">Tags: {probe.tags.join(', ')}</p>
       </section>
 
-      <div className="ladder" role="radiogroup" aria-label="Response">
-        {options.map((o) => {
-          const active = chosen?.responseType === o.responseType;
-          return (
-            <button
-              key={o.id}
-              type="button"
-              role="radio"
-              aria-checked={active}
-              className={`ladder-rung rung-${RESPONSE_ORDINAL[o.responseType]} ${active ? 'selected' : ''}`}
-              onClick={() => setProbeResponse(o.responseType, o.rationaleSetId ? content.rationales.find((r) => r.id === o.rationaleSetId)?.options[0]?.id ?? 'auto' : 'auto')}
-            >
-              <span className="rung-type">{o.responseType}</span>
-              <span className="rung-label">{o.label}</span>
-              <span className="rung-hint">{LADDER_HINT[o.responseType]}</span>
-            </button>
-          );
-        })}
-      </div>
+      <ResponseLadder
+        options={options}
+        chosenType={chosen?.responseType}
+        onSelect={(o) =>
+          setProbeResponse(
+            o.responseType,
+            o.rationaleSetId
+              ? content.rationales.find((r) => r.id === o.rationaleSetId)?.options[0]?.id ?? 'auto'
+              : 'auto',
+          )
+        }
+      />
 
       {chosen && (
         <div className="panel rationale-panel">

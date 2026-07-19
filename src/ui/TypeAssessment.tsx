@@ -5,6 +5,7 @@
 
 import { useGameStore } from '../store/gameStore';
 import type { RivalType } from '../engine/types';
+import { useRovingRadio } from './useRovingRadio';
 
 type Belief = RivalType | 'UNSURE';
 
@@ -36,6 +37,11 @@ export function TypeAssessment(): JSX.Element | null {
   const draft = useGameStore((s) => s.draft);
   const setTypeBelief = useGameStore((s) => s.setTypeBelief);
   const goToStage = useGameStore((s) => s.goToStage);
+  const hypRadio = useRovingRadio(
+    HYPOTHESES.length,
+    HYPOTHESES.findIndex((h) => h.id === draft.typeBelief),
+    (i) => setTypeBelief(HYPOTHESES[i].id),
+  );
 
   if (!state) return null;
 
@@ -52,12 +58,13 @@ export function TypeAssessment(): JSX.Element | null {
       </p>
 
       <div className="hypotheses" role="radiogroup" aria-label="Rival hypothesis">
-        {HYPOTHESES.map((h) => (
+        {HYPOTHESES.map((h, i) => (
           <button
             key={h.id}
             type="button"
             role="radio"
             aria-checked={current === h.id}
+            {...hypRadio(i)}
             className={`hypothesis ${current === h.id ? 'selected' : ''}`}
             onClick={() => setTypeBelief(h.id)}
           >

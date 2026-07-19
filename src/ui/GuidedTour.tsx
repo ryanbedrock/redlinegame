@@ -3,7 +3,7 @@
 // a cutout around the target and an explanatory card. Purely presentational —
 // it reads no engine state and mutates nothing but the store's `tourOpen` flag.
 
-import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
+import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
 import { useGameStore } from '../store/gameStore';
 
 interface TourStep {
@@ -101,6 +101,9 @@ export function GuidedTour(): JSX.Element | null {
   const endTour = useGameStore((s) => s.endTour);
   const [i, setI] = useState(0);
   const [rect, setRect] = useState<Rect | null>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const returnFocusRef = useRef<HTMLElement | null>(null);
+  const titleId = useId();
 
   const steps = STEPS;
   const step = steps[i];
@@ -144,15 +147,59 @@ export function GuidedTour(): JSX.Element | null {
 
   const prev = useCallback(() => setI((v) => Math.max(v - 1, 0)), []);
 
+  // Save the opener's focus and restore it when the tour closes (WCAG 2.4.3).
   useEffect(() => {
     if (!tourOpen) {
       setI(0);
       return;
     }
+    returnFocusRef.current = document.activeElement as HTMLElement | null;
+    return () => returnFocusRef.current?.focus?.();
+  }, [tourOpen]);
+
+  // Move focus into the dialog on open and on each step change so screen
+  // readers announce the new step (4.1.3) and keyboard focus never strands on
+  // an unmounted control.
+  useLayoutEffect(() => {
+    if (!tourOpen) return;
+    cardRef.current?.focus();
+  }, [tourOpen, i]);
+
+  useEffect(() => {
+    if (!tourOpen) return;
     const onKey = (e: KeyboardEvent): void => {
-      if (e.key === 'Escape') endTour();
-      else if (e.key === 'ArrowRight') next();
-      else if (e.key === 'ArrowLeft') prev();
+      if (e.key === 'Escape') {
+        endTour();
+        return;
+      }
+      if (e.key === 'ArrowRight') {
+        next();
+        return;
+      }
+      if (e.key === 'ArrowLeft') {
+        prev();
+        return;
+      }
+      if (e.key !== 'Tab') return;
+      // Trap Tab within the card so the dimmed background stays unreachable.
+      const card = cardRef.current;
+      if (!card) return;
+      const focusables = Array.from(
+        card.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+        ),
+      );
+      if (focusables.length === 0) return;
+      const first = focusables[0];
+      const lastEl = focusables[focusables.length - 1];
+      const active = document.activeElement;
+      if (e.shiftKey && (active === first || active === card)) {
+        e.preventDefault();
+        lastEl.focus();
+      } else if (!e.shiftKey && active === lastEl) {
+        e.preventDefault();
+        first.focus();
+      }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
@@ -188,7 +235,7 @@ export function GuidedTour(): JSX.Element | null {
   })();
 
   return (
-    <div className="tour-root" role="dialog" aria-modal="true" aria-label="Guided tour">
+    <div className="tour-root" role="dialog" aria-modal="true" aria-labelledby={titleId}>
       <div className="tour-backdrop" onClick={endTour} />
       {spotlight && (
         <div
@@ -201,11 +248,11 @@ export function GuidedTour(): JSX.Element | null {
           }}
         />
       )}
-      <div className="tour-card panel" style={cardStyle}>
+      <div className="tour-card panel" style={cardStyle} ref={cardRef} tabIndex={-1}>
         <div className="tour-step-count" aria-hidden="true">
           {i + 1} / {steps.length}
         </div>
-        <h3>{step.title}</h3>
+        <h3 id={titleId}>{step.title}</h3>
         {step.body.map((p, k) => (
           <p key={k}>{p}</p>
         ))}

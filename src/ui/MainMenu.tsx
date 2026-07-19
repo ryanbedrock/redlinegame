@@ -6,6 +6,7 @@ import { useMemo, useState } from 'react';
 import { listScenarios, loadContentPack } from '../content-loader';
 import { useGameStore } from '../store/gameStore';
 import { listSaves, deleteSave, isSaveCompatible, type SaveGame } from '../store/persistence';
+import { useRovingRadio } from './useRovingRadio';
 
 export function MainMenu(): JSX.Element {
   const newGame = useGameStore((s) => s.newGame);
@@ -27,6 +28,11 @@ export function MainMenu(): JSX.Element {
   const [displayName, setDisplayName] = useState<string>('');
 
   const current = scenarios.find((s) => s.id === selected) ?? scenarios[0];
+  const scenarioRadio = useRovingRadio(
+    scenarios.length,
+    scenarios.findIndex((s) => s.id === selected),
+    (i) => setSelected(scenarios[i].id),
+  );
 
   const start = () => {
     if (!current) return;
@@ -62,12 +68,13 @@ export function MainMenu(): JSX.Element {
         <div className="panel new-campaign">
           <h2>New Campaign</h2>
           <div className="scenario-picker" role="radiogroup" aria-label="Scenario">
-            {scenarios.map((s) => (
+            {scenarios.map((s, i) => (
               <button
                 key={s.id}
                 type="button"
                 role="radio"
                 aria-checked={s.id === selected}
+                {...scenarioRadio(i)}
                 className={`scenario-option ${s.id === selected ? 'selected' : ''}`}
                 onClick={() => setSelected(s.id)}
               >
