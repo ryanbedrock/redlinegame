@@ -120,10 +120,13 @@ export function beliefTrajectory(
 
 export function credibilityScore(state: GameState): number {
   const commitments = state.player.commitmentRegister;
-  const made = commitments.length;
-  const honored = commitments.filter((c) => c.status === 'HONORED').length;
+  // Only resolved commitments (kept or broken) count toward the honor ratio; a
+  // still-STANDING commitment that was never tested is not evidence of broken
+  // faith and must not be scored as un-honored (§2.3).
+  const resolved = commitments.filter((c) => c.status === 'HONORED' || c.status === 'BROKEN');
+  const honored = resolved.filter((c) => c.status === 'HONORED').length;
   let score = 0.6;
-  if (made > 0) score = honored / made;
+  if (resolved.length > 0) score = honored / resolved.length;
   score -= 0.15 * state.player.backDownCount;
   return clamp(score, 0, 1);
 }
@@ -131,13 +134,22 @@ export function credibilityScore(state: GameState): number {
 // --- Efficiency -------------------------------------------------------------
 
 export function efficiencyScore(state: GameState, content: ContentPack): number {
-  const spend = state.analytics.cumulativeSpend;
-  const value = outcomeValue(state);
-  if (spend <= 0) return value / 100;
-  // Outcome value per unit spend, normalized against a reference spend.
-  const refSpend = content.scenario.tuning.budgetIncome * content.scenario.turnCount;
-  const perUnit = value / 100 / (spend / refSpend);
-  return clamp(perUnit, 0, 1);
+  const value = outcomeValue(state) / 100;
+  const t = content.scenario.tuning;
+  const turns = content.scenario.turnCount;
+  // Budget and political capital are distinct currencies drawn from distinct
+  // renewable pools; summing them and dividing by a budget-only reference
+  // penalized PC-heavy play on a currency it never touched (§2.3). Instead,
+  // measure consumption as the fraction of each pool drawn down and average
+  // the fractions, so each strategy is scored on the currencies it spent.
+  const budgetRef = t.budgetIncome * turns;
+  const pcRef = t.pcRegenPerTurn * turns;
+  const fracs: number[] = [];
+  if (budgetRef > 0) fracs.push(state.analytics.cumulativeBudgetSpend / budgetRef);
+  if (pcRef > 0) fracs.push(state.analytics.cumulativePcSpend / pcRef);
+  const consumption = fracs.length ? fracs.reduce((a, b) => a + b, 0) / fracs.length : 0;
+  if (consumption <= 0) return value;
+  return clamp(value / consumption, 0, 1);
 }
 
 // --- Salami audit -----------------------------------------------------------
@@ -150,9 +162,12 @@ export interface SalamiStep {
   cumulativeIntegrity: number;
 }
 
-export function salamiAudit(state: GameState): SalamiStep[] {
+export function salamiAudit(state: GameState, content: ContentPack): SalamiStep[] {
   const steps: SalamiStep[] = [];
-  let integrity = 100;
+  // Start from the scenario's opening integrity, not a hardcoded 100, and note
+  // that this column replays probe deltas only — it is the probe-driven erosion
+  // trace, which can diverge from live integrity if events also move SQ (§2.3).
+  let integrity = content.scenario.opening.statusQuoIntegrity;
   for (const p of state.world.probeLog) {
     integrity = clamp(integrity + p.statusQuoDelta, 0, 100);
     steps.push({
@@ -174,7 +189,11 @@ export interface SignalAuditRow {
   type: SignalClass;
   budget: number;
   politicalCapital: number;
-  resolveDelta: number; // resolve change on the turn this signal landed
+  // The resolve read's movement across the WHOLE quarter this signal landed —
+  // it includes decay, the probe response, and any other signals bought that
+  // quarter, so it is not an isolated per-signal effect (§2.3). The debrief
+  // labels it as a quarter delta to avoid over-attributing it to one signal.
+  quarterResolveDelta: number;
 }
 
 export function signalAudit(state: GameState): SignalAuditRow[] {
@@ -182,14 +201,14 @@ export function signalAudit(state: GameState): SignalAuditRow[] {
   return state.player.signalHistory.map((sig) => {
     const cur = snaps.get(sig.turn);
     const prev = snaps.get(sig.turn - 1);
-    const resolveDelta = cur && prev ? cur.perceivedResolve - prev.perceivedResolve : 0;
+    const quarterResolveDelta = cur && prev ? cur.perceivedResolve - prev.perceivedResolve : 0;
     return {
       turn: sig.turn,
       cardId: sig.cardId,
       type: sig.type,
       budget: sig.cost.budget,
       politicalCapital: sig.cost.politicalCapital,
-      resolveDelta,
+      quarterResolveDelta,
     };
   });
 }

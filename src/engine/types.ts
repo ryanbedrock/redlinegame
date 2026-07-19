@@ -614,7 +614,10 @@ export interface GameState {
     typeBeliefs: TypeBeliefRecord[];
     perceptionHistory: PerceptionSnapshot[];
     turnRecords: TurnRecord[];
-    cumulativeSpend: number;
+    // Card spend tracked per-currency so efficiency scores each strategy on the
+    // pool it actually drew down (§2.3).
+    cumulativeBudgetSpend: number;
+    cumulativePcSpend: number;
   };
 }
 

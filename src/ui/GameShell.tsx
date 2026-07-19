@@ -16,6 +16,8 @@ import { GuidedTour } from './GuidedTour';
 
 export function GameShell(): JSX.Element {
   const stage = useGameStore((s) => s.stage);
+  const saveError = useGameStore((s) => s.saveError);
+  const dismissSaveError = useGameStore((s) => s.dismissSaveError);
 
   const screen = (() => {
     switch (stage) {
@@ -47,6 +49,17 @@ export function GameShell(): JSX.Element {
   return (
     <div className="game-shell">
       {showHud && <Hud />}
+      {saveError && (
+        <div className="alert danger save-error" role="alert">
+          <span>
+            Couldn&rsquo;t save this campaign — your browser storage is full or unavailable
+            (e.g. private mode). Play continues, but progress won&rsquo;t persist if you leave.
+          </span>
+          <button type="button" className="ghost" onClick={dismissSaveError}>
+            Dismiss
+          </button>
+        </div>
+      )}
       <div className="stage">{screen}</div>
       <GuidedTour />
     </div>

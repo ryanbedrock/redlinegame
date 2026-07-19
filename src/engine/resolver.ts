@@ -53,6 +53,36 @@ function deepClone(state: GameState): GameState {
   return structuredClone(state);
 }
 
+// The effective stakes of the currently staged probe. When the player's
+// concession streak has reached the salami threshold the engine resolves the
+// probe at an escalated severity and salami value (see phaseProbeResponse); the
+// UI must show those escalated numbers, not the base ones, so the player sees
+// what a concession will actually cost (§2.2). Pure: no mutation, no I/O.
+export interface ProbeStakes {
+  probe: ProbeCard;
+  escalated: boolean;
+  severity: number;
+  salamiValue: number;
+}
+
+export function stagedProbeStakes(
+  state: GameState,
+  content: ContentPack,
+): ProbeStakes | null {
+  const stagedId = state.world.stagedProbeId;
+  if (!stagedId) return null;
+  const probe = content.probes.find((p) => p.id === stagedId);
+  if (!probe) return null;
+  const escalated =
+    state.world.concessionStreak >= content.scenario.tuning.concessionSalamiThreshold;
+  return {
+    probe,
+    escalated,
+    severity: escalated ? probe.severity + 1 : probe.severity,
+    salamiValue: escalated ? probe.salamiValue * 1.5 : probe.salamiValue,
+  };
+}
+
 // --- Phase 1: probe response ------------------------------------------------
 
 function phaseProbeResponse(
@@ -201,7 +231,8 @@ function phaseSignalsInvestments(
     );
     next.player.purchaseCounts[card.id] = count + 1;
     next.player.lastPurchaseTurn[card.id] = next.meta.turnNumber;
-    next.analytics.cumulativeSpend += card.cost.budget + card.cost.politicalCapital;
+    next.analytics.cumulativeBudgetSpend += card.cost.budget;
+    next.analytics.cumulativePcSpend += card.cost.politicalCapital;
 
     if (card.family === 'SIGNAL') {
       const rec: SignalRecord = {

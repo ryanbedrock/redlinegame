@@ -46,7 +46,7 @@ describe('Phase 2 debrief', () => {
 
   it('salami audit is monotone in count and tracks the probe log', () => {
     const live = playScripted(content, 1, { probe: 'CONCEDE', buys: rushDenial });
-    const steps = salamiAudit(live.state);
+    const steps = salamiAudit(live.state, content);
     expect(steps.length).toBe(live.state.world.probeLog.length);
     for (const s of steps) {
       expect(s.cumulativeIntegrity).toBeGreaterThanOrEqual(0);
