@@ -162,12 +162,20 @@ export function GuidedTour(): JSX.Element | null {
   }, [tourOpen, i]);
 
   // On close, restore focus to the opener (WCAG 2.4.3) and reset for next time.
+  // When the tour auto-opened on a new game the opener (a menu button) has
+  // already unmounted, so `document.activeElement` was `<body>`; fall back to
+  // the stage container so keyboard/screen-reader users land on the game
+  // content instead of the top of the page.
   useEffect(() => {
     if (tourOpen) return;
     setI(0);
     const opener = returnFocusRef.current;
     returnFocusRef.current = null;
-    opener?.focus?.();
+    if (opener && opener !== document.body && opener.isConnected) {
+      opener.focus();
+    } else {
+      document.querySelector<HTMLElement>('.stage')?.focus();
+    }
   }, [tourOpen]);
 
   useEffect(() => {
