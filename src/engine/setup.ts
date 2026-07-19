@@ -34,7 +34,6 @@ export function createInitialState(
 
   const state: GameState = {
     meta: {
-      schemaVersion: '1.1.0',
       scenarioId: sc.id,
       seed,
       createdAt,
@@ -89,7 +88,6 @@ export function createInitialState(
       perceptionHistory: [],
       turnRecords: [],
       cumulativeSpend: 0,
-      lockInTurn: null,
     },
   };
 

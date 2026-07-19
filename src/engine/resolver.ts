@@ -16,6 +16,7 @@ import type {
   IntelMetric,
   ProbeCard,
   ProbeRecord,
+  ResponseType,
   SignalRecord,
   TrackId,
   TurnDecisions,
@@ -69,17 +70,27 @@ function phaseProbeResponse(
   const severity = escalated ? probe.severity + 1 : probe.severity;
   const salamiValue = escalated ? probe.salamiValue * 1.5 : probe.salamiValue;
 
-  // Determine the chosen response; inaction (no matching option) = CONCEDE.
+  // Determine the chosen response. The engine — not just the caller — validates
+  // it: the decision must name the staged probe and pick one of that probe's
+  // authored options. A wrong probe id, an unavailable response type, or a
+  // corrupt/version-skewed log is treated as inaction (CONCEDE), matching the
+  // purchase path's defensive posture (§1.2).
   const chosen = decisions.probeResponse;
-  let responseType = chosen?.responseType ?? 'CONCEDE';
+  let responseType: ResponseType = 'CONCEDE';
   let responseChosen: string | null = null;
+  let rationaleId: string | undefined;
   let overrideOpt: ProbeCard['responses'][number] | undefined;
   if (chosen && chosen.probeId === stagedId) {
-    // Decisions carry a responseType directly; find the option matching it so
-    // per-response overrides (if authored) can apply.
     overrideOpt = probe.responses.find((r) => r.responseType === chosen.responseType);
-    responseChosen = overrideOpt?.id ?? null;
-    responseType = chosen.responseType;
+    if (overrideOpt) {
+      responseType = chosen.responseType;
+      responseChosen = overrideOpt.id;
+      // Record the rationale only if it belongs to the option's authored set.
+      const set = content.rationales.find((s) => s.id === overrideOpt!.rationaleSetId);
+      if (set?.options.some((o) => o.id === chosen.rationaleId)) {
+        rationaleId = chosen.rationaleId;
+      }
+    }
   }
 
   const eff = probeDefaultEffects(responseType, salamiValue);
@@ -144,7 +155,7 @@ function phaseProbeResponse(
     kind: 'PROBE_RESPONSE',
     refId: stagedId,
     cost: { budget: 0, politicalCapital: 0 },
-    rationaleId: chosen?.rationaleId,
+    rationaleId,
   });
   next.world.stagedProbeId = null;
   return { probeId: stagedId };
@@ -385,16 +396,26 @@ function phaseEvents(next: GameState, content: ContentPack): string[] {
   }
 
   const candidates: EventCard[] = content.events.filter((ev) => {
-    if (ev.maxFires !== undefined && eventFireCount(next, ev.id) >= ev.maxFires) {
+    const window = beatWindow.get(ev.id);
+    // A scheduled (beat) event is a one-shot occurrence by default, so it never
+    // fires more than once even if its eligibility spills past the window.
+    const maxFires = ev.maxFires ?? (window ? 1 : undefined);
+    if (maxFires !== undefined && eventFireCount(next, ev.id) >= maxFires) {
       return false;
     }
     const last = eventLastTurn(next, ev.id);
     if (ev.cooldownTurns !== undefined && last !== undefined && turn - last < ev.cooldownTurns) {
       return false;
     }
-    const window = beatWindow.get(ev.id);
-    // Scheduled events fire on their rolled turn (once, gated by maxFires).
-    if (window && next.world.scheduledEventTurns[ev.id] !== turn) return false;
+    // A scheduled event becomes eligible on its rolled turn and STAYS eligible
+    // until it actually fires. This is a lower bound, not an exact-turn match:
+    // if several events roll to the same quarter (even the window's last turn)
+    // the ≤2-per-turn cap defers the extras to subsequent quarters instead of
+    // silently discarding them. The one-shot default above bounds repeats.
+    if (window) {
+      const rolled = next.world.scheduledEventTurns[ev.id];
+      if (rolled === undefined || turn < rolled) return false;
+    }
     if (ev.condition && !evalBool(ev.condition, vars)) return false;
     // Purely conditional events fire on condition; events with neither a beat
     // nor a condition are unreachable (rejected by validation).
@@ -408,7 +429,7 @@ function phaseEvents(next: GameState, content: ContentPack): string[] {
     // Per-type effects augment the base effects (base applies to all types).
     const perType = ev.perTypeEffects?.[next.rival.type] ?? [];
     const effects = [...ev.effects, ...perType];
-    applyEffects(next, effects, ev.id, turn);
+    applyEffects(next, effects, ev.id, turn, content.scenario.tuning.pcCap);
     if (ev.biasMetric) {
       next.world.biasActive = {
         metric: ev.biasMetric,
@@ -550,7 +571,7 @@ export function resolveTurn(
       const opt = msg.responseOptions.find((o) => o.id === resp.optionId);
       if (!opt) continue;
       msg.respondedWith = opt.id;
-      if (opt.effects) applyEffects(next, opt.effects, msg.id, turn);
+      if (opt.effects) applyEffects(next, opt.effects, msg.id, turn, content.scenario.tuning.pcCap);
       next.analytics.decisions.push({
         turn,
         kind: 'INBOX',

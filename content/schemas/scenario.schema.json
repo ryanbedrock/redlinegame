@@ -52,7 +52,7 @@
       "required": [
         "budgetIncome", "pcRegenPerTurn", "pcCap", "decayPerTurn",
         "concessionSalamiThreshold", "warThresholdConsecutiveTurns", "honoredTestPC",
-        "pivotSubSeeds", "maxPivots", "unsurePenaltyTurnFraction", "trackThreatDeltas",
+        "pivotSubSeeds", "maxPivots", "trackThreatDeltas",
         "trackLeadTimeReadinessBonus", "intelSigmaLevel0", "intelSigmaLevel10"
       ],
       "properties": {
