@@ -87,7 +87,8 @@ export function createInitialState(
       typeBeliefs: [],
       perceptionHistory: [],
       turnRecords: [],
-      cumulativeSpend: 0,
+      cumulativeBudgetSpend: 0,
+      cumulativePcSpend: 0,
     },
   };
 

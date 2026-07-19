@@ -39,7 +39,7 @@ export function useDebrief(
       report,
       score,
       belief: beliefTrajectory(state, state.rival.type),
-      salami: salamiAudit(state),
+      salami: salamiAudit(state, content),
       signals: signalAudit(state),
     };
     // The report is a pure function of (content, seed, decisionLog); the save id

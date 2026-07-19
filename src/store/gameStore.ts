@@ -68,6 +68,11 @@ interface GameStore {
   seenMessageIds: string[];
   // Client-only: whether the interactive guided tour overlay is showing.
   tourOpen: boolean;
+  // Client-only: set when a save write fails (quota/private mode). The live
+  // GameState is unaffected — the campaign just isn't persisted — so the UI can
+  // warn the player instead of losing the turn silently (§2.4).
+  saveError: boolean;
+  dismissSaveError: () => void;
 
   newGame: (scenarioId: string, seed: number, displayName?: string) => void;
   resume: (saveId: string) => void;
@@ -88,10 +93,10 @@ interface GameStore {
   commitEpilogue: (optionId: string) => void;
 }
 
-function persist(save: SaveGame, decisionLog: TurnDecisions[]): SaveGame {
+function persist(save: SaveGame, decisionLog: TurnDecisions[]): { save: SaveGame; ok: boolean } {
   const updated: SaveGame = { ...save, decisionLog, updatedAt: nowIso() };
-  writeSave(updated);
-  return updated;
+  const ok = writeSave(updated);
+  return { save: updated, ok };
 }
 
 const TOUR_SEEN_KEY = 'redline:tourSeen';
@@ -125,6 +130,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
   resolvedTurn: null,
   seenMessageIds: [],
   tourOpen: false,
+  saveError: false,
+
+  dismissSaveError: () => set({ saveError: false }),
 
   newGame: (scenarioId, seed, displayName) => {
     const content = loadContentPack(scenarioId);
@@ -140,7 +148,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       updatedAt: createdAt,
       decisionLog: [],
     };
-    writeSave(save);
+    const ok = writeSave(save);
     set({
       screen: 'GAME',
       content,
@@ -151,6 +159,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       resolvedTurn: null,
       seenMessageIds: [],
       tourOpen: !tourSeen(),
+      saveError: !ok,
     });
   },
 
@@ -258,8 +267,14 @@ export const useGameStore = create<GameStore>((set, get) => ({
       typeBelief: draft.typeBelief ? { statedType: draft.typeBelief } : undefined,
     };
     const next = resolveTurn(state, decision, content);
-    const nextSave = persist(save, [...save.decisionLog, decision]);
-    set({ state: next, save: nextSave, stage: 'RESOLUTION', resolvedTurn: state.meta.turnNumber });
+    const { save: nextSave, ok } = persist(save, [...save.decisionLog, decision]);
+    set({
+      state: next,
+      save: nextSave,
+      stage: 'RESOLUTION',
+      resolvedTurn: state.meta.turnNumber,
+      saveError: !ok,
+    });
   },
 
   continueAfterResolution: () => {
@@ -286,8 +301,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
       epilogueChoice: { decisionId: decision.id, optionId },
     };
     const next = resolveEpilogueTurn(state, td, content);
-    const nextSave = persist(save, [...save.decisionLog, td]);
+    const { save: nextSave, ok } = persist(save, [...save.decisionLog, td]);
     const stage: Stage = next.meta.phase === 'DEBRIEF' ? 'DEBRIEF' : 'EPILOGUE';
-    set({ state: next, save: nextSave, stage });
+    set({ state: next, save: nextSave, stage, saveError: !ok });
   },
 }));

@@ -38,19 +38,19 @@ describe('AC-1 determinism', () => {
         seed: 1,
         cfg: { probe: 'MATCH', buys: rushDenial },
         ending: 'DETERRENCE_HOLD',
-        hash: '09fa19ff6c9b6efeb8628987088139a884b94ed889b2a1c19e0da89e02472e26',
+        hash: 'b475e0d28597ac0af9142a68370bd22325a654a9778fd44c13a543cc34eec744',
       },
       {
         seed: 7,
         cfg: { probe: 'CONCEDE', buys: rushDenial },
         ending: 'CAPITULATION',
-        hash: '46511ff5cf60ef107518188b8283d0a898c7a719b8ac467770fbf941342dbba3',
+        hash: '6d7fbc5dcfaf2e584439c7aa0548e5ff82624722e3f5109393928a60b9aa42a9',
       },
       {
         seed: 1,
         cfg: { probe: 'MATCH' },
         ending: 'WAR',
-        hash: '995c184c4485a60ffada2556dffc9626bc8ad0dff41f84e660bffc48754545ec',
+        hash: '791adfa4145ddc452b4b5aed76f3b30e3ce1eb22bf220800d13027502b9cf969',
       },
     ];
     for (const g of golden) {

@@ -4,6 +4,7 @@
 
 import { useGameStore } from '../store/gameStore';
 import type { IntelMetric } from '../engine/types';
+import { stagedProbeStakes } from '../engine/resolver';
 import { pct, probeView, GLOSSARY } from './format';
 import { InfoTip } from './InfoTip';
 
@@ -23,9 +24,8 @@ export function Sitrep(): JSX.Element | null {
 
   const turn = state.meta.turnNumber;
   const intelThisTurn = state.world.intel.filter((i) => i.turn === turn);
-  const staged = state.world.stagedProbeId
-    ? content.probes.find((p) => p.id === state.world.stagedProbeId)
-    : undefined;
+  const stakes = stagedProbeStakes(state, content);
+  const staged = stakes?.probe;
   const salamiThreshold = content.scenario.tuning.concessionSalamiThreshold;
   const concedeStreak = state.world.concessionStreak;
 
@@ -88,7 +88,10 @@ export function Sitrep(): JSX.Element | null {
           <div className="probe-preview">
             <div className="probe-preview-head">
               <span className="probe-title">{probeView(staged, state.world.stagedProbeVariant).title}</span>
-              <span className="severity">Severity {staged.severity}</span>
+              <span className={`severity${stakes?.escalated ? ' escalated' : ''}`}>
+                Severity {stakes?.severity ?? staged.severity}
+                {stakes?.escalated && ' (escalated)'}
+              </span>
             </div>
             <p>{probeView(staged, state.world.stagedProbeVariant).text}</p>
             {staged.intent && <p className="probe-intent">Intelligence read: {staged.intent}</p>}

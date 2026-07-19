@@ -12,12 +12,14 @@ import type { ContentPack, GameState, TurnDecisions } from '../engine/types';
 import { createInitialState } from '../engine/setup';
 import { resolveTurn, resolveEpilogueTurn } from '../engine/resolver';
 
-// Bumped to 1.2.0: controlled randomness (seeded event-beat timing + probe
-// variant draws) changed replay semantics, so decision logs recorded under an
-// earlier engine no longer reconstruct the same campaign. Bump the MAJOR.MINOR
-// whenever replay semantics change; PATCH is reserved for non-replay-affecting
-// changes.
-export const SAVE_SCHEMA_VERSION = '1.2.0';
+// Bump the MAJOR.MINOR whenever replay semantics change (a decision log then
+// reconstructs a different campaign); PATCH is reserved for non-replay-affecting
+// changes. History:
+//   1.2.0 — controlled randomness: seeded event-beat timing + probe variant draws.
+//   1.3.0 — scheduled-event deferral: an event dropped by the ≤2-per-turn cap now
+//           fires on a later quarter instead of vanishing, so a colliding-event
+//           timeline (and its state hash) differs from a 1.2.0 replay.
+export const SAVE_SCHEMA_VERSION = '1.3.0';
 
 // A save replays identically only under an engine whose schema shares the same
 // MAJOR.MINOR. A newer/older/malformed version is treated as incompatible so
@@ -103,13 +105,22 @@ export function loadSave(id: string): SaveGame | null {
   }
 }
 
-export function writeSave(save: SaveGame): void {
+// Returns whether the save was persisted. localStorage.setItem can throw
+// (quota exceeded, private-mode restrictions), which previously propagated out
+// of commitTurn and blew up mid-turn; the caller now surfaces a failure so the
+// player knows the campaign is unsaved rather than losing it silently (§2.4).
+export function writeSave(save: SaveGame): boolean {
   const s = storage();
-  if (!s) return;
-  s.setItem(SAVE_PREFIX + save.id, JSON.stringify(save));
-  const ids = new Set(indexIds(s));
-  ids.add(save.id);
-  s.setItem(INDEX_KEY, JSON.stringify([...ids]));
+  if (!s) return false;
+  try {
+    s.setItem(SAVE_PREFIX + save.id, JSON.stringify(save));
+    const ids = new Set(indexIds(s));
+    ids.add(save.id);
+    s.setItem(INDEX_KEY, JSON.stringify([...ids]));
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 export function deleteSave(id: string): void {

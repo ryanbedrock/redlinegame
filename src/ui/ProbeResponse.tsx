@@ -5,6 +5,7 @@
 import { useGameStore } from '../store/gameStore';
 import type { ResponseType } from '../engine/types';
 import { RESPONSE_ORDINAL } from '../engine/types';
+import { stagedProbeStakes } from '../engine/resolver';
 import { RationalePicker } from './RationalePicker';
 import { probeView, GLOSSARY } from './format';
 import { InfoTip } from './InfoTip';
@@ -25,11 +26,10 @@ export function ProbeResponse(): JSX.Element | null {
   const goToStage = useGameStore((s) => s.goToStage);
 
   if (!state || !content) return null;
-  const probe = state.world.stagedProbeId
-    ? content.probes.find((p) => p.id === state.world.stagedProbeId)
-    : undefined;
+  const stakes = stagedProbeStakes(state, content);
+  const probe = stakes?.probe;
 
-  if (!probe) {
+  if (!probe || !stakes) {
     return (
       <div className="screen">
         <p className="muted">No probe to respond to.</p>
@@ -57,10 +57,20 @@ export function ProbeResponse(): JSX.Element | null {
       <section className="panel probe-card">
         <div className="probe-preview-head">
           <span className="probe-title">{view.title}</span>
-          <span className="severity">Severity {probe.severity}</span>
+          <span className={`severity${stakes.escalated ? ' escalated' : ''}`}>
+            Severity {stakes.severity}
+            {stakes.escalated && ' (escalated)'}
+          </span>
         </div>
         <p>{view.text}</p>
         {probe.intent && <p className="probe-intent">Intelligence read: {probe.intent}</p>}
+        {stakes.escalated && (
+          <p className="alert warn" role="alert">
+            Escalated stakes: your concession streak has pushed the Rival to press harder.
+            Conceding this probe now cedes ~{Math.round(stakes.salamiValue)} status-quo integrity
+            (vs {Math.round(probe.salamiValue)} normally), and holding the line costs more resolve.
+          </p>
+        )}
         <p className="footnote">Tags: {probe.tags.join(', ')}</p>
       </section>
 

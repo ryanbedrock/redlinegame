@@ -1,10 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { assembleContentPack, loadContentPack, SCHEMAS, type RawFiles } from '../src/content-loader';
 import { createInitialState } from '../src/engine/setup';
-import { resolveTurn } from '../src/engine/resolver';
+import { resolveTurn, stagedProbeStakes } from '../src/engine/resolver';
 import { applyEffect } from '../src/engine/effects';
-import { isSaveCompatible, SAVE_SCHEMA_VERSION, type SaveGame } from '../src/store/persistence';
-import type { ResponseType } from '../src/engine/types';
+import { credibilityScore, efficiencyScore, salamiAudit } from '../src/engine/analytics';
+import { isSaveCompatible, SAVE_SCHEMA_VERSION, writeSave, type SaveGame } from '../src/store/persistence';
+import type { Commitment, ResponseType } from '../src/engine/types';
 import { runCounterfactualReport } from '../src/engine/counterfactual';
 import { playScripted, rushDenial } from './helpers';
 
@@ -111,14 +112,15 @@ describe('§1.3 save compatibility', () => {
     updatedAt: 'b',
     decisionLog: [],
   });
+  const [maj, min] = SAVE_SCHEMA_VERSION.split('.').map(Number);
   it('accepts the current version', () => {
     expect(isSaveCompatible(mk(SAVE_SCHEMA_VERSION))).toBe(true);
   });
   it('accepts a patch-level difference', () => {
-    expect(isSaveCompatible(mk('1.2.99'))).toBe(true);
+    expect(isSaveCompatible(mk(`${maj}.${min}.99`))).toBe(true);
   });
   it('rejects an older minor version whose replay semantics differ', () => {
-    expect(isSaveCompatible(mk('1.1.0'))).toBe(false);
+    expect(isSaveCompatible(mk(`${maj}.${min - 1}.0`))).toBe(false);
   });
   it('rejects a malformed / missing version', () => {
     expect(isSaveCompatible(mk(''))).toBe(false);
@@ -195,5 +197,100 @@ describe('pivots are anchored to recorded probe responses', () => {
         );
       }
     }
+  });
+});
+
+// §2.2 — the UI must be able to read the escalated stakes the resolver applies
+// once a concession streak reaches the salami threshold.
+describe('§2.2 staged probe stakes reflect salami escalation', () => {
+  const content = loadContentPack('scenario-1');
+
+  it('returns base stakes below the threshold and escalated stakes at/above it', () => {
+    const state = createInitialState(content, 1, 'T');
+    const base = stagedProbeStakes(state, content);
+    expect(base).not.toBeNull();
+    expect(base!.escalated).toBe(false);
+    expect(base!.severity).toBe(base!.probe.severity);
+    expect(base!.salamiValue).toBeCloseTo(base!.probe.salamiValue);
+
+    state.world.concessionStreak = content.scenario.tuning.concessionSalamiThreshold;
+    const esc = stagedProbeStakes(state, content);
+    expect(esc!.escalated).toBe(true);
+    expect(esc!.severity).toBe(esc!.probe.severity + 1);
+    expect(esc!.salamiValue).toBeCloseTo(esc!.probe.salamiValue * 1.5);
+  });
+
+  it('is null when no probe is staged', () => {
+    const state = createInitialState(content, 1, 'T');
+    state.world.stagedProbeId = null;
+    expect(stagedProbeStakes(state, content)).toBeNull();
+  });
+});
+
+// §2.3 — debrief metric units and attribution.
+describe('§2.3 debrief metric correctness', () => {
+  const content = loadContentPack('scenario-1');
+
+  it('efficiency stays within 0..1 and rewards a cheaper hold', () => {
+    const thrifty = playScripted(content, 1, { probe: 'MATCH' });
+    const spendy = playScripted(content, 1, { probe: 'MATCH', buys: rushDenial });
+    for (const s of [thrifty, spendy]) {
+      const e = efficiencyScore(s.state, content);
+      expect(e).toBeGreaterThanOrEqual(0);
+      expect(e).toBeLessThanOrEqual(1);
+    }
+    // Spend is tracked per-currency, never as a single mixed total.
+    expect(spendy.state.analytics.cumulativeBudgetSpend).toBeGreaterThan(0);
+    expect(spendy.state.analytics).toHaveProperty('cumulativePcSpend');
+  });
+
+  it('credibility does not penalize an untested standing commitment', () => {
+    const state = createInitialState(content, 1, 'T');
+    const standing: Commitment = {
+      id: 'c1',
+      cardId: 'x',
+      declaredOnTurn: 0,
+      scopeProbeTags: [],
+      floorResponse: 'MATCH',
+      backDownPenaltyPC: 0,
+      upkeepPC: 0,
+      timesTested: 0,
+      timesHonored: 0,
+      status: 'STANDING',
+    };
+    state.player.commitmentRegister = [standing];
+    state.player.backDownCount = 0;
+    // No resolved commitments → neutral default, not honored/made = 0/1 = 0.
+    expect(credibilityScore(state)).toBeCloseTo(0.6);
+  });
+
+  it('salami audit begins at the scenario opening integrity', () => {
+    const live = playScripted(content, 1, { probe: 'CONCEDE' });
+    const steps = salamiAudit(live.state, content);
+    if (steps.length > 0) {
+      const first = steps[0];
+      const expected = Math.max(
+        0,
+        Math.min(100, content.scenario.opening.statusQuoIntegrity + first.delta),
+      );
+      expect(first.cumulativeIntegrity).toBeCloseTo(expected);
+    }
+  });
+});
+
+// §2.4 — a failed save write is reported, not thrown.
+describe('§2.4 save writes are guarded', () => {
+  it('writeSave returns a boolean and never throws when storage is unavailable', () => {
+    const save: SaveGame = {
+      schemaVersion: SAVE_SCHEMA_VERSION,
+      id: 's',
+      scenarioId: 'scenario-1',
+      seed: 1,
+      createdAt: 'a',
+      updatedAt: 'b',
+      decisionLog: [],
+    };
+    expect(() => writeSave(save)).not.toThrow();
+    expect(typeof writeSave(save)).toBe('boolean');
   });
 });

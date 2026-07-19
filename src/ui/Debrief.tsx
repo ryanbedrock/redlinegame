@@ -273,22 +273,29 @@ export function Debrief(): JSX.Element | null {
         {signals.length === 0 ? (
           <p className="empty">You sent no signals.</p>
         ) : (
-          <table className="audit">
-            <thead>
-              <tr><th>Q</th><th>Signal</th><th>Class</th><th>Cost</th><th>Resolve read Δ</th></tr>
-            </thead>
-            <tbody>
-              {signals.map((s, i) => (
-                <tr key={i}>
-                  <td>{s.turn + 1}</td>
-                  <td>{content.cardsById[s.cardId]?.title ?? s.cardId}</td>
-                  <td>{SIGNAL_LABEL[s.type]}</td>
-                  <td>{s.budget}B{s.politicalCapital ? ` ${s.politicalCapital}PC` : ''}</td>
-                  <td className={s.resolveDelta > 0 ? 'good' : s.resolveDelta < 0 ? 'bad' : ''}>{signed(s.resolveDelta, 2)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <>
+            <table className="audit">
+              <thead>
+                <tr><th>Q</th><th>Signal</th><th>Class</th><th>Cost</th><th>Quarter resolve Δ</th></tr>
+              </thead>
+              <tbody>
+                {signals.map((s, i) => (
+                  <tr key={i}>
+                    <td>{s.turn + 1}</td>
+                    <td>{content.cardsById[s.cardId]?.title ?? s.cardId}</td>
+                    <td>{SIGNAL_LABEL[s.type]}</td>
+                    <td>{s.budget}B{s.politicalCapital ? ` ${s.politicalCapital}PC` : ''}</td>
+                    <td className={s.quarterResolveDelta > 0 ? 'good' : s.quarterResolveDelta < 0 ? 'bad' : ''}>{signed(s.quarterResolveDelta, 2)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <p className="panel-note">
+              &ldquo;Quarter resolve Δ&rdquo; is how the Rival&rsquo;s resolve read moved across that
+              whole quarter — including natural decay, your probe response, and any other signals
+              you bought the same quarter — not the isolated effect of this one signal.
+            </p>
+          </>
         )}
       </section>
 
