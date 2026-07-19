@@ -148,6 +148,7 @@ input[type="text"], select {
 .save-info { display: grid; gap: 0.2rem; }
 .save-name { font-weight: 600; }
 .save-meta { color: var(--faint); font-size: 0.8rem; }
+.save-incompatible { color: var(--danger, #e0796b); font-size: 0.78rem; max-width: 34ch; }
 .save-actions { display: flex; gap: 0.5rem; }
 .empty { color: var(--faint); }
 .menu-footer { margin-top: 2rem; color: var(--faint); font-size: 0.8rem; }

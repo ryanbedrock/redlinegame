@@ -24,6 +24,7 @@ import {
   writeSave,
   loadSave,
   replay,
+  isSaveCompatible,
 } from './persistence';
 
 export type Stage =
@@ -156,6 +157,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
   resume: (saveId) => {
     const save = loadSave(saveId);
     if (!save) return;
+    // Never replay a save recorded under incompatible engine semantics — it
+    // would silently reconstruct a different campaign (§1.3). The menu surfaces
+    // these as discard-or-restart; this guard defends the engine regardless.
+    if (!isSaveCompatible(save)) return;
     const content = loadContentPack(save.scenarioId);
     const state = replay(content, save);
     const stage: Stage =

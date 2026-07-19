@@ -162,12 +162,6 @@ export function makeProjectedDecide(
   content: ContentPack,
   pivotOverride?: { turn: number; response: ResponseType },
 ): DecideFn {
-  // Modal recorded response per severity band, for probes with no exact match.
-  const bandResponses: Record<'low' | 'mid' | 'high', ResponseType[]> = {
-    low: [],
-    mid: [],
-    high: [],
-  };
   return (state: GameState): TurnDecisions => {
     const turn = state.meta.turnNumber;
     const rec = recorded.find((d) => d.turn === turn);
@@ -178,7 +172,6 @@ export function makeProjectedDecide(
       let responseType: ResponseType = 'MATCH';
       if (rec?.probeResponse) responseType = rec.probeResponse.responseType;
       if (pivotOverride && pivotOverride.turn === turn) responseType = pivotOverride.response;
-      void bandResponses;
       decisions.probeResponse = {
         probeId: state.world.stagedProbeId,
         responseType,
@@ -269,10 +262,18 @@ export interface Pivot {
   swing: number;
 }
 
-export function identifyPivots(state: GameState, maxPivots: number): Pivot[] {
+export function identifyPivots(
+  state: GameState,
+  maxPivots: number,
+  eligibleTurns?: Set<number>,
+): Pivot[] {
   const hist = state.analytics.perceptionHistory;
   const swings: Pivot[] = [];
   for (let i = 1; i < hist.length; i++) {
+    // A pivot must land on a quarter the player actually faced a probe —
+    // otherwise flipping the "response" is a no-op and the sub-runs would
+    // differ only by exogenous reseed noise, not a genuine counterfactual.
+    if (eligibleTurns && !eligibleTurns.has(hist[i].turn)) continue;
     const swing = Math.abs(hist[i].warUtility - hist[i - 1].warUtility);
     swings.push({ pivotId: `pivot_t${hist[i].turn}`, turn: hist[i].turn, swing });
   }
@@ -329,11 +330,16 @@ export function runCounterfactualReport(
     run: playGame(content, seed, makePolicyDecide(profile, content)),
   }));
 
-  // Pivots × sub-seeds.
-  const pivotList = identifyPivots(actual.finalState, tuning.maxPivots);
+  // Pivots × sub-seeds. Only quarters with a recorded probe response are
+  // eligible — flipping a response on a probe-free quarter would be a no-op.
+  const probeTurns = new Set(
+    recorded.filter((d) => d.probeResponse).map((d) => d.turn),
+  );
+  const pivotList = identifyPivots(actual.finalState, tuning.maxPivots, probeTurns);
   const pivots: PivotRow[] = pivotList.map((pivot) => {
     const alt = alternativeResponse(recorded, pivot.turn);
-    const recordedResponse = recorded.find((d) => d.turn === pivot.turn)?.probeResponse?.responseType ?? 'CONCEDE';
+    const recordedResponse =
+      recorded.find((d) => d.turn === pivot.turn)?.probeResponse?.responseType ?? 'CONCEDE';
     const subRuns: RunResult[] = [];
     for (let k = 0; k < tuning.pivotSubSeeds; k++) {
       subRuns.push(

@@ -1,10 +1,11 @@
 // ============================================================================
 // Event-sourced save/resume (PRD §8). A save is the seed + the ordered log of
 // per-turn decisions; the full GameState is reconstructed by replaying the pure
-// resolver over that log. This keeps saves tiny, tamper-evident, and immune to
-// engine-state drift, and guarantees a resumed game is bit-identical to the
-// original (determinism, AC-1). localStorage is the only persistence layer —
-// no backend, no network.
+// resolver over that log. This keeps saves tiny and guarantees a resumed game
+// is bit-identical to the original for the SAME engine version (determinism,
+// AC-1). Because replay is engine-defined, a save is only reproducible under a
+// compatible schema version — see `isSaveCompatible` / `SAVE_SCHEMA_VERSION`.
+// localStorage is the only persistence layer — no backend, no network.
 // ============================================================================
 
 import type { ContentPack, GameState, TurnDecisions } from '../engine/types';
@@ -13,8 +14,25 @@ import { resolveTurn, resolveEpilogueTurn } from '../engine/resolver';
 
 // Bumped to 1.2.0: controlled randomness (seeded event-beat timing + probe
 // variant draws) changed replay semantics, so decision logs recorded under an
-// earlier engine no longer reconstruct the same campaign.
+// earlier engine no longer reconstruct the same campaign. Bump the MAJOR.MINOR
+// whenever replay semantics change; PATCH is reserved for non-replay-affecting
+// changes.
 export const SAVE_SCHEMA_VERSION = '1.2.0';
+
+// A save replays identically only under an engine whose schema shares the same
+// MAJOR.MINOR. A newer/older/malformed version is treated as incompatible so
+// the UI can offer discard-or-restart rather than silently mis-replaying into a
+// campaign that differs from the one the player left (§1.3).
+export function isSaveCompatible(save: SaveGame): boolean {
+  const parse = (v: string): [number, number] | null => {
+    const m = /^(\d+)\.(\d+)\./.exec(v);
+    return m ? [Number(m[1]), Number(m[2])] : null;
+  };
+  const cur = parse(SAVE_SCHEMA_VERSION);
+  const got = parse(save.schemaVersion ?? '');
+  if (!cur || !got) return false;
+  return got[0] === cur[0] && got[1] === cur[1];
+}
 
 export interface SaveGame {
   schemaVersion: string;

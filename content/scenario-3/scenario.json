@@ -31,7 +31,6 @@
     "honoredTestPC": 2,
     "pivotSubSeeds": 5,
     "maxPivots": 6,
-    "unsurePenaltyTurnFraction": 0.6,
     "trackThreatDeltas": { "denial": 0.01, "punishment": 0.06, "intelligence": 0.0, "readiness": 0.02 },
     "trackLeadTimeReadinessBonus": 0.15,
     "intelSigmaLevel0": 0.22,

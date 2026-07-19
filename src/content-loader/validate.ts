@@ -10,6 +10,8 @@
 import Ajv2020, { type ValidateFunction } from 'ajv/dist/2020';
 import addFormats from 'ajv-formats';
 import { validateCondition } from '../engine/conditions';
+import { STOCK_TARGETS, MULTIPLIER_FLOW_TARGETS } from '../engine/effects';
+import type { EffectSpec } from '../engine/types';
 import {
   RESPONSE_ORDINAL,
   RIVAL_TYPES,
@@ -170,10 +172,22 @@ export function assembleContentPack(files: RawFiles, schemas: SchemaMap): Conten
     });
   });
 
-  // 3. Effect target vocabulary.
-  const checkEffects = (effs: { target: string }[] | undefined, where: string) => {
+  // 3. Effect target vocabulary + shape (reject inert effect shapes, §1.4).
+  const checkEffects = (effs: EffectSpec[] | undefined, where: string) => {
     (effs ?? []).forEach((e, i) => {
-      if (!VALID_EFFECT_TARGETS.has(e.target)) push(`${where}[${i}]: unknown effect target "${e.target}"`);
+      if (!VALID_EFFECT_TARGETS.has(e.target)) {
+        push(`${where}[${i}]: unknown effect target "${e.target}"`);
+        return;
+      }
+      // A stock mutates immediately; `durationTurns` has no consumer and would
+      // silently orphan a modifier that never applies.
+      if (STOCK_TARGETS.has(e.target) && e.durationTurns !== undefined) {
+        push(`${where}[${i}]: durationTurns is inert on stock target "${e.target}"`);
+      }
+      // Multiplier flow targets are read only via `mul`; an add/set is inert.
+      if (MULTIPLIER_FLOW_TARGETS.has(e.target) && e.op !== 'mul') {
+        push(`${where}[${i}]: "${e.target}" is read multiplicatively — op must be "mul", not "${e.op}"`);
+      }
     });
   };
   events.forEach((e) => {

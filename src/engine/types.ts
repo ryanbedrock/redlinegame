@@ -188,8 +188,6 @@ export interface ProbeCard {
   severity: number; // 1..5
   salamiValue: number; // baseline shift when conceded
   responses: ProbeResponseOption[];
-  // Per-type generation gate (RIVAL_CONTEXT). Optional; scheduling in rules.
-  perType?: Partial<Record<RivalType, { weight?: number }>>;
 }
 
 // --- Content: rival types ---------------------------------------------------
@@ -221,7 +219,7 @@ export interface RivalTypeDef {
 export interface RivalRule {
   id: string;
   type: RivalType;
-  kind: 'PROBE' | 'ARMING' | 'PRESSURE';
+  kind: 'PROBE';
   condition: ConditionExpr; // RIVAL_CONTEXT
   probeId?: string; // for PROBE rules
   priority: number; // higher wins when multiple fire
@@ -242,7 +240,10 @@ export interface EventCard {
   maxFires?: number;
   // Optional per-type divergent effects (e.g. economic shock, §6.9).
   perTypeEffects?: Partial<Record<RivalType, EffectSpec[]>>;
-  // Intelligence-bias marker: metric that gets systematically overstated.
+  // Intelligence-bias marker: a metric whose estimate is systematically skewed
+  // by `biasAmount` (signed — negative understates, positive overstates) for
+  // `biasDurationTurns`. Shipped content uses a negative amount (optimistic
+  // intent reads that mislead the player).
   biasMetric?: IntelMetric;
   biasAmount?: number;
   biasDurationTurns?: number;
@@ -360,7 +361,6 @@ export interface ScenarioTuning {
   honoredTestPC: number;
   pivotSubSeeds: number;
   maxPivots: number;
-  unsurePenaltyTurnFraction: number; // e.g. 0.6
   trackThreatDeltas: Record<TrackId, number>;
   trackLeadTimeReadinessBonus: number; // turns shaved per readiness level (fractional)
   intelSigmaLevel0: number;
@@ -541,7 +541,6 @@ export interface ActiveModifier {
 
 export interface GameState {
   meta: {
-    schemaVersion: string;
     scenarioId: string;
     seed: number;
     createdAt: string;
@@ -616,7 +615,6 @@ export interface GameState {
     perceptionHistory: PerceptionSnapshot[];
     turnRecords: TurnRecord[];
     cumulativeSpend: number;
-    lockInTurn: number | null; // turn cumulative spend passed 50% of eventual
   };
 }
 

@@ -24,16 +24,16 @@ export function logistic(x: number, slope = 0.45): number {
   return 1 / (1 + Math.exp(-slope * x));
 }
 
-// pSuccess: the Rival's estimated probability a seizure succeeds.
-// Driven by observable capability gap (its arming vs the player's denial),
-// nudged by readiness (faster/steadier posture ⇒ slightly lower success).
+// pSuccess: the Rival's estimated probability a seizure succeeds. Driven solely
+// by the observable capability gap — its arming level vs the player's denial
+// level. (Readiness affects investment lead-time elsewhere, not this formula.)
 export function pSuccess(armingLevel: number, denialLevel: number): number {
   return clamp01(logistic(armingLevel - denialLevel));
 }
 
-// costEstimate: the Rival's estimate of post-seizure costs, g(punishment, resolve).
-// Punishment capacity sets the ceiling; credited resolve scales how much of it
-// the Rival believes will actually be imposed.
+// costEstimate: the punishment-capacity ceiling on expected post-seizure costs,
+// normalized to a 0..1-ish scale. Credited resolve is NOT applied here — it
+// scales this ceiling in `warUtility` (the `perceivedResolve` factor).
 export function costEstimate(punishmentLevel: number): number {
   // Normalize punishment 0..10 → 0..1-ish cost scale.
   return punishmentLevel / 10;

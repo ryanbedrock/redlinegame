@@ -5,7 +5,7 @@
 import { useMemo, useState } from 'react';
 import { listScenarios, loadContentPack } from '../content-loader';
 import { useGameStore } from '../store/gameStore';
-import { listSaves, deleteSave, type SaveGame } from '../store/persistence';
+import { listSaves, deleteSave, isSaveCompatible, type SaveGame } from '../store/persistence';
 
 export function MainMenu(): JSX.Element {
   const newGame = useGameStore((s) => s.newGame);
@@ -123,7 +123,9 @@ export function MainMenu(): JSX.Element {
             <p className="empty">No saved campaigns yet.</p>
           ) : (
             <ul className="save-list">
-              {saves.map((s) => (
+              {saves.map((s) => {
+                const compatible = isSaveCompatible(s);
+                return (
                 <li key={s.id}>
                   <div className="save-info">
                     <span className="save-name">{s.displayName || 'Unnamed commander'}</span>
@@ -131,17 +133,34 @@ export function MainMenu(): JSX.Element {
                       {scenarios.find((sc) => sc.id === s.scenarioId)?.name ?? s.scenarioId} · seed {s.seed} ·{' '}
                       {s.decisionLog.length} quarters played
                     </span>
+                    {!compatible && (
+                      <span className="save-incompatible" role="note">
+                        Saved under an older version — cannot be resumed. Restart it fresh (same
+                        scenario &amp; seed) or discard.
+                      </span>
+                    )}
                   </div>
                   <div className="save-actions">
-                    <button type="button" className="primary" onClick={() => doResume(s.id)}>
-                      Resume
-                    </button>
+                    {compatible ? (
+                      <button type="button" className="primary" onClick={() => doResume(s.id)}>
+                        Resume
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        className="primary"
+                        onClick={() => newGame(s.scenarioId, s.seed, s.displayName)}
+                      >
+                        Restart
+                      </button>
+                    )}
                     <button type="button" className="ghost danger" onClick={() => doDelete(s.id)} aria-label={`Delete save ${s.displayName || s.id}`}>
-                      Delete
+                      {compatible ? 'Delete' : 'Discard'}
                     </button>
                   </div>
                 </li>
-              ))}
+                );
+              })}
             </ul>
           )}
         </div>

@@ -29,7 +29,7 @@
     "baseArmingSchedule": 5.0,
     "armingFromThreat": 0.0,
     "pressureSchedulePerTurn": 0.03,
-    "tell": "Internal pressure rises every turn — a closing window of opportunity. Deterrence must be established EARLY; late resolve is discounted as the window narrows. Reassurance barely helps."
+    "tell": "Internal pressure rises every turn, steadily raising the payoff it sees from acting — a closing window of opportunity. Deterrence must be established EARLY: the same resolve deters less later, because the prize it is weighed against keeps growing. Reassurance barely helps."
   },
   {
     "type": "SECURITY_SEEKER",

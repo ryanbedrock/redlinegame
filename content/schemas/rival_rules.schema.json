@@ -7,7 +7,7 @@
     "properties": {
       "id": { "type": "string" },
       "type": { "enum": ["OPPORTUNIST", "PRESSURED_EXPANSIONIST", "SECURITY_SEEKER"] },
-      "kind": { "enum": ["PROBE", "ARMING", "PRESSURE"] },
+      "kind": { "enum": ["PROBE"] },
       "condition": {},
       "probeId": { "type": "string" },
       "priority": { "type": "number" },

@@ -1,8 +1,11 @@
 // ============================================================================
 // Pure SHA-256 (vendored, public-domain reference implementation) + stable
-// JSON stringify. Used for golden-master determinism hashing (AC-1, AC-6,
-// AC-9). No I/O, no Web Crypto (which is async and import-bound) — a synchronous
-// pure function keeps the engine referentially transparent (AC-2).
+// JSON stringify. Used to hash a final GameState for determinism checks (AC-1,
+// AC-6, AC-9): identical seed + decisions must yield an identical hash, and
+// `tests/determinism.test.ts` pins golden-master hashes for fixed campaigns so
+// any unintended change in replay semantics is caught. No I/O, no Web Crypto
+// (async, import-bound) — a synchronous pure function keeps the engine
+// referentially transparent (AC-2).
 // ============================================================================
 
 /* eslint-disable no-bitwise */
