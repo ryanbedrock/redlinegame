@@ -207,6 +207,55 @@ export function Debrief(): JSX.Element | null {
         <StrategyLattice rows={latticeRows} />
       </section>
 
+      {/* 4b — Pivot analysis (sub-seeded counterfactuals) */}
+      {report.pivots.length > 0 && (
+        <section className="panel">
+          <h3>Pivot Analysis</h3>
+          <p className="panel-note">
+            At each quarter where the Rival&apos;s war calculus swung most, we replay the campaign with
+            your response flipped, then re-run it under {content.scenario.tuning.pivotSubSeeds} draws of
+            the exogenous uncertainty (when external shocks land, which variant of a probe appears).
+            &ldquo;Agreement&rdquo; is how consistently that alternative leads to the same ending — high
+            agreement means the outcome was robust to luck; low means the quarter was a genuine coin-flip.
+          </p>
+          <table className="audit">
+            <thead>
+              <tr>
+                <th>Quarter</th>
+                <th>Your call → alternative</th>
+                <th>Most likely result</th>
+                <th>Agreement</th>
+                <th>Across draws</th>
+              </tr>
+            </thead>
+            <tbody>
+              {report.pivots.map((p) => {
+                const tally = new Map<string, number>();
+                for (const r of p.subRuns) {
+                  const key = endingLabel(r.ending);
+                  tally.set(key, (tally.get(key) ?? 0) + 1);
+                }
+                const spread = [...tally.entries()]
+                  .sort((a, b) => b[1] - a[1])
+                  .map(([label, n]) => `${n}× ${label}`)
+                  .join(', ');
+                return (
+                  <tr key={p.pivot.pivotId}>
+                    <td>Q{p.pivot.turn + 1}</td>
+                    <td>
+                      {p.recordedResponse} → <strong>{p.altResponse}</strong>
+                    </td>
+                    <td>{endingLabel(p.modalEnding)}</td>
+                    <td>{Math.round(p.agreement * 100)}%</td>
+                    <td className="muted">{spread}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </section>
+      )}
+
       {/* 5 — Diagnosis trajectory */}
       <section className="panel">
         <h3>Diagnosis</h3>

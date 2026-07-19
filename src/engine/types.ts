@@ -181,7 +181,8 @@ export interface ProbeCard {
   text: string;
   // What this class of probe is testing (deterrence read shown to the player).
   intent?: string;
-  // Flavor variants (same mechanics) rotated deterministically on repeats.
+  // Flavor variants (same mechanics); a variant is drawn at random on each
+  // appearance so a repeated probe reads differently (the `probes` stream).
   variants?: ProbeVariant[];
   tags: string[];
   severity: number; // 1..5
@@ -454,6 +455,7 @@ export interface SignalRecord {
 export interface ProbeRecord {
   turn: number;
   probeId: string;
+  variant: number; // flavor-variant index shown this appearance
   severity: number;
   salamiValue: number;
   responseChosen: string | null;
@@ -594,6 +596,10 @@ export interface GameState {
     activeModifiers: ActiveModifier[];
     stagedProbeId: string | null; // probe awaiting response this turn
     stagedProbeVariant: number; // flavor-variant index for the staged probe
+    // Rolled fire turn per scheduled event, drawn once from the `events` RNG
+    // stream when the event's beat window first opens (controlled randomness:
+    // an event lands at a random turn inside [minTurn, maxTurn]).
+    scheduledEventTurns: Record<string, number>;
     biasActive: { metric: IntelMetric; amount: number; expiresOnTurn: number } | null;
     playerDistractionActive: boolean;
   };

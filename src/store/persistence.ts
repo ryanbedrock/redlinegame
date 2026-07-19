@@ -11,7 +11,10 @@ import type { ContentPack, GameState, TurnDecisions } from '../engine/types';
 import { createInitialState } from '../engine/setup';
 import { resolveTurn, resolveEpilogueTurn } from '../engine/resolver';
 
-export const SAVE_SCHEMA_VERSION = '1.1.0';
+// Bumped to 1.2.0: controlled randomness (seeded event-beat timing + probe
+// variant draws) changed replay semantics, so decision logs recorded under an
+// earlier engine no longer reconstruct the same campaign.
+export const SAVE_SCHEMA_VERSION = '1.2.0';
 
 export interface SaveGame {
   schemaVersion: string;

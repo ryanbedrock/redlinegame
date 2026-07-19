@@ -21,7 +21,7 @@
     { "eventId": "evt_budget_windfall", "minTurn": 3, "maxTurn": 6 },
     { "eventId": "evt_intel_deception", "minTurn": 6, "maxTurn": 11 },
     { "eventId": "evt_domestic_crisis", "minTurn": 10, "maxTurn": 15 },
-    { "eventId": "evt_econ_shock", "minTurn": 16, "maxTurn": 22 }
+    { "eventId": "evt_econ_shock", "minTurn": 9, "maxTurn": 18 }
   ],
   "tuning": {
     "budgetIncome": 6,

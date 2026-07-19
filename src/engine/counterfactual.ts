@@ -284,6 +284,10 @@ export function identifyPivots(state: GameState, maxPivots: number): Pivot[] {
 
 export interface PivotRow {
   pivot: Pivot;
+  // The recorded response at the pivot turn and the counterfactual alternative
+  // that was played instead, across the sub-seeds.
+  recordedResponse: ResponseType;
+  altResponse: ResponseType;
   // Lattice per sub-seed; modal outcome and agreement across sub-seeds.
   subRuns: RunResult[];
   modalEnding: GameState['meta']['ending'];
@@ -329,6 +333,7 @@ export function runCounterfactualReport(
   const pivotList = identifyPivots(actual.finalState, tuning.maxPivots);
   const pivots: PivotRow[] = pivotList.map((pivot) => {
     const alt = alternativeResponse(recorded, pivot.turn);
+    const recordedResponse = recorded.find((d) => d.turn === pivot.turn)?.probeResponse?.responseType ?? 'CONCEDE';
     const subRuns: RunResult[] = [];
     for (let k = 0; k < tuning.pivotSubSeeds; k++) {
       subRuns.push(
@@ -351,6 +356,8 @@ export function runCounterfactualReport(
     const modalRun = subRuns.find((r) => String(r.ending) === String(modal)) ?? subRuns[0];
     return {
       pivot,
+      recordedResponse,
+      altResponse: alt,
       subRuns,
       modalEnding: modal,
       agreement: modalCount / subRuns.length,
