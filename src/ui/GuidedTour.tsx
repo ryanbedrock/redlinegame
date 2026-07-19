@@ -147,23 +147,28 @@ export function GuidedTour(): JSX.Element | null {
 
   const prev = useCallback(() => setI((v) => Math.max(v - 1, 0)), []);
 
-  // Save the opener's focus and restore it when the tour closes (WCAG 2.4.3).
-  useEffect(() => {
-    if (!tourOpen) {
-      setI(0);
-      return;
-    }
-    returnFocusRef.current = document.activeElement as HTMLElement | null;
-    return () => returnFocusRef.current?.focus?.();
-  }, [tourOpen]);
-
   // Move focus into the dialog on open and on each step change so screen
   // readers announce the new step (4.1.3) and keyboard focus never strands on
-  // an unmounted control.
+  // an unmounted control. Before the first focus move we record the opener so
+  // it can be restored on close — captured here (a layout effect, before focus
+  // leaves the opener) rather than in a passive effect, which would run after
+  // this and capture the card itself.
   useLayoutEffect(() => {
     if (!tourOpen) return;
+    if (returnFocusRef.current === null) {
+      returnFocusRef.current = document.activeElement as HTMLElement | null;
+    }
     cardRef.current?.focus();
   }, [tourOpen, i]);
+
+  // On close, restore focus to the opener (WCAG 2.4.3) and reset for next time.
+  useEffect(() => {
+    if (tourOpen) return;
+    setI(0);
+    const opener = returnFocusRef.current;
+    returnFocusRef.current = null;
+    opener?.focus?.();
+  }, [tourOpen]);
 
   useEffect(() => {
     if (!tourOpen) return;
