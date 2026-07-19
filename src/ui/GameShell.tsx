@@ -1,7 +1,8 @@
 // Routes the active stage to its screen and mounts the persistent HUD during
 // play. Menu vs. in-game is decided one level up in App.
 
-import { useGameStore } from '../store/gameStore';
+import { Suspense, lazy, useEffect, useRef } from 'react';
+import { useGameStore, type Stage } from '../store/gameStore';
 import { Hud } from './Hud';
 import { Sitrep } from './Sitrep';
 import { ProbeResponse } from './ProbeResponse';
@@ -10,14 +11,38 @@ import { Inbox } from './Inbox';
 import { TypeAssessment } from './TypeAssessment';
 import { Resolution } from './Resolution';
 import { Epilogue } from './Epilogue';
-import { Debrief } from './Debrief';
 import { KnowledgeCheck } from './KnowledgeCheck';
 import { GuidedTour } from './GuidedTour';
+
+// The debrief is the sole Recharts consumer and pulls in the counterfactual
+// re-simulation; it is only reached at end-of-campaign, so we code-split it out
+// of the main bundle (§2.6) and show a fallback while its chunk loads (§2.1).
+const Debrief = lazy(() => import('./Debrief').then((m) => ({ default: m.Debrief })));
+
+const STAGE_LABEL: Record<Stage, string> = {
+  SITREP: 'Situation Report',
+  PROBE: 'Probe Response',
+  SIGNALS: 'Signals & Investment',
+  INBOX: 'Inbox',
+  ASSESSMENT: 'Rival Assessment',
+  RESOLUTION: 'Resolution',
+  EPILOGUE: 'War Epilogue',
+  DEBRIEF: 'After-Action Debrief',
+  KNOWLEDGE: 'Knowledge Check',
+};
 
 export function GameShell(): JSX.Element {
   const stage = useGameStore((s) => s.stage);
   const saveError = useGameStore((s) => s.saveError);
   const dismissSaveError = useGameStore((s) => s.dismissSaveError);
+  const stageRef = useRef<HTMLDivElement>(null);
+
+  // On each stage change the whole screen is swapped; move focus to the new
+  // container so keyboard focus never strands on an unmounted button (WCAG
+  // 2.4.3). The stage name is also mirrored into a live region below (4.1.3).
+  useEffect(() => {
+    stageRef.current?.focus();
+  }, [stage]);
 
   const screen = (() => {
     switch (stage) {
@@ -60,7 +85,14 @@ export function GameShell(): JSX.Element {
           </button>
         </div>
       )}
-      <div className="stage">{screen}</div>
+      <div className="stage" ref={stageRef} tabIndex={-1}>
+        <Suspense fallback={<p className="muted">Preparing after-action debrief…</p>}>
+          {screen}
+        </Suspense>
+      </div>
+      <p className="sr-only" role="status" aria-live="polite">
+        {STAGE_LABEL[stage]}
+      </p>
       <GuidedTour />
     </div>
   );

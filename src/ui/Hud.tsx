@@ -68,7 +68,7 @@ export function Hud(): JSX.Element | null {
 
       <div className="hud-tracks" data-tour="tracks">
         {TRACK_IDS.map((t) => (
-          <Tooltip key={t} label={TRACK_GLOSSARY[t]} side="bottom" className="track-chip">
+          <Tooltip key={t} label={TRACK_GLOSSARY[t]} side="bottom" className="track-chip" focusableTrigger>
             <span className="track-name">{TRACK_LABEL[t]}</span>
             <span className="track-level">{state.player.tracks[t]}</span>
           </Tooltip>
