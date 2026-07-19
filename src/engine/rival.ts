@@ -7,6 +7,7 @@
 import type { ContentPack, GameState } from './types';
 import { buildRivalVars } from './context';
 import { evalBool } from './conditions';
+import { rollInt } from './rng';
 import {
   clamp,
   clamp01,
@@ -114,13 +115,25 @@ export function generateProbe(state: GameState, content: ContentPack): void {
 
   state.world.stagedProbeId = chosen;
 
-  // Rotate flavor variants deterministically on repeats: the Nth appearance of
-  // a probe shows its Nth variant (mod the pool size). Same mechanics, new text.
+  // Controlled randomness (the `probes` stream): pick a flavor variant at random
+  // so a repeated probe reads differently across appearances (same mechanics,
+  // new text). A single-draw dedupe against the last-shown variant avoids the
+  // jarring case of the exact same text twice in a row when the pool allows it.
   if (chosen) {
     const probe = content.probes.find((p) => p.id === chosen);
     const pool = probe?.variants?.length ?? 0;
-    const priorCount = state.world.probeLog.filter((p) => p.probeId === chosen).length;
-    state.world.stagedProbeVariant = pool > 0 ? priorCount % pool : 0;
+    if (pool > 0) {
+      const last = state.world.probeLog
+        .filter((p) => p.probeId === chosen)
+        .slice(-1)[0]?.variant;
+      let pick = rollInt(state.meta.seed, state.rng, 'probes', 0, pool - 1);
+      if (pool > 1 && pick === last) {
+        pick = (pick + 1 + rollInt(state.meta.seed, state.rng, 'probes', 0, pool - 2)) % pool;
+      }
+      state.world.stagedProbeVariant = pick;
+    } else {
+      state.world.stagedProbeVariant = 0;
+    }
   } else {
     state.world.stagedProbeVariant = 0;
   }

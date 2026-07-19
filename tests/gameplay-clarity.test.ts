@@ -4,26 +4,29 @@ import { resolveTurn } from '../src/engine/resolver';
 import type { TurnDecisions } from '../src/engine/types';
 import { pack } from './helpers';
 
-// #2 — probe flavor variants rotate deterministically on repeats (same
-// mechanics, new text) so a repeated probe never reads identically twice.
+// #2 — probe flavor variants are drawn at random on each appearance (same
+// mechanics, new text) so a repeated probe reads differently and never shows
+// the identical variant twice in a row.
 describe('probe flavor variants', () => {
   const content = pack();
 
-  it('shows the Nth occurrence of a probe as its Nth variant (mod pool)', () => {
+  it('draws an in-pool variant that never immediately repeats, and varies over time', () => {
     let state = createInitialState(content, 1, 'TEST');
-    const seen: Record<string, number> = {};
-    let sawRepeatWithNewVariant = false;
+    const variantsByProbe: Record<string, number[]> = {};
 
     for (let step = 0; step < 20 && state.meta.phase === 'SITREP'; step++) {
       const probeId = state.world.stagedProbeId;
       if (probeId) {
         const probe = content.probes.find((p) => p.id === probeId);
         const pool = probe?.variants?.length ?? 0;
-        const occurrence = seen[probeId] ?? 0;
-        const expected = pool > 0 ? occurrence % pool : 0;
-        expect(state.world.stagedProbeVariant).toBe(expected);
-        if (occurrence > 0 && pool > 1) sawRepeatWithNewVariant = true;
-        seen[probeId] = occurrence + 1;
+        const v = state.world.stagedProbeVariant;
+        // Variant index is always within the authored pool.
+        expect(v).toBeGreaterThanOrEqual(0);
+        if (pool > 0) expect(v).toBeLessThan(pool);
+        const prior = variantsByProbe[probeId] ?? [];
+        // No identical variant two appearances in a row (dedupe) when possible.
+        if (pool > 1 && prior.length > 0) expect(v).not.toBe(prior[prior.length - 1]);
+        variantsByProbe[probeId] = [...prior, v];
       }
       const d: TurnDecisions = { turn: state.meta.turnNumber, purchases: [] };
       if (probeId) {
@@ -32,8 +35,11 @@ describe('probe flavor variants', () => {
       state = resolveTurn(state, d, content);
     }
 
-    // Matching an Opportunist reliably repeats the low-severity grey-zone probe.
-    expect(sawRepeatWithNewVariant).toBe(true);
+    // Matching an Opportunist reliably repeats the low-severity grey-zone probe,
+    // and its text varies across appearances (more than one distinct variant).
+    const repeated = Object.values(variantsByProbe).find((vs) => vs.length >= 3);
+    expect(repeated).toBeDefined();
+    expect(new Set(repeated).size).toBeGreaterThan(1);
   });
 
   it('keeps every variant index within the authored pool', () => {

@@ -39,7 +39,7 @@ import {
   flowMultiplier,
 } from './effects';
 import { advanceRivalInternal, evaluateDecision, generateProbe } from './rival';
-import { noiseAdditive } from './rng';
+import { noiseAdditive, rollInt } from './rng';
 
 const INTEL_METRICS: IntelMetric[] = [
   'RESOLVE_READ',
@@ -131,6 +131,7 @@ function phaseProbeResponse(
   const record: ProbeRecord = {
     turn: next.meta.turnNumber,
     probeId: stagedId,
+    variant: next.world.stagedProbeVariant,
     severity,
     salamiValue,
     responseChosen,
@@ -363,6 +364,26 @@ function phaseEvents(next: GameState, content: ContentPack): string[] {
     });
   }
 
+  // Controlled randomness: the turn a scheduled event actually lands is rolled
+  // once from the `events` stream when its window first opens, uniformly in
+  // [minTurn, maxTurn]. Rolling lazily (rather than all at turn 1) is what makes
+  // sub-seeded counterfactual pivots diverge: a pivot reseeds the streams, so
+  // events whose windows open after the pivot are re-rolled and can land on
+  // different turns, yielding genuinely different futures. Iterate in a stable
+  // order so the cursor advances deterministically.
+  for (const eventId of [...beatWindow.keys()].sort()) {
+    if (next.world.scheduledEventTurns[eventId] !== undefined) continue;
+    const w = beatWindow.get(eventId)!;
+    if (turn < w.minTurn) continue;
+    next.world.scheduledEventTurns[eventId] = rollInt(
+      next.meta.seed,
+      next.rng,
+      'events',
+      Math.max(w.minTurn, turn),
+      w.maxTurn,
+    );
+  }
+
   const candidates: EventCard[] = content.events.filter((ev) => {
     if (ev.maxFires !== undefined && eventFireCount(next, ev.id) >= ev.maxFires) {
       return false;
@@ -372,10 +393,11 @@ function phaseEvents(next: GameState, content: ContentPack): string[] {
       return false;
     }
     const window = beatWindow.get(ev.id);
-    if (window && (turn < window.minTurn || turn > window.maxTurn)) return false;
+    // Scheduled events fire on their rolled turn (once, gated by maxFires).
+    if (window && next.world.scheduledEventTurns[ev.id] !== turn) return false;
     if (ev.condition && !evalBool(ev.condition, vars)) return false;
-    // Deterministic scheduled events fire as soon as the beat window opens
-    // (once, gated by maxFires). Purely conditional events fire on condition.
+    // Purely conditional events fire on condition; events with neither a beat
+    // nor a condition are unreachable (rejected by validation).
     if (!window && !ev.condition) return false;
     return true;
   });
