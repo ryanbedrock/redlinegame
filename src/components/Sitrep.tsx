@@ -1,3 +1,4 @@
+import { commitmentLedger, commitmentSummary } from '../engine';
 import type { ContentPack, GameState } from '../engine';
 import { useGameStore } from '../store/gameStore';
 import { Hud, TRACK_LABELS } from './Hud';
@@ -18,7 +19,7 @@ export function Sitrep({
   const latestIntel = state.world.intel.filter((i) => i.turn === turn);
   const inbox = state.world.inbox.filter((m) => m.turn === turn);
   const pending = state.player.pendingInvestments;
-  const standing = state.player.commitmentRegister;
+  const ledger = commitmentLedger(state, content);
 
   return (
     <div className="screen">
@@ -58,14 +59,19 @@ export function Sitrep({
               </ul>
             </>
           )}
-          {standing.length > 0 && (
+          {ledger.length > 0 && (
             <>
               <h4>Commitment register</h4>
               <ul className="plain">
-                {standing.map((c) => (
-                  <li key={c.id}>
-                    {content.cardsById[c.cardId]?.title ?? c.cardId} · floor {c.floorResponse} ·{' '}
-                    <span className={`tag tag-${c.status.toLowerCase()}`}>{c.status}</span>
+                {ledger.map((entry) => (
+                  <li key={entry.commitment.id} className="commitment">
+                    <div className="intel-head">
+                      <strong>{entry.title}</strong>
+                      <span className={`tag tag-${entry.status.toLowerCase()}`}>
+                        {entry.status}
+                      </span>
+                    </div>
+                    <p className="muted">{commitmentSummary(entry)}</p>
                   </li>
                 ))}
               </ul>

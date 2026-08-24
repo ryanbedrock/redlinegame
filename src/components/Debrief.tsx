@@ -13,6 +13,8 @@ import {
 } from 'recharts';
 import {
   coherenceAudit,
+  commitmentLedger,
+  commitmentSummary,
   computeScore,
   outcomeBand,
   runCounterfactualReport,
@@ -50,6 +52,7 @@ export function Debrief({
   const salami = salamiAudit(state);
   const signals = signalAudit(state);
   const coherence = coherenceAudit(state, content);
+  const ledger = commitmentLedger(state, content);
   const settlement = [...content.epilogue.settlements]
     .sort((a, b) => b.minOutcome - a.minOutcome)
     .find((s) => band.value >= s.minOutcome);
@@ -273,6 +276,59 @@ export function Debrief({
                 ))}
               </tbody>
             </table>
+          )}
+        </section>
+
+        <section className="panel span-2">
+          <h3>Commitment ledger</h3>
+          <p className="muted">
+            Every commitment you declared, and how each in-scope provocation tested it. Meeting the
+            floor honors it and pays political capital; falling below breaks it permanently.
+          </p>
+          {ledger.length === 0 ? (
+            <p className="muted">You never tied your hands, so nothing could be honored or broken.</p>
+          ) : (
+            ledger.map((entry) => (
+              <div key={entry.commitment.id} className="commitment">
+                <div className="intel-head">
+                  <strong>{entry.title}</strong>
+                  <span className={`tag tag-${entry.status.toLowerCase()}`}>{entry.status}</span>
+                </div>
+                <p className="muted">{commitmentSummary(entry)}</p>
+                {entry.tests.length > 0 && (
+                  <table className="table">
+                    <thead>
+                      <tr>
+                        <th>Quarter</th>
+                        <th>Provocation</th>
+                        <th>Floor</th>
+                        <th>Your response</th>
+                        <th>Verdict</th>
+                        <th>PC</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {entry.tests.map((t, i) => (
+                        <tr key={`${t.turn}-${t.probeId}-${i}`}>
+                          <td>{t.turn + 1}</td>
+                          <td>{t.probeTitle}</td>
+                          <td>{entry.floorResponse}</td>
+                          <td>{t.responseType}</td>
+                          <td>
+                            <span className={`tag tag-${t.honored ? 'honored' : 'broken'}`}>
+                              {t.honored ? 'HONORED' : 'BROKEN'}
+                            </span>
+                          </td>
+                          <td className="num">
+                            {t.pcDelta > 0 ? `+${t.pcDelta}` : t.pcDelta}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            ))
           )}
         </section>
 
