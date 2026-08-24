@@ -1,22 +1,10 @@
 // ============================================================================
-// Commitment ledger: reconstructs, for each declared commitment, which probes
-// tested it and how each test was honored or broken. Pure derivation from the
-// probe log and the commitment register; mirrors the resolver's own rules.
+// Commitment ledger: for each declared commitment, which probes tested it and
+// how each test was honored or broken. Reads the tests the resolver recorded,
+// so the political-capital swing is the one actually applied.
 // ============================================================================
 
 import type { Commitment, ContentPack, GameState, ResponseType } from './types';
-
-const RESPONSE_ORDER: ResponseType[] = [
-  'CONCEDE',
-  'PROTEST',
-  'MATCH',
-  'ENFORCE',
-  'ESCALATE',
-];
-
-function meetsFloor(response: ResponseType, floor: ResponseType): boolean {
-  return RESPONSE_ORDER.indexOf(response) >= RESPONSE_ORDER.indexOf(floor);
-}
 
 export interface CommitmentTest {
   turn: number;
@@ -24,8 +12,6 @@ export interface CommitmentTest {
   probeTitle: string;
   responseType: ResponseType;
   honored: boolean;
-  // Nominal political-capital swing; the resolver scales break penalties by the
-  // prevailing audience-cost multiplier, so a break can cost more than this.
   pcDelta: number;
 }
 
@@ -43,26 +29,17 @@ export function commitmentLedger(
   state: GameState,
   content: ContentPack,
 ): CommitmentLedgerEntry[] {
-  const honoredPC = content.scenario.tuning.honoredTestPC;
-
   return state.player.commitmentRegister.map((c) => {
-    const tests: CommitmentTest[] = [];
-    for (const p of state.world.probeLog) {
-      if (p.turn < c.declaredOnTurn) continue;
-      const probe = content.probes.find((x) => x.id === p.probeId);
-      if (!probe || !c.scopeProbeTags.some((tag) => probe.tags.includes(tag))) continue;
-      const honored = meetsFloor(p.responseType, c.floorResponse);
-      tests.push({
-        turn: p.turn,
-        probeId: p.probeId,
-        probeTitle: probe.title,
-        responseType: p.responseType,
-        honored,
-        pcDelta: honored ? honoredPC : -c.backDownPenaltyPC,
-      });
-      // A broken commitment is never tested again (the resolver skips it).
-      if (!honored) break;
-    }
+    const tests: CommitmentTest[] = state.analytics.commitmentTests
+      .filter((t) => t.commitmentId === c.id)
+      .map((t) => ({
+        turn: t.turn,
+        probeId: t.probeId,
+        probeTitle: content.probes.find((p) => p.id === t.probeId)?.title ?? t.probeId,
+        responseType: t.responseType,
+        honored: t.honored,
+        pcDelta: t.pcDelta,
+      }));
     return {
       commitment: c,
       title: content.cardsById[c.cardId]?.title ?? c.cardId,

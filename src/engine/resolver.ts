@@ -106,7 +106,9 @@ function phaseProbeResponse(
     if (c.status === 'BROKEN') continue;
     const covers = c.scopeProbeTags.some((tag) => probe.tags.includes(tag));
     if (!covers) continue;
-    if (floorMet(c.floorResponse)) {
+    const pcBefore = next.player.politicalCapital;
+    const honored = floorMet(c.floorResponse);
+    if (honored) {
       c.timesTested += 1;
       c.timesHonored += 1;
       c.status = 'HONORED';
@@ -126,6 +128,15 @@ function phaseProbeResponse(
         content.scenario.tuning.pcCap,
       );
     }
+    next.analytics.commitmentTests.push({
+      turn: next.meta.turnNumber,
+      commitmentId: c.id,
+      probeId: stagedId,
+      responseType,
+      floorResponse: c.floorResponse,
+      honored,
+      pcDelta: next.player.politicalCapital - pcBefore,
+    });
   }
 
   const record: ProbeRecord = {

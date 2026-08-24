@@ -432,6 +432,19 @@ export interface Commitment {
   status: 'STANDING' | 'HONORED' | 'BROKEN';
 }
 
+// One in-scope probe that tested a commitment, with the political capital the
+// verdict actually moved (break penalties are scaled by the audience-cost
+// multiplier and clamped, so this is not derivable from the register alone).
+export interface CommitmentTestRecord {
+  turn: number;
+  commitmentId: string;
+  probeId: string;
+  responseType: ResponseType;
+  floorResponse: ResponseType;
+  honored: boolean;
+  pcDelta: number;
+}
+
 export interface SignalRecord {
   turn: number;
   cardId: string;
@@ -598,6 +611,7 @@ export interface GameState {
     typeBeliefs: TypeBeliefRecord[];
     perceptionHistory: PerceptionSnapshot[];
     turnRecords: TurnRecord[];
+    commitmentTests: CommitmentTestRecord[];
     cumulativeSpend: number;
     lockInTurn: number | null; // turn cumulative spend passed 50% of eventual
   };
