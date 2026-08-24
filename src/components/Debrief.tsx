@@ -304,7 +304,7 @@ export function Debrief({
                         <th>Floor</th>
                         <th>Your response</th>
                         <th>Verdict</th>
-                        <th>PC</th>
+                        <th>PC change</th>
                       </tr>
                     </thead>
                     <tbody>
