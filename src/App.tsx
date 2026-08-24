@@ -1,40 +1,38 @@
-import { useMemo } from 'react';
-import { listScenarios, loadContentPack } from './content-loader';
+import { Debrief } from './components/Debrief';
+import { Epilogue } from './components/Epilogue';
+import { ProbeResponse } from './components/ProbeResponse';
+import { Resolution } from './components/Resolution';
+import { ScenarioSelect } from './components/ScenarioSelect';
+import { SignalsInvestments } from './components/SignalsInvestments';
+import { Sitrep } from './components/Sitrep';
+import { useGameStore } from './store/gameStore';
 
-// Phase 0 bootstrap. The full playable interface (SITREP, probe response,
-// signals & investment, resolution, debrief, war epilogue) lands in the
-// subsequent phases; this landing page verifies the content pipeline loads and
-// the bundle builds. It performs no game logic.
+// Routes the active game to the phase screen. The engine owns meta.phase for
+// the terminal phases; within a quarter the store's `view` walks the player
+// through sitrep → probe → signals → resolution.
 export function App(): JSX.Element {
-  const scenarios = useMemo(() => {
-    return listScenarios().map((s) => {
-      const pack = loadContentPack(s.id);
-      return { ...s, turnCount: pack.scenario.turnCount };
-    });
-  }, []);
+  const content = useGameStore((s) => s.content);
+  const state = useGameStore((s) => s.state);
+  const view = useGameStore((s) => s.view);
+  const turnResolved = useGameStore((s) => s.turnResolved);
 
-  return (
-    <main className="landing">
-      <header>
-        <h1>The Red Line</h1>
-        <p className="subtitle">Costly Signals in the Long Pre-War</p>
-      </header>
-      <section>
-        <p>
-          A serious game on deterrence, credibility, and the security dilemma. The engine, content
-          pipeline, and counterfactual analysis are in place; the playable interface is under
-          construction.
-        </p>
-        <h2>Scenarios</h2>
-        <ul className="scenario-list">
-          {scenarios.map((s) => (
-            <li key={s.id}>
-              <strong>{s.name}</strong> <span className="turns">· {s.turnCount} quarters</span>
-              <p>{s.description}</p>
-            </li>
-          ))}
-        </ul>
-      </section>
-    </main>
-  );
+  if (!content || !state) return <ScenarioSelect />;
+
+  // The resolution summary of the final quarter is shown before handing off to
+  // the epilogue or debrief.
+  if (view === 'RESOLUTION' && turnResolved) return <Resolution state={state} content={content} />;
+
+  if (state.meta.phase === 'EPILOGUE') return <Epilogue state={state} content={content} />;
+  if (state.meta.phase === 'DEBRIEF') return <Debrief state={state} content={content} />;
+
+  switch (view) {
+    case 'PROBE_RESPONSE':
+      return <ProbeResponse state={state} content={content} />;
+    case 'SIGNALS':
+      return <SignalsInvestments state={state} content={content} />;
+    case 'RESOLUTION':
+      return <Resolution state={state} content={content} />;
+    default:
+      return <Sitrep state={state} content={content} />;
+  }
 }
