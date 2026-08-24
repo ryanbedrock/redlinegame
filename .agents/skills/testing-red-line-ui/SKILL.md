@@ -63,6 +63,22 @@ with a page-side loop injected via `Runtime.evaluate`:
     (gate is `turnNumber - lastPurchaseTurn < cooldownTurns`).
   - Keep enough budget in the later quarter that affordability doesn't mask the reason you
     are trying to observe — the precedence is prereq → limit → cooldown → affordability.
+- Selecting a probe response rung auto-selects the *first* rationale of record
+  (`ProbeResponse.tsx`: `set?.options[0]?.id ?? 'unspecified'`), so every answered probe is a
+  scoreable justified decision. A run with `Rationale coherence = n/a` is therefore not
+  reachable through normal UI play — do not plan a test around it without an engine-level
+  fixture (or a scenario where no probe ever fires).
+- Testing the commitment ledger (`sig_redline` floor MATCH / scope `frontier`;
+  `sig_tripwire_treaty` floor ENFORCE / scope `frontier`+`maritime`):
+  - Probe scopes: `probe_fishing` maritime only, `probe_incursion`/`probe_seizure` frontier,
+    `probe_blockade` maritime+frontier. A Q1 red line is *not* tested by the usual Q1 fishing
+    probe → clean "STANDING / no in-scope provocation has tested it yet" shot.
+  - Same-quarter regression: commitments are created after the probe resolves, so a probe
+    answered in the declaration quarter must produce NO ledger row and leave status STANDING.
+  - Broken case (fast): scenario 3, declare the red line in Q1 and CONCEDE everything —
+    Customs Quarantine in Q3 breaks it, WAR lands ~Q4, so the whole case takes ~4 quarters.
+  - The CDP driver overshoots the SITREP; use the on-screen "Back" buttons (Signals → Probe
+    response → Situation report) to get back to the commitment register for a screenshot.
 - Debrief "Composite score" renders as `N / 100` and must equal the weighted mean of the five
   sub-scores shown beneath it (weights in `content/baseline/scenario.json` → scoring.weights:
   outcome .35, robustness .25, diagnosis .20, credibility .10, efficiency .10). Verify by
