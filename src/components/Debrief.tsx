@@ -12,6 +12,7 @@ import {
   YAxis,
 } from 'recharts';
 import {
+  coherenceAudit,
   computeScore,
   outcomeBand,
   runCounterfactualReport,
@@ -48,6 +49,7 @@ export function Debrief({
   const score = computeScore(state, content, report.robustness01);
   const salami = salamiAudit(state);
   const signals = signalAudit(state);
+  const coherence = coherenceAudit(state, content);
   const settlement = [...content.epilogue.settlements]
     .sort((a, b) => b.minOutcome - a.minOutcome)
     .find((s) => band.value >= s.minOutcome);
@@ -135,6 +137,14 @@ export function Debrief({
               <tr>
                 <td>Credibility</td>
                 <td className="num">{score.credibility.toFixed(1)}</td>
+              </tr>
+              <tr className="sub">
+                <td>&nbsp;&nbsp;Commitment discipline</td>
+                <td className="num">{score.discipline.toFixed(1)}</td>
+              </tr>
+              <tr className="sub">
+                <td>&nbsp;&nbsp;Rationale coherence</td>
+                <td className="num">{score.coherence.toFixed(1)}</td>
               </tr>
               <tr>
                 <td>Efficiency</td>
@@ -257,6 +267,47 @@ export function Debrief({
                     <td>{step.responseType}</td>
                     <td className="num">{step.delta.toFixed(1)}</td>
                     <td className="num">{step.cumulativeIntegrity.toFixed(0)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </section>
+
+        <section className="panel span-2">
+          <h3>Rationale audit</h3>
+          <p className="muted">
+            What you said you were doing, against what you did.{' '}
+            {coherence.scored > 0 && (
+              <>
+                {coherence.mismatches} of {coherence.scored} justified decisions contradicted their
+                stated reason.
+              </>
+            )}
+          </p>
+          {coherence.rows.length === 0 ? (
+            <p className="muted">No justified decisions were logged.</p>
+          ) : (
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Quarter</th>
+                  <th>Decision</th>
+                  <th>Stated reason</th>
+                  <th>Verdict</th>
+                  <th>Reading</th>
+                </tr>
+              </thead>
+              <tbody>
+                {coherence.rows.map((row, i) => (
+                  <tr key={`${row.turn}-${row.refId}-${i}`}>
+                    <td>{row.turn + 1}</td>
+                    <td>{row.action}</td>
+                    <td>{row.stated}</td>
+                    <td>
+                      <span className={`tag tag-${row.verdict.toLowerCase()}`}>{row.verdict}</span>
+                    </td>
+                    <td className="muted">{row.note}</td>
                   </tr>
                 ))}
               </tbody>

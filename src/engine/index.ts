@@ -10,5 +10,6 @@ export * from './rival';
 export { resolveTurn, resolveEpilogueTurn, primeInitialTurn, computeWarOutcomeBase } from './resolver';
 export { createInitialState, typeFromSeed } from './setup';
 export * from './analytics';
+export * from './coherence';
 export * from './counterfactual';
 export { sha256, stableStringify } from './hash';
