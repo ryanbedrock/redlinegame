@@ -206,8 +206,10 @@ export interface ScoreBreakdown {
   composite: number;
   band: string;
   // Components of the credibility term, reported for the debrief breakdown.
+  // coherence is null when no scoreable rationale was recorded, in which case
+  // credibility is commitment discipline alone.
   discipline: number;
-  coherence: number;
+  coherence: number | null;
 }
 
 // Weight of rationale coherence inside the credibility term: honoring
@@ -227,7 +229,9 @@ export function computeScore(
   const discipline01 = credibilityScore(state);
   const coherence01 = coherenceAudit(state, content).score01;
   const cred01 =
-    (1 - COHERENCE_WEIGHT) * discipline01 + COHERENCE_WEIGHT * coherence01;
+    coherence01 === null
+      ? discipline01
+      : (1 - COHERENCE_WEIGHT) * discipline01 + COHERENCE_WEIGHT * coherence01;
   const eff01 = efficiencyScore(state, content);
   const composite01 =
     w.outcome * outcome01 +
@@ -244,6 +248,6 @@ export function computeScore(
     composite: clamp(composite01 * 100, 0, 100),
     band: band.label,
     discipline: discipline01 * 100,
-    coherence: coherence01 * 100,
+    coherence: coherence01 === null ? null : coherence01 * 100,
   };
 }

@@ -34,12 +34,10 @@ export interface CoherenceReport {
   rows: CoherenceRow[];
   scored: number;
   mismatches: number;
-  score01: number;
+  // null when nothing scoreable was justified: there is no coherence to judge,
+  // so callers must exclude the term rather than substitute a placeholder.
+  score01: number | null;
 }
-
-// Neutral score when the player never justified anything scoreable, matching
-// the credibility default so an empty log neither rewards nor punishes.
-const NEUTRAL = 0.6;
 
 function judgeProbe(
   rationaleId: string,
@@ -80,7 +78,8 @@ function judgePurchase(
   if (!card) return { verdict: 'UNSCORED', note: 'Unknown card.' };
 
   if (card.family === 'TRACK_LEVEL') {
-    const expected = TRACK_FOR_RATIONALE[rationaleId];
+    // Readiness shortens every lead time, so it serves any stated purpose.
+    const expected = card.track === 'readiness' ? undefined : TRACK_FOR_RATIONALE[rationaleId];
     if (!expected) {
       return { verdict: 'UNSCORED', note: 'Enabling investment; consistent with any purpose.' };
     }
@@ -168,7 +167,7 @@ export function coherenceAudit(state: GameState, content: ContentPack): Coherenc
 
   const scored = rows.filter((r) => r.verdict !== 'UNSCORED').length;
   const mismatches = rows.filter((r) => r.verdict === 'MISMATCH').length;
-  const score01 = scored === 0 ? NEUTRAL : clamp((scored - mismatches) / scored, 0, 1);
+  const score01 = scored === 0 ? null : clamp((scored - mismatches) / scored, 0, 1);
   return { rows, scored, mismatches, score01 };
 }
 
