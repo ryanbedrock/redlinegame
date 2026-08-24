@@ -61,6 +61,27 @@ describe('rationale coherence audit', () => {
     const audit = coherenceAudit(next, content);
     expect(audit.rows.every((r) => r.verdict === 'UNSCORED')).toBe(true);
     expect(audit.scored).toBe(0);
+    expect(audit.score01).toBeNull();
+  });
+
+  it('does not judge readiness investments, which serve any stated purpose', () => {
+    const state = createInitialState(content, 2, 'TEST_CREATED_AT');
+    const next = playQuarter(state, {
+      purchases: [{ cardId: 'inv_ready_1', rationaleId: 'denial' }],
+    });
+    const row = coherenceAudit(next, content).rows.at(-1);
+    expect(row?.refId).toBe('inv_ready_1');
+    expect(row?.verdict).toBe('UNSCORED');
+  });
+
+  it('leaves credibility as discipline alone when nothing was justified', () => {
+    const state = createInitialState(content, 2, 'TEST_CREATED_AT');
+    const next = playQuarter(state, {
+      purchases: [{ cardId: 'sig_statement', rationaleId: 'auto' }],
+    });
+    const score = computeScore(next, content, 1);
+    expect(score.coherence).toBeNull();
+    expect(score.credibility).toBeCloseTo(score.discipline, 6);
   });
 
   it('drags the credibility term below commitment discipline alone', () => {

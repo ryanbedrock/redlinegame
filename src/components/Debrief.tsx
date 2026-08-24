@@ -144,7 +144,9 @@ export function Debrief({
               </tr>
               <tr className="sub">
                 <td>&nbsp;&nbsp;Rationale coherence</td>
-                <td className="num">{score.coherence.toFixed(1)}</td>
+                <td className="num">
+                  {score.coherence === null ? 'n/a' : score.coherence.toFixed(1)}
+                </td>
               </tr>
               <tr>
                 <td>Efficiency</td>
