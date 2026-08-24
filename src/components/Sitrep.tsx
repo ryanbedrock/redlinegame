@@ -1,20 +1,7 @@
-import type { ContentPack, GameState, IntelEstimate } from '../engine';
+import type { ContentPack, GameState } from '../engine';
 import { useGameStore } from '../store/gameStore';
 import { Hud, TRACK_LABELS } from './Hud';
-
-const METRIC_LABELS: Record<string, string> = {
-  RESOLVE_READ: 'Their read of our resolve',
-  CAPABILITY_READ: 'Their read of our capability',
-  INTENT_ASSESSMENT: 'Assessed hostile intent',
-  ARMING_READ: 'Rival arming level',
-};
-
-function intelBody(est: IntelEstimate, content: ContentPack): string {
-  const tmpl = content.intelTemplates.find((t) => t.id === est.sourceFlavorId);
-  const value = est.value.toFixed(2);
-  if (!tmpl) return `${METRIC_LABELS[est.metric] ?? est.metric}: ${value}`;
-  return tmpl.body.replace('{value}', value);
-}
+import { IntelEstimateRow } from './IntelEstimateRow';
 
 export function Sitrep({
   state,
@@ -91,15 +78,12 @@ export function Sitrep({
           {latestIntel.length === 0 && <p className="muted">No new reporting this quarter.</p>}
           <ul className="plain">
             {latestIntel.map((est) => (
-              <li key={`${est.metric}-${est.turn}`} className="intel-item">
-                <div className="intel-head">
-                  <strong>{METRIC_LABELS[est.metric] ?? est.metric}</strong>
-                  <span className={`tag tag-${est.confidence.toLowerCase()}`}>
-                    {est.confidence} confidence
-                  </span>
-                </div>
-                <p className="muted">{intelBody(est, content)}</p>
-              </li>
+              <IntelEstimateRow
+                key={`${est.metric}-${est.turn}`}
+                est={est}
+                state={state}
+                content={content}
+              />
             ))}
           </ul>
         </section>
