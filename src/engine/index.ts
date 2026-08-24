@@ -11,5 +11,6 @@ export { resolveTurn, resolveEpilogueTurn, primeInitialTurn, computeWarOutcomeBa
 export { createInitialState, typeFromSeed } from './setup';
 export * from './analytics';
 export * from './coherence';
+export * from './commitments';
 export * from './counterfactual';
 export { sha256, stableStringify } from './hash';
