@@ -114,7 +114,10 @@ export function Debrief({
 
         <section className="panel">
           <h3>Composite score</h3>
-          <p className="big">{score.composite.toFixed(1)}</p>
+          <p className="big">
+            {score.composite.toFixed(1)}
+            <span className="muted"> / 100</span>
+          </p>
           <table className="table">
             <tbody>
               <tr>
