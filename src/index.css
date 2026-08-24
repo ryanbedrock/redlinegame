@@ -395,6 +395,54 @@ li.card.selected {
   margin: 0.3rem 0 0;
 }
 
+.intel-why {
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-style: italic;
+}
+
+.gauge {
+  margin: 0.55rem 0 0.15rem;
+}
+
+.gauge-track {
+  position: relative;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: rgba(230, 237, 243, 0.08);
+}
+
+.gauge-band {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 999px;
+  background: rgba(192, 57, 43, 0.35);
+}
+
+.gauge-marker {
+  position: absolute;
+  top: -0.15rem;
+  bottom: -0.15rem;
+  width: 2px;
+  transform: translateX(-1px);
+  background: var(--ink);
+}
+
+.gauge-scale {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.25rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.gauge-reading {
+  color: var(--ink);
+  font-weight: 600;
+}
+
 .ending-banner {
   margin-top: 1.25rem;
   border-left: 4px solid var(--accent);
