@@ -218,7 +218,7 @@ export function computeScore(
   const diagnosis01 = beliefTrajectory(state, state.rival.type).score;
   const cred01 = credibilityScore(state);
   const eff01 = efficiencyScore(state, content);
-  const composite =
+  const composite01 =
     w.outcome * outcome01 +
     w.robustness * robustness01 +
     w.diagnosis * diagnosis01 +
@@ -230,7 +230,7 @@ export function computeScore(
     diagnosis: diagnosis01 * 100,
     credibility: cred01 * 100,
     efficiency: eff01 * 100,
-    composite: clamp(composite, 0, 100),
+    composite: clamp(composite01 * 100, 0, 100),
     band: band.label,
   };
 }
