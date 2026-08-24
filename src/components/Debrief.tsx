@@ -320,7 +320,8 @@ export function Debrief({
                             </span>
                           </td>
                           <td className="num">
-                            {t.pcDelta > 0 ? `+${t.pcDelta}` : t.pcDelta}
+                            {t.pcDelta > 0 ? '+' : ''}
+                            {t.pcDelta.toFixed(1)}
                           </td>
                         </tr>
                       ))}
