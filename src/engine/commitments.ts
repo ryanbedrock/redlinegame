@@ -65,5 +65,5 @@ export function commitmentSummary(entry: CommitmentLedgerEntry): string {
     const kept = entry.tests.filter((t) => t.honored).length;
     return `${promise} Tested ${kept === 1 ? 'once' : `${kept} times`} and kept — most recently ${last.probeTitle} in Q${last.turn + 1}, answered with ${last.responseType}.`;
   }
-  return `${promise} No in-scope provocation has tested it yet, so it costs ${entry.commitment.upkeepPC} PC per quarter to keep standing.`;
+  return `${promise} No in-scope provocation has tested it yet, so it costs ${entry.commitment.upkeepPC} Political Capital per quarter to keep standing.`;
 }

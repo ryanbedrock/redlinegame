@@ -304,7 +304,7 @@ export function Debrief({
                         <th>Floor</th>
                         <th>Your response</th>
                         <th>Verdict</th>
-                        <th>PC change</th>
+                        <th>Political Capital change</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -386,7 +386,7 @@ export function Debrief({
                   <th>Signal</th>
                   <th>Class</th>
                   <th>Budget</th>
-                  <th>PC</th>
+                  <th>Political Capital</th>
                   <th>Δ perceived resolve</th>
                 </tr>
               </thead>
