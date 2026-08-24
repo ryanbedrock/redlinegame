@@ -5,6 +5,7 @@
 
 import type { ContentPack, GameState, RivalType, SignalClass } from './types';
 import { clamp } from './formulas';
+import { coherenceAudit } from './coherence';
 import { sha256, stableStringify } from './hash';
 
 // Canonical state hash. Excludes volatile presentation-only meta fields so the
@@ -204,7 +205,14 @@ export interface ScoreBreakdown {
   efficiency: number;
   composite: number;
   band: string;
+  // Components of the credibility term, reported for the debrief breakdown.
+  discipline: number;
+  coherence: number;
 }
+
+// Weight of rationale coherence inside the credibility term: honoring
+// commitments dominates, but justifying moves you then contradict costs you.
+const COHERENCE_WEIGHT = 0.3;
 
 // robustness01 comes from the counterfactual engine (§6.13, §6.12); 0..1.
 export function computeScore(
@@ -216,7 +224,10 @@ export function computeScore(
   const band = outcomeBand(state, content);
   const outcome01 = band.points / 100;
   const diagnosis01 = beliefTrajectory(state, state.rival.type).score;
-  const cred01 = credibilityScore(state);
+  const discipline01 = credibilityScore(state);
+  const coherence01 = coherenceAudit(state, content).score01;
+  const cred01 =
+    (1 - COHERENCE_WEIGHT) * discipline01 + COHERENCE_WEIGHT * coherence01;
   const eff01 = efficiencyScore(state, content);
   const composite01 =
     w.outcome * outcome01 +
@@ -232,5 +243,7 @@ export function computeScore(
     efficiency: eff01 * 100,
     composite: clamp(composite01 * 100, 0, 100),
     band: band.label,
+    discipline: discipline01 * 100,
+    coherence: coherence01 * 100,
   };
 }

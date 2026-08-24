@@ -341,12 +341,14 @@ li.card.selected {
 }
 
 .tag-warn,
+.tag-mismatch,
 .tag-broken {
   color: var(--accent);
   border-color: var(--accent);
 }
 
 .tag-honored,
+.tag-consistent,
 .tag-high {
   color: #6fcf97;
   border-color: #2f6b4a;
@@ -372,6 +374,12 @@ li.card.selected {
   border-bottom: 1px solid #1e2833;
   padding: 0.35rem 0.4rem;
   vertical-align: top;
+}
+
+.table tr.sub td {
+  color: var(--muted);
+  font-size: 0.85rem;
+  border-top: none;
 }
 
 .table .num {
