@@ -1,6 +1,7 @@
 import type { ContentPack, GameState } from '../engine';
 import { useGameStore } from '../store/gameStore';
 import { Hud } from './Hud';
+import { PROBE_CHARTS } from './probeCharts';
 
 export function ProbeResponse({
   state,
@@ -14,6 +15,7 @@ export function ProbeResponse({
   const stageProbeResponse = useGameStore((s) => s.stageProbeResponse);
 
   const probe = content.probes.find((p) => p.id === state.world.stagedProbeId);
+  const chart = probe ? PROBE_CHARTS[probe.id] : undefined;
   const staged = draft.probeResponse;
   const selected = probe?.responses.find((r) => r.responseType === staged?.responseType);
   const rationales = selected
@@ -43,6 +45,16 @@ export function ProbeResponse({
           <h3>{probe.title}</h3>
           <span className="tag">severity {probe.severity}</span>
         </div>
+        {chart && (
+          <figure className="theatre-map">
+            <img src={chart.src} alt={chart.alt} />
+            <figcaption>
+              {chart.figure} &mdash; {probe.title}, quarter{' '}
+              {Math.min(state.meta.turnNumber + 1, content.scenario.turnCount)}. Positions as
+              reported; sourcing unconfirmed.
+            </figcaption>
+          </figure>
+        )}
         <p>{probe.text}</p>
         <p className="muted">
           Tags: {probe.tags.join(', ')} · conceding shifts the baseline by {probe.salamiValue}
