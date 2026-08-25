@@ -587,3 +587,30 @@ li.card.selected {
   display: flex;
   gap: 0.5rem;
 }
+
+.takeaways {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.takeaway {
+  padding: 0.55rem 0.75rem;
+  border-left: 3px solid var(--muted);
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 0 4px 4px 0;
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.takeaway.good {
+  border-left-color: #4c9a6a;
+}
+
+.takeaway.warn {
+  border-left-color: var(--accent);
+}
+>>>>>>> origin/devin/1784406219-phase0-engine
