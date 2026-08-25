@@ -583,6 +583,11 @@ li.card.selected {
   letter-spacing: 0.02em;
 }
 
+.hud-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
 .takeaways {
   list-style: none;
   margin: 0;
@@ -608,3 +613,4 @@ li.card.selected {
 .takeaway.warn {
   border-left-color: var(--accent);
 }
+>>>>>>> origin/devin/1784406219-phase0-engine

@@ -10,6 +10,7 @@ export const TRACK_LABELS: Record<string, string> = {
 
 export function Hud({ state, content }: { state: GameState; content: ContentPack }): JSX.Element {
   const reset = useGameStore((s) => s.reset);
+  const openBriefing = useGameStore((s) => s.openBriefing);
   const turnLabel = Math.min(state.meta.turnNumber + 1, content.scenario.turnCount);
 
   return (
@@ -40,9 +41,14 @@ export function Hud({ state, content }: { state: GameState; content: ContentPack
           </div>
         ))}
       </div>
-      <button className="ghost" onClick={reset}>
-        Abandon game
-      </button>
+      <div className="hud-actions">
+        <button className="ghost" onClick={openBriefing}>
+          Briefing
+        </button>
+        <button className="ghost" onClick={reset}>
+          Abandon game
+        </button>
+      </div>
     </header>
   );
 }

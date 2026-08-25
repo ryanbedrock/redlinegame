@@ -39,9 +39,13 @@ export interface GameStore {
   // The pre-game briefing is shown once, between scenario select and the first
   // situation report.
   briefingAcknowledged: boolean;
+  // True while the briefing is reopened mid-campaign from the HUD.
+  briefingOpen: boolean;
 
   startGame: (scenarioId: string, seed?: number, displayName?: string) => void;
   acknowledgeBriefing: () => void;
+  openBriefing: () => void;
+  closeBriefing: () => void;
   setView: (view: View) => void;
 
   stageProbeResponse: (probeId: string, responseType: ResponseType, rationaleId: string) => void;
@@ -65,6 +69,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   view: 'SITREP',
   turnResolved: false,
   briefingAcknowledged: false,
+  briefingOpen: false,
 
   startGame: (scenarioId, seed, displayName = 'Principal') => {
     const content = loadContentPack(scenarioId);
@@ -82,10 +87,13 @@ export const useGameStore = create<GameStore>((set, get) => ({
       view: 'SITREP',
       turnResolved: false,
       briefingAcknowledged: false,
+      briefingOpen: false,
     });
   },
 
   acknowledgeBriefing: () => set({ briefingAcknowledged: true }),
+  openBriefing: () => set({ briefingOpen: true }),
+  closeBriefing: () => set({ briefingOpen: false }),
 
   setView: (view) => set({ view }),
 
@@ -163,5 +171,6 @@ export const useGameStore = create<GameStore>((set, get) => ({
       view: 'SITREP',
       turnResolved: false,
       briefingAcknowledged: false,
+      briefingOpen: false,
     }),
 }));
