@@ -1,3 +1,4 @@
+import mapAmberApproaches from '../assets/amber-approaches.webp';
 import type { ContentPack, GameState } from '../engine';
 import { RESPONSE_ORDINAL, SIGNAL_CLASSES, type ResponseType } from '../engine';
 import { useGameStore } from '../store/gameStore';
@@ -67,6 +68,16 @@ export function Briefing({
 
       <section className="panel">
         <h3>1. Situation</h3>
+        <figure className="theatre-map">
+          <img
+            src={mapAmberApproaches}
+            alt="Chart of the Amber Approaches: Meridian Federation to the west, the Verdant Dominion to the east, the disputed claim line running down the strait between them."
+          />
+          <figcaption>
+            Figure 1 &mdash; The Amber Approaches. Basing and patrol envelopes notional; the claim
+            line is the Dominion&rsquo;s, not one you have recognised.
+          </figcaption>
+        </figure>
         <p>{scenario.flavor}</p>
         <p className="muted">{scenario.description}</p>
       </section>

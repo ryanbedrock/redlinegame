@@ -563,3 +563,22 @@ li.card.selected {
   font-size: 0.75rem;
   letter-spacing: 0.02em;
 }
+
+.theatre-map {
+  margin: 0 0 1rem;
+}
+
+.theatre-map img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid #23262d;
+  border-radius: 4px;
+}
+
+.theatre-map figcaption {
+  margin-top: 0.4rem;
+  color: var(--muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+}
