@@ -20,7 +20,7 @@ export function ScenarioSelect(): JSX.Element {
   }, []);
 
   const savedScenario = useMemo(() => {
-    if (!save) return null;
+    if (!save || save.state.meta.ending) return null;
     try {
       return loadContentPack(save.state.meta.scenarioId).scenario;
     } catch {

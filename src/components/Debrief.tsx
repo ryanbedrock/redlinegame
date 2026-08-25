@@ -62,7 +62,7 @@ export function Debrief({
       ending: state.meta.ending,
       compositeScore: score.composite,
       scenarioId: state.meta.scenarioId,
-      quartersPlayed: state.meta.turnNumber,
+      quartersPlayed: state.analytics.turnRecords.length,
     });
   }, [state, score.composite]);
   const salami = salamiAudit(state);
