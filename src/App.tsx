@@ -17,11 +17,12 @@ export function App(): JSX.Element {
   const view = useGameStore((s) => s.view);
   const turnResolved = useGameStore((s) => s.turnResolved);
   const briefingAcknowledged = useGameStore((s) => s.briefingAcknowledged);
+  const briefingOpen = useGameStore((s) => s.briefingOpen);
 
   if (!content || !state) return <ScenarioSelect />;
 
-  // Read-in before the first situation report.
-  if (!briefingAcknowledged) return <Briefing state={state} content={content} />;
+  // Read-in before the first situation report, or reopened from the HUD.
+  if (!briefingAcknowledged || briefingOpen) return <Briefing state={state} content={content} />;
 
   // The resolution summary of the final quarter is shown before handing off to
   // the epilogue or debrief.

@@ -582,3 +582,8 @@ li.card.selected {
   font-size: 0.72rem;
   letter-spacing: 0.02em;
 }
+
+.hud-actions {
+  display: flex;
+  gap: 0.5rem;
+}

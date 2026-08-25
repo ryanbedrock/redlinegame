@@ -45,7 +45,11 @@ export function Briefing({
   content: ContentPack;
 }): JSX.Element {
   const acknowledgeBriefing = useGameStore((s) => s.acknowledgeBriefing);
+  const closeBriefing = useGameStore((s) => s.closeBriefing);
   const reset = useGameStore((s) => s.reset);
+  // When reopened from the HUD mid-campaign, the briefing is a reference
+  // document: one button back to the game, no reset to scenario select.
+  const reopened = useGameStore((s) => s.briefingAcknowledged);
 
   const { scenario } = content;
   const years = scenario.turnCount / 4;
@@ -241,10 +245,18 @@ export function Briefing({
       </section>
 
       <div className="actions">
-        <button className="primary" onClick={acknowledgeBriefing}>
-          Acknowledge &mdash; assume the portfolio
-        </button>
-        <button onClick={reset}>Return to scenario select</button>
+        {reopened ? (
+          <button className="primary" onClick={closeBriefing}>
+            Return to the game
+          </button>
+        ) : (
+          <>
+            <button className="primary" onClick={acknowledgeBriefing}>
+              Acknowledge &mdash; assume the portfolio
+            </button>
+            <button onClick={reset}>Return to scenario select</button>
+          </>
+        )}
       </div>
     </main>
   );
