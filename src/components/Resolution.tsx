@@ -7,6 +7,104 @@ function signed(n: number, digits = 1): string {
   return v > 0 ? `+${v}` : `${v}`;
 }
 
+type Takeaway = { tone: 'good' | 'warn' | 'info'; text: string };
+
+function buildTakeaways(state: GameState, content: ContentPack): Takeaway[] {
+  const out: Takeaway[] = [];
+  const record = state.analytics.turnRecords[state.analytics.turnRecords.length - 1];
+  if (!record) return out;
+  const probeRecord = state.world.probeLog.find((p) => p.turn === record.turn);
+  const history = state.analytics.perceptionHistory;
+  const snapshot = history[history.length - 1];
+  const prev = history.length > 1 ? history[history.length - 2] : undefined;
+  const tuning = content.scenario.tuning;
+
+  if (probeRecord) {
+    const title =
+      content.probes.find((p) => p.id === probeRecord.probeId)?.title ?? probeRecord.probeId;
+    if (record.concessionStreak > 0) {
+      const words =
+        probeRecord.responseType === 'PROTEST'
+          ? 'A protest is words, and words alone do not defend the line: '
+          : '';
+      const atThreshold = record.concessionStreak >= tuning.concessionSalamiThreshold;
+      out.push({
+        tone: 'warn',
+        text:
+          `Your ${probeRecord.responseType} to the ${title} was read as a concession. ${words}` +
+          `status-quo integrity gave up ${Math.abs(probeRecord.statusQuoDelta).toFixed(1)} points, and your concession streak is now ` +
+          `${record.concessionStreak} of ${tuning.concessionSalamiThreshold}. ` +
+          (atThreshold
+            ? 'The Rival will now escalate its next demand — harder provocations, bigger slices.'
+            : `Reach ${tuning.concessionSalamiThreshold} in a row and the Rival escalates its next demand.`),
+      });
+    } else if (probeRecord.responseType === 'MATCH') {
+      out.push({
+        tone: 'good',
+        text: `You met the ${title} at parity: nothing conceded, no new escalation, and any concession streak is reset.`,
+      });
+    } else {
+      out.push({
+        tone: 'good',
+        text:
+          `You pushed back on the ${title} above parity. The line held and the streak reset, ` +
+          'but visible force makes you look more threatening — watch threat perception if you keep it up.',
+      });
+    }
+  } else {
+    out.push({
+      tone: 'info',
+      text: 'A quiet quarter on the line — no provocation required an answer.',
+    });
+  }
+
+  const pending = state.player.pendingInvestments;
+  if (pending.length > 0) {
+    const soonest = Math.min(...pending.map((p) => p.turnsRemaining));
+    out.push({
+      tone: 'info',
+      text:
+        `Your spending has not vanished: ${pending.length} investment${pending.length === 1 ? '' : 's'} ` +
+        `${pending.length === 1 ? 'is' : 'are'} in the pipeline and will land in ` +
+        `${soonest <= 0 ? 'the coming quarter' : `${soonest} quarter${soonest === 1 ? '' : 's'}`}. ` +
+        'Track gains appear in the ledger only when an investment arrives.',
+    });
+  }
+
+  if (snapshot) {
+    const streak = state.rival.warUtilityStreak;
+    if (streak > 0) {
+      const limit = tuning.warThresholdConsecutiveTurns;
+      out.push({
+        tone: 'warn',
+        text:
+          `War utility (${snapshot.warUtility.toFixed(2)}) has been above the Rival's war line for ` +
+          `${streak} consecutive quarter${streak === 1 ? '' : 's'} — ${limit} in a row and the game ends in WAR. ` +
+          'Cool it down: avoid feeding threat perception, and do not look like an easy win.',
+      });
+    } else {
+      out.push({
+        tone: 'good',
+        text:
+          `War utility (${snapshot.warUtility.toFixed(2)}) is below the Rival's war line — no momentum toward war this quarter.`,
+      });
+    }
+    if (prev) {
+      const dr = snapshot.perceivedResolve - prev.perceivedResolve;
+      if (Math.abs(dr) >= 0.005) {
+        out.push({
+          tone: 'info',
+          text:
+            `The Rival's read of your resolve moved ${signed(dr, 2)} to ${snapshot.perceivedResolve.toFixed(2)}. ` +
+            'Perception updates slowly and noisily — one quarter rarely moves it far, and the number is their estimate, not the truth.',
+        });
+      }
+    }
+  }
+
+  return out;
+}
+
 export function Resolution({
   state,
   content,
@@ -141,6 +239,17 @@ export function Resolution({
               })}
             </ul>
           )}
+        </section>
+
+        <section className="panel span-2">
+          <h3>What this means</h3>
+          <ul className="takeaways">
+            {buildTakeaways(state, content).map((t, i) => (
+              <li key={i} className={`takeaway ${t.tone}`}>
+                {t.text}
+              </li>
+            ))}
+          </ul>
         </section>
 
         <section className="panel span-2">
