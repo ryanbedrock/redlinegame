@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { chartTheme } from '../theme';
 import {
   Bar,
   BarChart,
@@ -171,17 +172,17 @@ export function Debrief({
           <div className="chart">
             <ResponsiveContainer width="100%" height={280}>
               <LineChart data={perceptionData}>
-                <CartesianGrid stroke="#233042" />
-                <XAxis dataKey="turn" stroke="#9aa7b4" />
-                <YAxis stroke="#9aa7b4" domain={[0, 1]} />
+                <CartesianGrid stroke={chartTheme.grid} />
+                <XAxis dataKey="turn" stroke={chartTheme.axis} />
+                <YAxis stroke={chartTheme.axis} domain={[0, 1]} />
                 <Tooltip
-                  contentStyle={{ background: '#131a22', border: '1px solid #233042' }}
-                  labelStyle={{ color: '#e6edf3' }}
+                  contentStyle={{ background: chartTheme.tooltipBg, border: `1px solid ${chartTheme.tooltipBorder}` }}
+                  labelStyle={{ color: chartTheme.tooltipText }}
                 />
                 <Legend />
-                <Line type="monotone" dataKey="warUtility" stroke="#c0392b" dot={false} />
-                <Line type="monotone" dataKey="threatPerception" stroke="#e0a458" dot={false} />
-                <Line type="monotone" dataKey="perceivedResolve" stroke="#5aa9e6" dot={false} />
+                <Line type="monotone" dataKey="warUtility" stroke={chartTheme.seriesCritical} dot={false} />
+                <Line type="monotone" dataKey="threatPerception" stroke={chartTheme.seriesWarning} dot={false} />
+                <Line type="monotone" dataKey="perceivedResolve" stroke={chartTheme.seriesInfo} dot={false} />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -196,14 +197,14 @@ export function Debrief({
           <div className="chart">
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={counterfactualData}>
-                <CartesianGrid stroke="#233042" />
-                <XAxis dataKey="name" stroke="#9aa7b4" interval={0} height={60} angle={-20} dy={16} />
-                <YAxis stroke="#9aa7b4" domain={[0, 100]} />
+                <CartesianGrid stroke={chartTheme.grid} />
+                <XAxis dataKey="name" stroke={chartTheme.axis} interval={0} height={60} angle={-20} dy={16} />
+                <YAxis stroke={chartTheme.axis} domain={[0, 100]} />
                 <Tooltip
-                  contentStyle={{ background: '#131a22', border: '1px solid #233042' }}
-                  labelStyle={{ color: '#e6edf3' }}
+                  contentStyle={{ background: chartTheme.tooltipBg, border: `1px solid ${chartTheme.tooltipBorder}` }}
+                  labelStyle={{ color: chartTheme.tooltipText }}
                 />
-                <Bar dataKey="outcome" fill="#c0392b" />
+                <Bar dataKey="outcome" fill={chartTheme.seriesCritical} />
               </BarChart>
             </ResponsiveContainer>
           </div>
