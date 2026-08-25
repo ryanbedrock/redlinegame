@@ -7,6 +7,7 @@
 
 import { create } from 'zustand';
 import { loadContentPack } from '../content-loader';
+import { pushPlatformSave, type PlatformSave } from '../platformBridge';
 import {
   createInitialState,
   resolveEpilogueTurn,
@@ -43,6 +44,9 @@ export interface GameStore {
   briefingOpen: boolean;
 
   startGame: (scenarioId: string, seed?: number, displayName?: string) => void;
+  // Restores a campaign from a platform save: the exact serialized state plus
+  // the committed-decision log (the debrief counterfactuals need it).
+  resumeGame: (save: PlatformSave) => void;
   acknowledgeBriefing: () => void;
   openBriefing: () => void;
   closeBriefing: () => void;
@@ -87,6 +91,20 @@ export const useGameStore = create<GameStore>((set, get) => ({
       view: 'SITREP',
       turnResolved: false,
       briefingAcknowledged: false,
+      briefingOpen: false,
+    });
+  },
+
+  resumeGame: (save) => {
+    const content = loadContentPack(save.state.meta.scenarioId);
+    set({
+      content,
+      state: save.state,
+      draft: emptyDecisions(save.state.meta.turnNumber),
+      committed: save.committed,
+      view: 'SITREP',
+      turnResolved: false,
+      briefingAcknowledged: true,
       briefingOpen: false,
     });
   },
@@ -139,9 +157,11 @@ export const useGameStore = create<GameStore>((set, get) => ({
     if (!content || !state) return;
     const decisions: TurnDecisions = { ...draft, turn: state.meta.turnNumber };
     const nextState = resolveTurn(state, decisions, content);
+    const nextCommitted = [...committed, decisions];
+    pushPlatformSave({ version: 1, state: nextState, committed: nextCommitted });
     set({
       state: nextState,
-      committed: [...committed, decisions],
+      committed: nextCommitted,
       draft: emptyDecisions(nextState.meta.turnNumber),
       // Show the resolution summary; EPILOGUE/DEBRIEF are driven by meta.phase.
       view: 'RESOLUTION',
@@ -159,6 +179,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       { turn: state.meta.turnNumber, purchases: [], epilogueChoice: { decisionId, optionId } },
       content,
     );
+    pushPlatformSave({ version: 1, state: nextState, committed: get().committed });
     set({ state: nextState, draft: emptyDecisions(nextState.meta.turnNumber) });
   },
 

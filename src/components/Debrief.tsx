@@ -1,4 +1,5 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
+import { postPlatformComplete } from '../platformBridge';
 import { chartTheme } from '../theme';
 import {
   Bar,
@@ -50,6 +51,20 @@ export function Debrief({
   );
   const band = outcomeBand(state, content);
   const score = computeScore(state, content, report.robustness01);
+
+  // Report the terminal result to the platform once per mounted debrief; the
+  // platform side is also idempotent, so a refresh cannot double-score.
+  const reported = useRef(false);
+  useEffect(() => {
+    if (reported.current || !state.meta.ending) return;
+    reported.current = true;
+    postPlatformComplete({
+      ending: state.meta.ending,
+      compositeScore: score.composite,
+      scenarioId: state.meta.scenarioId,
+      quartersPlayed: state.meta.turnNumber,
+    });
+  }, [state, score.composite]);
   const salami = salamiAudit(state);
   const signals = signalAudit(state);
   const coherence = coherenceAudit(state, content);
