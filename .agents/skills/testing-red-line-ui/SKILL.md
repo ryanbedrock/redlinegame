@@ -87,3 +87,11 @@ with a page-side loop injected via `Runtime.evaluate`:
   checkpoint each quarter — do so if you want a non-trivial weighted-mean check.
 - The debrief runs `runCounterfactualReport` synchronously; on these scenarios it rendered in
   well under a second, but watch for a hang if scenario turn counts grow.
+- Deterministic route that surfaces all four probes in one campaign (scenario 1, default seed
+  1337, no purchases, no diagnosis, no inbox responses): answer the rungs in order
+  `MATCH, PROTEST, ENFORCE, PROTEST, ENFORCE, ESCALATE, ENFORCE, ESCALATE, MATCH, ESCALATE,
+  ESCALATE, MATCH, MATCH, CONCEDE, ESCALATE, ENFORCE` → fishing Q1, incursion Q3, blockade
+  Q11, seizure Q16, and WAR at Q16 (epilogue renders). Confirmed twice.
+- Staging a rung is free: only the *committed* rung enters the resolver, so on any probe screen
+  you can click all five rungs in turn — harvesting all five `resp-<probe>-<rung>.webp` response
+  charts — without changing which probe appears next quarter.
