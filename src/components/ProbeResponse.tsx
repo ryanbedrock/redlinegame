@@ -1,7 +1,7 @@
 import type { ContentPack, GameState } from '../engine';
 import { useGameStore } from '../store/gameStore';
 import { Hud } from './Hud';
-import { PROBE_CHARTS } from './probeCharts';
+import { PROBE_CHARTS, RESPONSE_CHARTS } from './probeCharts';
 
 export function ProbeResponse({
   state,
@@ -21,6 +21,8 @@ export function ProbeResponse({
   const rationales = selected
     ? content.rationales.find((r) => r.id === selected.rationaleSetId)
     : undefined;
+  const responseChart =
+    probe && selected ? RESPONSE_CHARTS[probe.id]?.[selected.responseType] : undefined;
 
   if (!probe) {
     return (
@@ -83,6 +85,21 @@ export function ProbeResponse({
           ))}
         </div>
       </section>
+
+      {selected && responseChart && (
+        <section className="panel">
+          <div className="intel-head">
+            <h3>Your response, as it would look</h3>
+            <span className="tag">{selected.responseType}</span>
+          </div>
+          <figure className="theatre-map">
+            <img src={responseChart.src} alt={responseChart.alt} />
+            <figcaption>
+              {selected.label} &mdash; {responseChart.summary} Projected; not yet ordered.
+            </figcaption>
+          </figure>
+        </section>
+      )}
 
       {selected && rationales && (
         <section className="panel">
