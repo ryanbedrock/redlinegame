@@ -1,9 +1,32 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { listScenarios, loadContentPack } from '../content-loader';
+import { fetchPlatformSave, platformAvailable, type PlatformSave } from '../platformBridge';
 import { useGameStore } from '../store/gameStore';
 
 export function ScenarioSelect(): JSX.Element {
   const startGame = useGameStore((s) => s.startGame);
+  const resumeGame = useGameStore((s) => s.resumeGame);
+  const [save, setSave] = useState<PlatformSave | null>(null);
+
+  useEffect(() => {
+    if (!platformAvailable()) return;
+    let cancelled = false;
+    void fetchPlatformSave().then((s) => {
+      if (!cancelled) setSave(s);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const savedScenario = useMemo(() => {
+    if (!save) return null;
+    try {
+      return loadContentPack(save.state.meta.scenarioId).scenario;
+    } catch {
+      return null;
+    }
+  }, [save]);
   const scenarios = useMemo(() => {
     return listScenarios().map((s) => {
       const { scenario } = loadContentPack(s.id);
@@ -25,6 +48,20 @@ export function ScenarioSelect(): JSX.Element {
         <h1>The Red Line</h1>
         <p className="subtitle">Costly Signals in the Long Pre-War</p>
       </header>
+      {save && savedScenario && (
+        <section className="resume-banner">
+          <h2>Campaign in progress</h2>
+          <p>
+            {savedScenario.name} &mdash; quarter {Math.min(save.state.meta.turnNumber + 1, savedScenario.turnCount)} of{' '}
+            {savedScenario.turnCount}. Your campaign is saved after each committed quarter;
+            resume where you left off, or open a new file below (starting a new campaign
+            overwrites this save at its first committed quarter).
+          </p>
+          <button className="primary" onClick={() => resumeGame(save)}>
+            Resume campaign
+          </button>
+        </section>
+      )}
       <section>
         <p>
           Three files, one problem: deter an adversary whose intentions you cannot read directly,
