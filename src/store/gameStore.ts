@@ -36,8 +36,12 @@ export interface GameStore {
   // True once the current quarter has been resolved by the engine, so the
   // resolution screen switches from "resolve" to the outcome summary.
   turnResolved: boolean;
+  // The pre-game briefing is shown once, between scenario select and the first
+  // situation report.
+  briefingAcknowledged: boolean;
 
   startGame: (scenarioId: string, seed?: number, displayName?: string) => void;
+  acknowledgeBriefing: () => void;
   setView: (view: View) => void;
 
   stageProbeResponse: (probeId: string, responseType: ResponseType, rationaleId: string) => void;
@@ -60,6 +64,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   committed: [],
   view: 'SITREP',
   turnResolved: false,
+  briefingAcknowledged: false,
 
   startGame: (scenarioId, seed, displayName = 'Principal') => {
     const content = loadContentPack(scenarioId);
@@ -76,8 +81,11 @@ export const useGameStore = create<GameStore>((set, get) => ({
       committed: [],
       view: 'SITREP',
       turnResolved: false,
+      briefingAcknowledged: false,
     });
   },
+
+  acknowledgeBriefing: () => set({ briefingAcknowledged: true }),
 
   setView: (view) => set({ view }),
 
@@ -154,5 +162,6 @@ export const useGameStore = create<GameStore>((set, get) => ({
       committed: [],
       view: 'SITREP',
       turnResolved: false,
+      briefingAcknowledged: false,
     }),
 }));
