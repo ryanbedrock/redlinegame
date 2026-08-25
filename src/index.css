@@ -556,3 +556,10 @@ li.card.selected {
 .briefing .table td {
   vertical-align: top;
 }
+
+.scenario-facts {
+  margin: 0.5rem 0 0.9rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+}

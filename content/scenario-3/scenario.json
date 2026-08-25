@@ -1,10 +1,10 @@
 {
   "id": "scenario-3",
   "name": "The Mirror's Edge",
-  "description": "A ten-year confrontation against a Rival that arms out of fear, not appetite. 40 quarters; manage the spiral or manufacture the war you dread.",
+  "description": "Ten years — 40 quarters — with a stronger intelligence apparatus and an adversary whose build-up may be fear or may be appetite. The two readings demand opposite policies: guess wrong in either direction and your own posture helps write the war.",
   "turnCount": 40,
   "defaultSeed": 3141,
-  "flavor": "The Verdant Dominion insists its build-up is defensive — a response to your forward posture. Whether that is true, and what to do about it, is the whole of the problem.",
+  "flavor": "The Verdant Dominion insists its build-up answers your forward posture, nothing more. Your own analysts are split on whether that is a genuine security dilemma or a cover story — and the difference decides whether restraint cools the strait or simply buys the Dominion time.",
   "seedTypePins": [
     { "seed": 3, "type": "SECURITY_SEEKER" }
   ],
