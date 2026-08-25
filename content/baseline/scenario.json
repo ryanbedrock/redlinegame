@@ -1,10 +1,10 @@
 {
   "id": "scenario-1",
   "name": "The Approaches",
-  "description": "A eight-year cold confrontation over a contested maritime frontier. Deter the Rival across 32 quarters without provoking the war you seek to prevent.",
+  "description": "Eight years — 32 quarters — of cold confrontation over a contested maritime frontier. The most forgiving of the three files: a full appropriation, balanced forces, and a Rival that has not yet decided what your guarantees are worth.",
   "turnCount": 32,
   "defaultSeed": 1337,
-  "flavor": "You are the national security principal of the Meridian Federation. Across the strait lies the Verdant Dominion, whose claims on the Amber Approaches have hardened. Neither side wants war — yet.",
+  "flavor": "You are the national security principal of the Meridian Federation. Across the strait lies the Verdant Dominion, whose claims on the Amber Approaches have hardened from rhetoric into patrols. Neither capital wants war — yet. Your task is to keep that sentence true for eight years without surrendering the Approaches a slice at a time.",
   "seedTypePins": [
     { "seed": 1, "type": "OPPORTUNIST" },
     { "seed": 2, "type": "PRESSURED_EXPANSIONIST" },

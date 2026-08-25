@@ -1,10 +1,10 @@
 {
   "id": "scenario-2",
   "name": "The Closing Window",
-  "description": "A longer, ten-year confrontation against a Rival whose domestic clock is ticking. 40 quarters; early deterrence is everything.",
+  "description": "Ten years — 40 quarters — on a leaner appropriation, against a Rival that entered the confrontation already better armed than you. The long horizon punishes drift: standing you fail to establish early is worth less later, and the treasury will not fund every recovery.",
   "turnCount": 40,
   "defaultSeed": 2718,
-  "flavor": "The Verdant Dominion's leadership has staked its legitimacy on resolving the Amber question within a generation. Time is not on the side of patience.",
+  "flavor": "The Verdant Dominion's leadership behaves as though it is working to a deadline — legitimacy staked on settling the Amber question within a generation. Your analysts call that a working hypothesis, not a finding, and the file says so in its first paragraph.",
   "seedTypePins": [
     { "seed": 2, "type": "PRESSURED_EXPANSIONIST" }
   ],
