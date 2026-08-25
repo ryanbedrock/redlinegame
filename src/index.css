@@ -521,3 +521,38 @@ li.card.selected {
     gap: 0.9rem;
   }
 }
+
+/* Pre-game briefing: read-in between scenario select and the first sitrep. */
+.briefing {
+  max-width: 900px;
+}
+
+.classification {
+  margin: 0 0 0.4rem;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.7rem;
+}
+
+.briefing .panel {
+  margin-bottom: 1rem;
+}
+
+.briefing .panel > p:last-child {
+  margin-bottom: 0;
+}
+
+.briefing ul.plain li,
+.briefing ol.steps li {
+  margin-bottom: 0.5rem;
+}
+
+.briefing ol.steps {
+  padding-left: 1.2rem;
+  list-style: decimal;
+}
+
+.briefing .table td {
+  vertical-align: top;
+}
