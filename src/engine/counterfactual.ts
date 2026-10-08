@@ -19,6 +19,7 @@ import { createInitialState } from './setup';
 import { buildRivalVars, buildPlayerVars } from './context';
 import { evalBool } from './conditions';
 import { hash32 } from './rng';
+import { terminationBonus } from './formulas';
 import { hashState, outcomeValue } from './analytics';
 
 // Fixed timestamp for counterfactual runs so hashes are stable.
@@ -47,7 +48,7 @@ function epilogueDecide(state: GameState, content: ContentPack): TurnDecisions {
   for (const o of decision.options) {
     let v = o.outcomeDelta;
     if (o.terminationLeverage) {
-      v += Math.max(0, state.player.tracks.punishment - 3);
+      v += terminationBonus(state.player.tracks.punishment, content.epilogue.outcomeFormula);
     }
     if (v > bestVal) {
       bestVal = v;

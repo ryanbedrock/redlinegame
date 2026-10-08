@@ -2,6 +2,7 @@ import { useState } from 'react';
 import {
   RIVAL_TYPES,
   buildPlayerVars,
+  effectiveLeadTime,
   evalBool,
   type Card,
   type ContentPack,
@@ -51,11 +52,13 @@ function evaluateCard(
 function CardRow({
   status,
   content,
+  readiness,
   rationaleId,
   onRationale,
 }: {
   status: CardStatus;
   content: ContentPack;
+  readiness: number;
   rationaleId: string;
   onRationale: (cardId: string, rationaleId: string) => void;
 }): JSX.Element {
@@ -87,7 +90,7 @@ function CardRow({
       <p className="meta">
         {card.family === 'SIGNAL' ? (
           <>
-            <span className="tag">{card.signalType}</span>
+            <span className="tag">{card.signalType?.replace(/_/g, ' ')}</span>
             {card.offensiveCoded && <span className="tag tag-warn">offensive-coded</span>}
             {card.commitmentSpec && (
               <span className="tag">commits to {card.commitmentSpec.floorResponse}</span>
@@ -96,7 +99,12 @@ function CardRow({
         ) : (
           <span className="tag">
             {TRACK_LABELS[card.track ?? ''] ?? card.track} → level {card.level} ·{' '}
-            {card.leadTimeTurns}q lead
+            {effectiveLeadTime(
+              card.leadTimeTurns,
+              readiness,
+              content.scenario.tuning.trackLeadTimeReadinessBonus,
+            )}
+            q lead
           </span>
         )}
       </p>
@@ -173,6 +181,7 @@ export function SignalsInvestments({
           key={card.id}
           status={evaluateCard(card, state, content, draftedCounts, remaining)}
           content={content}
+          readiness={state.player.tracks.readiness}
           rationaleId={rationaleFor(card)}
           onRationale={onRationale}
         />

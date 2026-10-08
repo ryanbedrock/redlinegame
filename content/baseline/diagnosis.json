@@ -1,5 +1,5 @@
 {
-  "promptText": "Based on the Rival's behaviour and your intelligence, what kind of adversary do you believe you are facing?",
+  "promptText": "Based on the Rival's behaviour and your intelligence, what kind of adversary do you believe you are facing? You are scored on the assessment you hold when half your total spending is committed (or your final one, if you spend nothing), and on how early you first named the right type.",
   "unsureText": "Insufficient evidence — I am not yet ready to commit to a type.",
   "typeDescriptions": {
     "OPPORTUNIST": "A greedy opportunist: probes for cheap gains and only fights when it looks easy. Deterred by demonstrated denial and resolve.",

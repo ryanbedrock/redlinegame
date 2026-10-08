@@ -77,7 +77,7 @@
     "id": "sig_reassure",
     "family": "SIGNAL",
     "title": "Open a Reassurance Channel",
-    "text": "Privately signal that your build-up is defensive and your aims limited. Dampens the security dilemma — at some cost to perceived resolve.",
+    "text": "Privately signal that your build-up is defensive and your aims limited. Dampens the security dilemma; adds little to how firm you look.",
     "cost": { "budget": 1, "politicalCapital": 2 },
     "leadTimeTurns": 0,
     "signalType": "REASSURANCE",
