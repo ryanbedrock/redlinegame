@@ -1,4 +1,4 @@
-import { clamp01, intelSigma } from '../engine';
+import { intelSigma } from '../engine';
 import type { ContentPack, GameState, IntelEstimate } from '../engine';
 
 const METRIC_LABELS: Record<string, string> = {
@@ -39,9 +39,9 @@ export function IntelEstimateRow({
     content.scenario.tuning.intelSigmaLevel10,
   );
   const reading = coarse(est.value);
-  const lo = coarse(clamp01(est.value - sigma));
-  const hi = coarse(clamp01(est.value + sigma));
   const margin = Math.round(sigma * 100);
+  const lo = Math.max(0, reading - margin);
+  const hi = Math.min(100, reading + margin);
 
   return (
     <li className="intel-item">

@@ -54,9 +54,13 @@ function judgeProbe(
       : { verdict: 'MISMATCH', note: 'Claimed restraint avoids a pretext, then escalated.' };
   }
   if (rationaleId === 'proportionate') {
-    return response === 'CONCEDE' || response === 'ESCALATE'
-      ? { verdict: 'MISMATCH', note: 'Claimed proportionality, then chose an off-ladder rung.' }
-      : { verdict: 'CONSISTENT', note: 'Response sat on the proportionate rung.' };
+    if (response === 'CONCEDE') {
+      return { verdict: 'MISMATCH', note: 'Claimed proportionality, then gave ground.' };
+    }
+    if (response === 'ESCALATE') {
+      return { verdict: 'MISMATCH', note: 'Claimed proportionality, then escalated past the provocation.' };
+    }
+    return { verdict: 'CONSISTENT', note: 'Response sat on the proportionate rung.' };
   }
   return { verdict: 'UNSCORED', note: 'No coherence rule for this rationale.' };
 }
@@ -78,7 +82,7 @@ function judgePurchase(
   if (!card) return { verdict: 'UNSCORED', note: 'Unknown card.' };
 
   if (card.family === 'TRACK_LEVEL') {
-    // Readiness shortens every lead time, so it serves any stated purpose.
+    // Readiness is an enabler for every track, so it serves any stated purpose.
     const expected = card.track === 'readiness' ? undefined : TRACK_FOR_RATIONALE[rationaleId];
     if (!expected) {
       return { verdict: 'UNSCORED', note: 'Enabling investment; consistent with any purpose.' };

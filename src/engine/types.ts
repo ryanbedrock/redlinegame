@@ -349,7 +349,6 @@ export interface ScenarioTuning {
   honoredTestPC: number;
   pivotSubSeeds: number;
   maxPivots: number;
-  unsurePenaltyTurnFraction: number; // e.g. 0.6
   trackThreatDeltas: Record<TrackId, number>;
   trackLeadTimeReadinessBonus: number; // turns shaved per readiness level (fractional)
   intelSigmaLevel0: number;

@@ -29,8 +29,12 @@ import {
   clamp01,
   credibilityMultiplier,
   effectiveBackDowns as effBackDowns,
+  effectiveLeadTime,
+  intelConfidence,
   intelSigma,
   probeDefaultEffects,
+  probeStakes,
+  terminationBonus,
 } from './formulas';
 import {
   applyEffects,
@@ -65,9 +69,11 @@ function phaseProbeResponse(
   if (!probe) return {};
 
   const streakBefore = next.world.concessionStreak;
-  const escalated = streakBefore >= content.scenario.tuning.concessionSalamiThreshold;
-  const severity = escalated ? probe.severity + 1 : probe.severity;
-  const salamiValue = escalated ? probe.salamiValue * 1.5 : probe.salamiValue;
+  const { severity, salamiValue } = probeStakes(
+    probe,
+    streakBefore,
+    content.scenario.tuning.concessionSalamiThreshold,
+  );
 
   // Determine the chosen response; inaction (no matching option) = CONCEDE.
   const chosen = decisions.probeResponse;
@@ -235,10 +241,11 @@ function phaseSignalsInvestments(
       });
     } else {
       // TRACK_LEVEL: queue with lead time, reduced by readiness.
-      const readinessBonus =
-        next.player.tracks.readiness *
-        content.scenario.tuning.trackLeadTimeReadinessBonus;
-      const lead = Math.max(1, Math.round(card.leadTimeTurns - readinessBonus));
+      const lead = effectiveLeadTime(
+        card.leadTimeTurns,
+        next.player.tracks.readiness,
+        content.scenario.tuning.trackLeadTimeReadinessBonus,
+      );
       next.player.pendingInvestments.push({
         trackOrSignalId: card.id,
         turnsRemaining: lead,
@@ -367,12 +374,15 @@ function phaseEvents(next: GameState, content: ContentPack): string[] {
     if (ev.cooldownTurns !== undefined && last !== undefined && turn - last < ev.cooldownTurns) {
       return false;
     }
-    if (ev.schedule) {
-      if (turn < ev.schedule.minTurn || turn > ev.schedule.maxTurn) return false;
+    // A scenario beat re-times the event for that scenario.
+    const beat = content.scenario.beats.find((b) => b.eventId === ev.id);
+    const schedule = beat ?? ev.schedule;
+    if (schedule) {
+      if (turn < schedule.minTurn || turn > schedule.maxTurn) return false;
     }
     if (ev.condition && !evalBool(ev.condition, vars)) return false;
     // Scheduled events with a window fire as soon as in-window (once).
-    if (!ev.schedule && !ev.condition) return false;
+    if (!schedule && !ev.condition) return false;
     return true;
   });
 
@@ -387,6 +397,7 @@ function phaseEvents(next: GameState, content: ContentPack): string[] {
       next.world.biasActive = {
         metric: ev.biasMetric,
         amount: ev.biasAmount ?? 0,
+        // Biases the next biasDurationTurns readings (staged at turn+1 onward).
         expiresOnTurn: turn + (ev.biasDurationTurns ?? 3),
       };
     }
@@ -422,12 +433,6 @@ function truthForMetric(next: GameState, metric: IntelMetric): number {
   }
 }
 
-function confidenceFor(sigma: number): 'LOW' | 'MODERATE' | 'HIGH' {
-  if (sigma >= 0.18) return 'LOW';
-  if (sigma >= 0.1) return 'MODERATE';
-  return 'HIGH';
-}
-
 function phaseIntel(next: GameState, content: ContentPack): void {
   const turn = next.meta.turnNumber;
   const sigma = intelSigma(
@@ -439,16 +444,16 @@ function phaseIntel(next: GameState, content: ContentPack): void {
   for (const metric of INTEL_METRICS) {
     const truth = truthForMetric(next, metric);
     const n = noiseAdditive(next.meta.seed, next.rng, 'intel', sigma);
-    const biasAmt = bias && bias.metric === metric && bias.expiresOnTurn > turn ? bias.amount : 0;
+    const biasAmt = bias && bias.metric === metric && bias.expiresOnTurn >= turn ? bias.amount : 0;
     const value = clamp01(truth + n + biasAmt);
     const template = content.intelTemplates.find(
-      (t) => t.metric === metric && t.confidence === confidenceFor(sigma),
+      (t) => t.metric === metric && t.confidence === intelConfidence(sigma),
     );
     const est: IntelEstimate = {
       turn,
       metric,
       value,
-      confidence: confidenceFor(sigma),
+      confidence: intelConfidence(sigma),
       sourceFlavorId: template?.id ?? `${metric}_default`,
     };
     next.world.intel.push(est);
@@ -689,12 +694,7 @@ export function resolveEpilogueTurn(
     if (opt) {
       let delta = opt.outcomeDelta;
       if (opt.terminationLeverage) {
-        const f = content.epilogue.outcomeFormula;
-        const bonus = Math.min(
-          f.terminationCap,
-          Math.max(0, next.player.tracks.punishment - 3) * f.terminationPerLevelAbove3,
-        );
-        delta += bonus;
+        delta += terminationBonus(next.player.tracks.punishment, content.epilogue.outcomeFormula);
       }
       next.epilogue.finalOutcome = clamp(next.epilogue.finalOutcome + delta, 0, 100);
       next.epilogue.decisionsTaken.push(`${decision.id}:${opt.id}`);

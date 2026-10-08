@@ -25,17 +25,24 @@ function buildTakeaways(state: GameState, content: ContentPack): Takeaway[] {
     if (record.concessionStreak > 0) {
       const words =
         probeRecord.responseType === 'PROTEST'
-          ? 'A protest is words, and words alone do not defend the line: '
-          : '';
-      const atThreshold = record.concessionStreak >= tuning.concessionSalamiThreshold;
+          ? 'A protest is words, and words alone do not defend the line: status-quo'
+          : 'Status-quo';
+      const threshold = tuning.concessionSalamiThreshold;
+      const atThreshold = record.concessionStreak >= threshold;
+      const streak =
+        record.concessionStreak > threshold
+          ? `${record.concessionStreak} in a row, past the threshold of ${threshold}`
+          : `${record.concessionStreak} of ${threshold}`;
       out.push({
         tone: 'warn',
         text:
-          `Your ${probeRecord.responseType} to the ${title} was read as a concession. ${words}` +
-          `status-quo integrity gave up ${Math.abs(probeRecord.statusQuoDelta).toFixed(1)} points, and your concession streak is now ` +
-          `${record.concessionStreak} of ${tuning.concessionSalamiThreshold}. ` +
-          (atThreshold
-            ? 'The Rival will now escalate its next demand — harder provocations, bigger slices.'
+          `Your ${probeRecord.responseType} to the ${title} was read as a concession. ${words} ` +
+          `integrity gave up ${Math.abs(probeRecord.statusQuoDelta).toFixed(1)} points, and your concession streak is now ` +
+          `${streak}. ` +
+          (record.concessionStreak > threshold
+            ? 'The Rival keeps escalating its demands until you stop giving ground.'
+            : atThreshold
+              ? 'The Rival will now escalate its next demand — harder provocations, bigger slices.'
             : `Reach ${tuning.concessionSalamiThreshold} in a row and the Rival escalates its next demand.`),
       });
     } else if (probeRecord.responseType === 'MATCH') {
@@ -272,10 +279,6 @@ export function Resolution({
                 <tr>
                   <td>War utility</td>
                   <td className="num">{snapshot.warUtility.toFixed(2)}</td>
-                </tr>
-                <tr>
-                  <td>Internal pressure</td>
-                  <td className="num">{snapshot.internalPressure.toFixed(2)}</td>
                 </tr>
               </tbody>
             </table>

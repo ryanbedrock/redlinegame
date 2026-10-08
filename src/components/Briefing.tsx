@@ -12,9 +12,9 @@ const RESPONSE_LADDER = (Object.keys(RESPONSE_ORDINAL) as ResponseType[]).sort(
 
 const RESPONSE_GLOSS: Record<ResponseType, string> = {
   CONCEDE: 'Yield the point. Cheapest today; it shifts the baseline in the Rival\u2019s favour.',
-  PROTEST: 'Words only. Registers displeasure at almost no cost \u2014 and is read that way.',
+  PROTEST: 'Words only. Still read as a concession: it gives up three-quarters of the slice and extends the concession streak.',
   MATCH: 'Meet the move in kind. The floor most declaratory commitments demand.',
-  ENFORCE: 'Impose a cost on the Rival. Expensive in political capital, legible as resolve.',
+  ENFORCE: 'Impose a cost on the Rival. Wins back some ground, legible as resolve, and raises threat perception.',
   ESCALATE: 'Raise the stakes above the provocation. Deters, and feeds the spiral.',
 };
 
@@ -31,7 +31,7 @@ const TRACK_GLOSS: Record<string, string> = {
   denial: 'Ability to defeat the move itself. Defensive-coded: deters without inflaming.',
   punishment: 'Ability to impose costs after the fact. Potent, and offensive-coded.',
   intelligence: 'Quality of your reporting. Every level narrows the error band on estimates.',
-  readiness: 'Ability to act on short notice. Shortens the lead time on what you buy.',
+  readiness: 'Ability to act on short notice. At high levels it shortens the lead time on what you buy.',
 };
 
 // Pre-game read-in: the situation, the mechanics of a quarter, the resources,
@@ -115,8 +115,8 @@ export function Briefing({
       <section className="panel">
         <h3>3. Conduct of a quarter</h3>
         <p className="muted">
-          Every quarter runs the same four steps. Nothing you buy takes effect the moment you buy
-          it.
+          Every quarter runs the same four steps. Signals and commitments register the quarter you
+          make them; investments land only after a lead time.
         </p>
         <ol className="plain steps">
           <li>

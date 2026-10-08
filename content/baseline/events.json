@@ -2,15 +2,15 @@
   {
     "id": "evt_budget_windfall",
     "title": "Supplemental Appropriation",
-    "text": "The legislature passes an emergency defense supplemental. Your budget expands this quarter.",
+    "text": "The legislature passes an emergency defense supplemental. The extra funds are available for next quarter's spending.",
     "schedule": { "minTurn": 3, "maxTurn": 6 },
     "effects": [ { "target": "budget", "op": "add", "value": 8 } ],
     "maxFires": 1
   },
   {
     "id": "evt_intel_deception",
-    "title": "Deception Operation Detected — Too Late",
-    "text": "The Rival has been feeding your collection a curated picture. Your intent estimates have been running optimistic.",
+    "title": "Deception Operation Detected",
+    "text": "The Rival is feeding your collection a curated picture. For the next three quarters, expect your intent estimates to run optimistic.",
     "schedule": { "minTurn": 6, "maxTurn": 11 },
     "effects": [],
     "biasMetric": "INTENT_ASSESSMENT",
@@ -21,7 +21,7 @@
   {
     "id": "evt_domestic_crisis",
     "title": "Domestic Political Crisis",
-    "text": "A budget standoff at home consumes the leadership's attention, degrading your capacity to act decisively.",
+    "text": "A budget standoff at home consumes the leadership's attention and drains your political capital.",
     "schedule": { "minTurn": 10, "maxTurn": 15 },
     "effects": [
       { "target": "playerDistractionActive", "op": "set", "value": 1, "durationTurns": 2 },

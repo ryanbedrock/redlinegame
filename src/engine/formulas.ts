@@ -145,6 +145,45 @@ export function probeDefaultEffects(
   }
 }
 
+// Salami escalation (§6.5-7): once the concession streak reaches the
+// threshold, the next probe lands one severity higher and takes 1.5× the slice.
+export function probeStakes(
+  probe: { severity: number; salamiValue: number },
+  concessionStreak: number,
+  salamiThreshold: number,
+): { escalated: boolean; severity: number; salamiValue: number } {
+  const escalated = concessionStreak >= salamiThreshold;
+  return {
+    escalated,
+    severity: escalated ? probe.severity + 1 : probe.severity,
+    salamiValue: escalated ? probe.salamiValue * 1.5 : probe.salamiValue,
+  };
+}
+
+// Track-investment lead time after the readiness reduction.
+export function effectiveLeadTime(
+  baseLeadTurns: number,
+  readiness: number,
+  bonusPerReadinessLevel: number,
+): number {
+  return Math.max(1, Math.round(baseLeadTurns - readiness * bonusPerReadinessLevel));
+}
+
+// Intel confidence bands over the noise sigma.
+export function intelConfidence(sigma: number): 'LOW' | 'MODERATE' | 'HIGH' {
+  if (sigma >= 0.18) return 'LOW';
+  if (sigma >= 0.12) return 'MODERATE';
+  return 'HIGH';
+}
+
+// War-epilogue termination leverage bonus for options flagged terminationLeverage.
+export function terminationBonus(
+  punishment: number,
+  f: { terminationPerLevelAbove3: number; terminationCap: number },
+): number {
+  return Math.min(f.terminationCap, Math.max(0, punishment - 3) * f.terminationPerLevelAbove3);
+}
+
 export function ordinal(r: ResponseType): number {
   return RESPONSE_ORDINAL[r];
 }

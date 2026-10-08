@@ -84,22 +84,22 @@ export function beliefTrajectory(
   const beliefs = state.analytics.typeBeliefs;
   let turnsToFirstCorrect: number | null = null;
   let flipFlops = 0;
-  let prev: string | null = null;
+  // A flip-flop is a change between two committed types; UNSURE is neither.
+  let lastCommitted: string | null = null;
   for (const b of beliefs) {
     if (b.statedType === trueType && turnsToFirstCorrect === null) {
       turnsToFirstCorrect = b.turn;
     }
-    if (prev !== null && b.statedType !== prev && b.statedType !== 'UNSURE') {
-      flipFlops += 1;
-    }
-    prev = b.statedType;
+    if (b.statedType === 'UNSURE') continue;
+    if (lastCommitted !== null && b.statedType !== lastCommitted) flipFlops += 1;
+    lastCommitted = b.statedType;
   }
+  // Without any spend there is no lock-in point; judge the final assessment.
   const lock = lockInTurn(state);
-  let beliefAtLockIn: RivalType | 'UNSURE' | null = null;
-  if (lock !== null) {
-    const upto = beliefs.filter((b) => b.turn <= lock);
-    beliefAtLockIn = upto.length ? upto[upto.length - 1].statedType : null;
-  }
+  const upto = lock === null ? beliefs : beliefs.filter((b) => b.turn <= lock);
+  const beliefAtLockIn: RivalType | 'UNSURE' | null = upto.length
+    ? upto[upto.length - 1].statedType
+    : null;
 
   // Score: correct-at-lock-in dominates, plus early correctness, minus flips.
   let score = 0;
@@ -121,10 +121,11 @@ export function beliefTrajectory(
 
 export function credibilityScore(state: GameState): number {
   const commitments = state.player.commitmentRegister;
-  const made = commitments.length;
+  // Only tested commitments carry evidence; an untested one leaves the baseline.
+  const tested = commitments.filter((c) => c.timesTested > 0).length;
   const honored = commitments.filter((c) => c.status === 'HONORED').length;
   let score = 0.6;
-  if (made > 0) score = honored / made;
+  if (tested > 0) score = honored / tested;
   score -= 0.15 * state.player.backDownCount;
   return clamp(score, 0, 1);
 }

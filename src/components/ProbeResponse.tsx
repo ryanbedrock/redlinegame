@@ -1,4 +1,4 @@
-import type { ContentPack, GameState } from '../engine';
+import { probeStakes, type ContentPack, type GameState } from '../engine';
 import { useGameStore } from '../store/gameStore';
 import { Hud } from './Hud';
 import { PROBE_CHARTS, RESPONSE_CHARTS } from './probeCharts';
@@ -16,6 +16,9 @@ export function ProbeResponse({
 
   const probe = content.probes.find((p) => p.id === state.world.stagedProbeId);
   const chart = probe ? PROBE_CHARTS[probe.id] : undefined;
+  const stakes = probe
+    ? probeStakes(probe, state.world.concessionStreak, content.scenario.tuning.concessionSalamiThreshold)
+    : undefined;
   const staged = draft.probeResponse;
   const selected = probe?.responses.find((r) => r.responseType === staged?.responseType);
   const rationales = selected
@@ -45,7 +48,10 @@ export function ProbeResponse({
       <section className="panel">
         <div className="intel-head">
           <h3>{probe.title}</h3>
-          <span className="tag">severity {probe.severity}</span>
+          <span className="tag">
+            severity {stakes?.severity ?? probe.severity}
+            {stakes?.escalated ? ' · escalated' : ''}
+          </span>
         </div>
         {chart && (
           <figure className="theatre-map">
@@ -59,7 +65,10 @@ export function ProbeResponse({
         )}
         <p>{probe.text}</p>
         <p className="muted">
-          Tags: {probe.tags.join(', ')} · conceding shifts the baseline by {probe.salamiValue}
+          Tags: {probe.tags.join(', ')} · conceding shifts the baseline by{' '}
+          {stakes?.salamiValue ?? probe.salamiValue}
+          {stakes?.escalated &&
+            ` (escalated after ${content.scenario.tuning.concessionSalamiThreshold} concessions in a row)`}
         </p>
         <div className="ladder">
           {probe.responses.map((opt) => (

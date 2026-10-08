@@ -69,9 +69,13 @@ export function Debrief({
   const signals = signalAudit(state);
   const coherence = coherenceAudit(state, content);
   const ledger = commitmentLedger(state, content);
-  const settlement = [...content.epilogue.settlements]
-    .sort((a, b) => b.minOutcome - a.minOutcome)
-    .find((s) => band.value >= s.minOutcome);
+  // Settlement terms only exist for a war that was fought to termination.
+  const settlement =
+    state.meta.ending === 'WAR'
+      ? [...content.epilogue.settlements]
+          .sort((a, b) => b.minOutcome - a.minOutcome)
+          .find((s) => band.value >= s.minOutcome)
+      : undefined;
 
   const perceptionData = state.analytics.perceptionHistory.map((p) => ({
     turn: p.turn + 1,
@@ -228,8 +232,10 @@ export function Debrief({
         <section className="panel span-2">
           <h3>Pivot lattice</h3>
           <p className="muted">
-            Each row re-runs the quarter with the opposite response across sub-seeds; cells show the
-            modal trajectory (peace, crisis, war, capitulation).
+            Each row re-runs the quarter with the opposite response across sub-seeds that re-draw
+            the intelligence noise; cells show the modal trajectory (peace, crisis, war,
+            capitulation). The Rival itself is deterministic, so agreement below 100% means the
+            outcome hinged on what your intelligence happened to report.
           </p>
           <table className="table">
             <thead>
@@ -403,7 +409,7 @@ export function Debrief({
                   <th>Class</th>
                   <th>Budget</th>
                   <th>Political Capital</th>
-                  <th>Δ perceived resolve</th>
+                  <th>Δ perceived resolve (whole quarter)</th>
                 </tr>
               </thead>
               <tbody>
