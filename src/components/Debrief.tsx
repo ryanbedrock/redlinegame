@@ -232,10 +232,10 @@ export function Debrief({
         <section className="panel span-2">
           <h3>Pivot lattice</h3>
           <p className="muted">
-            Each row re-runs the quarter with the opposite response across sub-seeds that re-draw
-            the intelligence noise; cells show the modal trajectory (peace, crisis, war,
-            capitulation). The Rival itself is deterministic, so agreement below 100% means the
-            outcome hinged on what your intelligence happened to report.
+            Each row re-runs the quarter with the opposite response across sub-seeds; cells show the
+            modal trajectory (peace, crisis, war, capitulation). The sub-seeds only re-draw
+            intelligence noise, and the re-runs replay your orders without reading it, so the
+            sub-seeds always agree.
           </p>
           <table className="table">
             <thead>
