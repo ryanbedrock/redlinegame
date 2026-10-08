@@ -39,8 +39,10 @@ function buildTakeaways(state: GameState, content: ContentPack): Takeaway[] {
           `Your ${probeRecord.responseType} to the ${title} was read as a concession. ${words} ` +
           `integrity gave up ${Math.abs(probeRecord.statusQuoDelta).toFixed(1)} points, and your concession streak is now ` +
           `${streak}. ` +
-          (atThreshold
-            ? 'The Rival will now escalate its next demand — harder provocations, bigger slices.'
+          (record.concessionStreak > threshold
+            ? 'The Rival keeps escalating its demands until you stop giving ground.'
+            : atThreshold
+              ? 'The Rival will now escalate its next demand — harder provocations, bigger slices.'
             : `Reach ${tuning.concessionSalamiThreshold} in a row and the Rival escalates its next demand.`),
       });
     } else if (probeRecord.responseType === 'MATCH') {
